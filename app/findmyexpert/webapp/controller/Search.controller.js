@@ -22,6 +22,9 @@ sap.ui.define([
 
     onInit: function () {
       this._oRouter = this.getRouter();
+      this._aAllResults = [];
+      this._iPageSize = 20;
+      this._iCurrentPage = 0;
     },
 
     onSearch: function(oEvent) {
@@ -70,16 +73,18 @@ sap.ui.define([
             const bMock = aResults.some(r => r.isMockMode);
             oMockBanner.setVisible(bMock);
 
+            // Store all results, reset pagination
+            this._aAllResults = aResults;
+            this._iCurrentPage = 0;
+
             // Update title with result count
             const oBundle2 = oView.getModel("i18n").getResourceBundle();
             const sCountTitle = oBundle2.getText("searchResultsCount", [aResults.length]);
             const oTitle = oView.byId("resultsTitle");
             if (oTitle) oTitle.setText(sCountTitle).setVisible(true);
 
-            aResults.forEach(oExpert => {
-              oResults.addItem(this._createExpertCard(oExpert));
-            });
-
+            // Render first page
+            this._renderNextPage(oResults, oBundle2);
             oResults.setVisible(true);
           } catch (err) {
             oBusy.setVisible(false);
@@ -95,6 +100,51 @@ sap.ui.define([
       }
     },
 
+    _renderNextPage: function(oResults, oBundle) {
+      const iStart = this._iCurrentPage * this._iPageSize;
+      const iEnd   = iStart + this._iPageSize;
+      const aPage  = this._aAllResults.slice(iStart, iEnd);
+
+      // Remove old "Load More" button if present
+      const aItems = oResults.getItems();
+      const oLast = aItems[aItems.length - 1];
+      if (oLast && oLast.isA && oLast.isA("sap.m.Button")) {
+        oResults.removeItem(oLast);
+        oLast.destroy();
+      }
+
+      aPage.forEach(oExpert => {
+        oResults.addItem(this._createExpertCard(oExpert));
+      });
+
+      this._iCurrentPage++;
+
+      // Add "Load More" button if there are more results
+      if (iEnd < this._aAllResults.length) {
+        const iRemaining = this._aAllResults.length - iEnd;
+        const oBundle2 = oBundle || this.getView().getModel("i18n").getResourceBundle();
+        const oLoadMore = new Button({
+          text: oBundle2.getText ? oBundle2.getText("searchLoadMore", [iRemaining]) : ("Weitere laden (" + iRemaining + ")"),
+          type: "Default",
+          icon: "sap-icon://down",
+          class: "sapUiMediumMarginTop sapUiMediumMarginBottom",
+          press: () => {
+            this._renderNextPage(oResults, oBundle2);
+          }
+        });
+        // Full-width wrapper
+        const oWrapper = new HBox({ justifyContent: "Center", width: "100%", class: "fmeLoadMoreWrapper" });
+        oWrapper.addItem(oLoadMore);
+        oResults.addItem(oWrapper);
+      }
+    },
+
+    onLoadMore: function() {
+      const oResults = this.getView().byId("resultsContainer");
+      const oBundle = this.getView().getModel("i18n").getResourceBundle();
+      this._renderNextPage(oResults, oBundle);
+    },
+
     _createExpertCard: function(oExpert) {
       const oBundle = this.getView().getModel("i18n").getResourceBundle();
       const sRoleState = this._getRoleState(oExpert.role);
@@ -103,13 +153,18 @@ sap.ui.define([
       const sInitials = ((oExpert.firstName || "?")[0] + (oExpert.lastName || "?")[0]).toUpperCase();
       const sAvatarColor = this._getAvatarColor(oExpert.role);
 
-      const oCard = new Card({ width: "320px", class: "sapUiSmallMarginEnd sapUiSmallMarginBottom", semanticRole: "ListItem" });
+      // Card with fixed width — height controlled by CSS via uniform content zones
+      const oCard = new Card({
+        width: "300px",
+        semanticRole: "ListItem",
+        class: "fmeExpertCard sapUiSmallMarginEnd sapUiSmallMarginBottom"
+      });
 
       // Header with avatar
       oCard.setHeader(new FCardHeader({
         title: oExpert.firstName + " " + oExpert.lastName,
-        subtitle: oExpert.topicName + " › " + oExpert.solutionName,
-        statusText: oExpert.location,
+        subtitle: (oExpert.topicName || "") + " › " + (oExpert.solutionName || ""),
+        statusText: oExpert.location || "",
         avatar: new Avatar({
           initials: sInitials,
           backgroundColor: sAvatarColor,
@@ -117,50 +172,52 @@ sap.ui.define([
         })
       }));
 
-      // Card content
-      const oVBox = new VBox({ class: "sapUiSmallMarginBeginEnd sapUiTinyMarginBottom" });
+      // Card content — fixed height via uniform VBox
+      const oVBox = new VBox({
+        class: "sapUiSmallMarginBeginEnd sapUiSmallMarginBottom fmeCardContent"
+      });
 
-      // Role as ObjectStatus with consistent semantic color
+      // 1) Role badge (always present, fixed height slot)
       oVBox.addItem(new ObjectStatus({
-        title: "",
         text: oExpert.roleLabel || oExpert.role,
         state: sRoleState,
         inverted: sRoleState !== "None",
-        class: "sapUiTinyMarginBottom"
+        class: "sapUiTinyMarginBottom fmeRoleBadge"
       }));
 
-      // Presentation capabilities — only show if at least one is enabled
+      // 2) Presentation capabilities row (fixed slot, hidden icons take no space)
       const aCaps = [
         { cap: oExpert.canPresent5M,   icon: "sap-icon://time-entry-request", tooltip: oBundle.getText("tooltip_5M")   },
         { cap: oExpert.canPresent30M,  icon: "sap-icon://calendar",            tooltip: oBundle.getText("tooltip_30M")  },
         { cap: oExpert.canPresent2H,   icon: "sap-icon://education",           tooltip: oBundle.getText("tooltip_2H")   },
         { cap: oExpert.canPresentDemo, icon: "sap-icon://show",                tooltip: oBundle.getText("tooltip_Demo") }
       ];
-      const bAny = aCaps.some(c => c.cap);
-      if (bAny) {
-        const oIconBar = new HBox({ class: "sapUiTinyMarginBottom" });
-        aCaps.forEach(({ cap, icon, tooltip }) => {
-          if (cap) {
-            oIconBar.addItem(new Icon({
-              src: icon,
-              tooltip: tooltip,
-              color: "Positive",
-              size: "1rem",
-              class: "sapUiTinyMarginEnd"
-            }));
-          }
-        });
-        oVBox.addItem(oIconBar);
+      const oIconBar = new HBox({ class: "sapUiTinyMarginBottom fmeCapRow", height: "1.5rem" });
+      aCaps.forEach(({ cap, icon, tooltip }) => {
+        oIconBar.addItem(new Icon({
+          src: icon,
+          tooltip: tooltip,
+          color: cap ? "Positive" : "Default",
+          size: "1rem",
+          class: "sapUiSmallMarginEnd",
+          visible: !!cap
+        }));
+      });
+      // Placeholder text if no capabilities
+      if (!aCaps.some(c => c.cap)) {
+        oIconBar.addItem(new sap.m.Text({ text: "", class: "fmeCapPlaceholder" }));
       }
+      oVBox.addItem(oIconBar);
 
-      // Relevance bar
+      // 3) Relevance bar (always full width, score always shown)
       const iScore = oExpert.score || 0;
       const sState = iScore >= 70 ? "Success" : iScore >= 40 ? "Warning" : "None";
       oVBox.addItem(new ProgressIndicator({
         percentValue: iScore,
         displayValue: oBundle.getText("scoreLabel", [iScore]),
         state: sState,
-        class: "sapUiTinyMarginBottom"
+        showValue: true,
+        class: "fmeRelevanceBar"
       }));
 
       oCard.setContent(oVBox);
