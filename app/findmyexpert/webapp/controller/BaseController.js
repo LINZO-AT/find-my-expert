@@ -11,21 +11,37 @@ sap.ui.define([
      * Falls back to browser history or FLP home.
      */
     onNavBack: function () {
-      const sPreviousHash = History.getInstance().getPreviousHash();
+      var sPreviousHash = History.getInstance().getPreviousHash();
 
       if (sPreviousHash !== undefined) {
         window.history.go(-1);
       } else {
         // No history — navigate to FLP home if available, else to search
-        const oCrossAppNav = sap.ushell
-          && sap.ushell.Container
-          && sap.ushell.Container.getService("CrossApplicationNavigation");
-
-        if (oCrossAppNav && oCrossAppNav.toExternal) {
-          oCrossAppNav.toExternal({ target: { shellHash: "#" } });
-        } else {
-          this.getOwnerComponent().getRouter().navTo("search", {}, true);
+        var oFLP = this._getFLPContainer();
+        if (oFLP) {
+          var oCrossAppNav = oFLP.getService("CrossApplicationNavigation");
+          if (oCrossAppNav && oCrossAppNav.toExternal) {
+            oCrossAppNav.toExternal({ target: { shellHash: "#" } });
+            return;
+          }
         }
+        this.getOwnerComponent().getRouter().navTo("search", {}, true);
+      }
+    },
+
+    /**
+     * Get the FLP ushell Container safely without global access.
+     * @returns {object|null} The ushell Container or null
+     */
+    _getFLPContainer: function () {
+      try {
+        var oContainer = null;
+        sap.ui.require(["sap/ushell/Container"], function (Container) {
+          oContainer = Container;
+        });
+        return oContainer;
+      } catch (e) {
+        return null;
       }
     },
 

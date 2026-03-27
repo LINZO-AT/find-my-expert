@@ -14,10 +14,10 @@
     <uxap:headerTitle>
       <uxap:ObjectPageDynamicHeaderTitle>
         <uxap:heading>
-          <Title text="{= ${/firstName} + ' ' + ${/lastName}}" wrapping="true" level="H2" />
+          <Title text="{= ${firstName} + ' ' + ${lastName}}" wrapping="true" level="H2" />
         </uxap:heading>
         <uxap:snappedHeading>
-          <Title text="{= ${/firstName} + ' ' + ${/lastName}}" wrapping="true" level="H3" />
+          <Title text="{= ${firstName} + ' ' + ${lastName}}" wrapping="true" level="H3" />
         </uxap:snappedHeading>
         <uxap:actions>
           <Button
@@ -46,7 +46,7 @@
                 id="expertiseTable"
                 sticky="ColumnHeaders"
                 items="{
-                  path: '/roles',
+                  path: 'roles',
                   parameters: { $expand: 'solution($expand=topic)' }
                 }">
                 <columns>

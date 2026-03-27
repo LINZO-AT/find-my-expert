@@ -48,14 +48,20 @@ sap.ui.define([
 
     _loadUserInfo: function (oUserModel) {
       try {
-        const oContainer = sap.ushell && sap.ushell.Container;
-        if (oContainer) {
-          const oUserInfoService = oContainer.getService("UserInfo");
-          const aRoles = oUserInfoService.getRoles ? oUserInfoService.getRoles() : [];
-          const bAdmin = Array.isArray(aRoles)
-            ? aRoles.some(r => r === "ExpertAdmin")
-            : false;
-          oUserModel.setData({ isAdmin: bAdmin, roles: aRoles || [] });
+        var oContainer = null;
+        sap.ui.require(["sap/ushell/Container"], function (Container) {
+          oContainer = Container;
+        });
+        if (oContainer && oContainer.getServiceAsync) {
+          oContainer.getServiceAsync("UserInfo").then(function (oUserInfoService) {
+            var aRoles = oUserInfoService.getRoles ? oUserInfoService.getRoles() : [];
+            var bAdmin = Array.isArray(aRoles)
+              ? aRoles.some(function (r) { return r === "ExpertAdmin"; })
+              : false;
+            oUserModel.setData({ isAdmin: bAdmin, roles: aRoles || [] });
+          }).catch(function () {
+            // UserInfo service not available
+          });
           return;
         }
       } catch (e) {

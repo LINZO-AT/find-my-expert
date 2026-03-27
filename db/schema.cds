@@ -48,7 +48,7 @@ entity Experts : cuid, managed {
 /**
  * Role types — ordered by relevance weight (highest first)
  */
-type ExpertRoleType : String enum {
+@assert.range type ExpertRoleType : String enum {
   TopicOwner              = 'TOPIC_OWNER';
   SolutioningArchAdvisory = 'SOLUTIONING_ARCH';
   ThemenLead              = 'THEMEN_LEAD';
@@ -70,6 +70,7 @@ entity ExpertRoles : cuid, managed {
   @title: 'Solution'
   solution          : Association to Solutions not null;
   @title: 'Role'
+  @assert.range
   role              : ExpertRoleType           not null;
   @title: 'Can present 5 min'
   canPresent5M      : Boolean default false;

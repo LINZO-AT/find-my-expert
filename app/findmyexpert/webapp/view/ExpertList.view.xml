@@ -54,18 +54,19 @@
           <Select
             id="topicFilter"
             width="auto"
+            ariaLabelledBy="topicFilterLabel"
             items="{ path: '/Topics', parameters: { $orderby: 'name' } }"
             change=".onFilterChange">
             <core:Item key="" text="{i18n>expertListAllTopics}" />
             <items><core:Item key="{ID}" text="{name}" /></items>
           </Select>
-          <Select id="locationFilter" width="auto" change=".onFilterChange" class="sapUiTinyMarginBegin">
+          <Select id="locationFilter" width="auto" ariaLabelledBy="locationFilterLabel" change=".onFilterChange" class="sapUiTinyMarginBegin">
             <core:Item key="" text="{i18n>expertListAllLocations}" />
             <core:Item key="AT" text="{i18n>loc_AT}" />
             <core:Item key="DE" text="{i18n>loc_DE}" />
             <core:Item key="CH" text="{i18n>loc_CH}" />
           </Select>
-          <SearchField id="nameSearch" width="200px" search=".onFilterChange" class="sapUiTinyMarginBegin" />
+          <SearchField id="nameSearch" width="200px" search=".onFilterChange" class="sapUiTinyMarginBegin" ariaLabelledBy="nameSearchLabel" />
           <Button
             text="{i18n>expertListResetFilter}"
             press=".onResetFilters"
@@ -81,6 +82,7 @@
         growing="true"
         growingThreshold="25"
         sticky="ColumnHeaders"
+        ariaLabelledBy="expertTableTitle"
         items="{
           path: '/Experts',
           parameters: {

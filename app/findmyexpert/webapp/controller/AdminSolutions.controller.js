@@ -24,8 +24,7 @@ sap.ui.define([
         this._selectedTopicId = sTopicId;
 
         // Use direct OData fetch for reliable result
-        const oModel = this.getView().getModel("admin");
-        const sUrl = oModel.sServiceUrl + "Solutions?$filter=topic_ID eq '" + sTopicId + "'&$orderby=name";
+        const sUrl = "/odata/v4/admin/Solutions?$filter=topic_ID eq '" + sTopicId + "'&$orderby=name";
         fetch(sUrl, { headers: { "Accept": "application/json" } })
           .then(r => r.json())
           .then(data => {

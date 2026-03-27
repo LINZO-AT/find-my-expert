@@ -14,13 +14,13 @@ sap.ui.define([
     },
 
     formatSolutionCount: function(aRoles, sPattern) {
-      const iCount = Array.isArray(aRoles) ? aRoles.length : 0;
+      const iCount = (aRoles && typeof aRoles.length === "number") ? aRoles.length : 0;
       if (sPattern) { return sPattern.replace("{0}", iCount); }
       return iCount + " Solutions";
     },
 
     formatRoleCount: function(aRoles) {
-      const iCount = Array.isArray(aRoles) ? aRoles.length : 0;
+      const iCount = (aRoles && typeof aRoles.length === "number") ? aRoles.length : 0;
       try {
         const sPattern = this.getView().getModel("i18n").getResourceBundle().getText("expertListSolutions", [iCount]);
         return sPattern;
@@ -97,6 +97,12 @@ sap.ui.define([
       if (!oBinding) return;
 
       const aFilters = [];
+
+      // Topic filter — filters on the nested roles/solution/topic_ID path
+      const sTopic = this.byId("topicFilter").getSelectedKey();
+      if (sTopic) {
+        aFilters.push(new Filter("roles/solution/topic_ID", FilterOperator.EQ, sTopic));
+      }
 
       const sLocation = this.byId("locationFilter").getSelectedKey();
       if (sLocation) {

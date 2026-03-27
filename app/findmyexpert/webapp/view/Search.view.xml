@@ -25,7 +25,8 @@
             id="searchField"
             placeholder="{i18n>searchPlaceholder}"
             width="560px"
-            search=".onSearch" />
+            search=".onSearch"
+            ariaLabelledBy="searchFieldLabel" />
           <Button
             text="{i18n>searchButton}"
             type="Emphasized"
@@ -73,7 +74,11 @@
           wrap="Wrap"
           visible="false"
           class="sapUiTinyMarginTop"
-          width="100%" />
+          width="100%">
+          <customData>
+            <core:CustomData key="sap-ui-fastnavgroup" value="true" writeToDom="true" />
+          </customData>
+        </FlexBox>
 
       </VBox>
     </content>

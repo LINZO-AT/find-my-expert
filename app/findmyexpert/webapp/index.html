@@ -4,22 +4,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Find My Expert</title>
-  <script>
-    window["sap-ui-config"] = {
-      resourceRoots: {
-        "com.sap.austria.findmyexpert": "http://localhost:8080/"
-      },
-      libs: "sap.m,sap.f,sap.ui.layout,sap.ui.unified",
-      theme: "sap_horizon",
-      compatVersion: "edge",
-      async: true,
-      frameOptions: "trusted"
-    };
-  </script>
   <script
     id="sap-ui-bootstrap"
     src="https://ui5.sap.com/1.132.1/resources/sap-ui-core.js"
-    data-sap-ui-oninit="module:sap/ui/core/ComponentSupport">
+    data-sap-ui-resource-roots='{"com.sap.austria.findmyexpert": "./"}'
+    data-sap-ui-libs="sap.m,sap.f,sap.f.cards,sap.ui.layout,sap.ui.unified"
+    data-sap-ui-theme="sap_horizon"
+    data-sap-ui-compat-version="edge"
+    data-sap-ui-async="true"
+    data-sap-ui-frame-options="trusted"
+    data-sap-ui-on-init="module:sap/ui/core/ComponentSupport">
   </script>
 </head>
 <body class="sapUiBody" id="content">

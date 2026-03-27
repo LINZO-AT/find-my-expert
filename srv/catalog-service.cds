@@ -3,10 +3,39 @@ using findmyexpert as db from '../db/schema';
 @requires: 'ExpertViewer'
 service CatalogService @(path: '/odata/v4/catalog') {
 
-  @readonly entity Topics      as projection on db.Topics;
-  @readonly entity Solutions   as projection on db.Solutions;
-  @readonly entity Experts     as projection on db.Experts;
-  @readonly entity ExpertRoles as projection on db.ExpertRoles;
+  @readonly
+  @UI.HeaderInfo: {
+    TypeName      : '{i18n>topic}',
+    TypeNamePlural: '{i18n>topics}',
+    Title         : { Value: name }
+  }
+  entity Topics      as projection on db.Topics;
+
+  @readonly
+  @UI.HeaderInfo: {
+    TypeName      : '{i18n>solution}',
+    TypeNamePlural: '{i18n>solutions}',
+    Title         : { Value: name }
+  }
+  entity Solutions   as projection on db.Solutions;
+
+  @readonly
+  @UI.HeaderInfo: {
+    TypeName      : '{i18n>expert}',
+    TypeNamePlural: '{i18n>experts}',
+    Title         : { Value: lastName },
+    Description   : { Value: firstName }
+  }
+  @UI.LineItem: [
+    { Value: firstName, Label: '{i18n>firstName}' },
+    { Value: lastName,  Label: '{i18n>lastName}' },
+    { Value: email,     Label: '{i18n>email}' },
+    { Value: location,  Label: '{i18n>location}' }
+  ]
+  entity Experts     as projection on db.Experts;
+
+  @readonly
+  entity ExpertRoles as projection on db.ExpertRoles;
 
   /**
    * AI-powered expert search.

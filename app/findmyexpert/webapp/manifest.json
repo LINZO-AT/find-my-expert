@@ -1,5 +1,5 @@
 {
-  "_version": "1.65.0",
+  "_version": "2.0.0",
   "sap.app": {
     "id": "com.sap.austria.findmyexpert",
     "type": "application",
@@ -28,6 +28,11 @@
     "archeType": "transactional"
   },
   "sap.ui5": {
+    "flexEnabled": false,
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
     "minUI5Version": "1.132.1",
     "theme": "sap_horizon",
     "dependencies": {
@@ -38,7 +43,8 @@
         "sap.f": {},
         "sap.uxap": {},
         "sap.ui.layout": {},
-        "sap.ui.unified": {}
+        "sap.ui.unified": {},
+        "sap.f.cards": {}
       }
     },
     "models": {
@@ -46,7 +52,6 @@
         "dataSource": "CatalogService",
         "type": "sap.ui.model.odata.v4.ODataModel",
         "settings": {
-          "synchronizationMode": "None",
           "operationMode": "Server",
           "autoExpandSelect": true
         }
@@ -55,7 +60,6 @@
         "dataSource": "AdminService",
         "type": "sap.ui.model.odata.v4.ODataModel",
         "settings": {
-          "synchronizationMode": "None",
           "operationMode": "Server",
           "autoExpandSelect": true
         }
@@ -72,7 +76,6 @@
     "rootView": {
       "viewName": "com.sap.austria.findmyexpert.view.App",
       "type": "XML",
-      "async": true,
       "id": "app"
     },
     "routing": {
@@ -82,7 +85,6 @@
         "viewPath": "com.sap.austria.findmyexpert.view",
         "controlId": "app",
         "controlAggregation": "pages",
-        "async": true,
         "bypassed": {
           "target": "Search"
         }
@@ -96,11 +98,11 @@
         { "name": "adminSolutions", "pattern": "admin/solutions",          "target": "AdminSolutions" }
       ],
       "targets": {
-        "Search":         { "id": "Search",         "viewName": "Search" },
-        "ExpertList":     { "id": "ExpertList",     "viewName": "ExpertList" },
-        "ExpertDetail":   { "id": "ExpertDetail",   "viewName": "ExpertDetail" },
-        "AdminExpert":    { "id": "AdminExpert",    "viewName": "AdminExpert" },
-        "AdminSolutions": { "id": "AdminSolutions", "viewName": "AdminSolutions" }
+        "Search":         { "id": "Search",         "name": "Search",         "viewName": "Search" },
+        "ExpertList":     { "id": "ExpertList",     "name": "ExpertList",     "viewName": "ExpertList" },
+        "ExpertDetail":   { "id": "ExpertDetail",   "name": "ExpertDetail",   "viewName": "ExpertDetail" },
+        "AdminExpert":    { "id": "AdminExpert",    "name": "AdminExpert",    "viewName": "AdminExpert" },
+        "AdminSolutions": { "id": "AdminSolutions", "name": "AdminSolutions", "viewName": "AdminSolutions" }
       }
     }
   }
