@@ -33,9 +33,19 @@ module.exports = cds.service.impl(async function () {
   // ─── userInfo ───────────────────────────────────────────────────────────────
   this.on("userInfo", async (req) => {
     const user = req.user;
+
+    // DEV mode (mocked auth, no NODE_ENV=production):
+    //   anonymous requests = automatically Admin, no login required.
+    // PROD mode (XSUAA):
+    //   Admin role comes from BTP role collection FindMyExpert_Admin.
+    const bDev   = !cds.env.production;
+    const bAnon  = user._is_anonymous || user.id === "anonymous";
+    const bAdmin = bDev && bAnon ? true : user.is("Admin");
+    const sName  = (user.id && !bAnon) ? user.id : (bDev ? "Dev/Admin" : "");
+
     return {
-      isAdmin: user.is("Admin"),
-      userName: user.id || ""
+      isAdmin:  bAdmin,
+      userName: sName
     };
   });
 

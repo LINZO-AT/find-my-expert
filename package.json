@@ -26,7 +26,8 @@
   "cds": {
     "requires": {
       "[production]": {
-        "auth": { "kind": "xsuaa" }
+        "auth": { "kind": "xsuaa" },
+        "db":   { "kind": "postgres" }
       }
     }
   }

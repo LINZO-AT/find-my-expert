@@ -13,29 +13,31 @@
           <Title text="{i18n>appTitle}" level="H2" wrapping="true" />
         </f:heading>
         <f:actions>
+          <!-- Expert Directory — always visible -->
           <Button
             text="{i18n>expertListTitle}"
             type="Transparent"
             icon="sap-icon://list"
             press=".onNavToExpertList" />
+
+          <!-- Admin: Topics & Solutions — only for Admin role -->
           <Button
             text="{i18n>adminSolutionsTitle}"
             type="Transparent"
             icon="sap-icon://settings"
             press=".onNavToAdminSolutions"
             visible="{userModel>/isAdmin}" />
-          <Button
-            text="{i18n>loginButton}"
-            type="Transparent"
-            icon="sap-icon://person-placeholder"
-            press=".onLogin"
-            visible="{= !${userModel>/userName} || ${userModel>/userName} === 'anonymous' }" />
-          <Button
-            text="{= ${userModel>/userName} }"
-            type="Transparent"
-            icon="sap-icon://account"
-            press=".onLogout"
-            visible="{= !!${userModel>/userName} &amp;&amp; ${userModel>/userName} !== 'anonymous' }" />
+
+          <!-- User indicator: shown once userInfo loaded.
+               DEV: shows "Admin" badge automatically.
+               PROD (XSUAA): shows authenticated user's name + role. -->
+          <ObjectStatus
+            text="{= ${userModel>/isAdmin} ? 'Admin' : 'Viewer' }"
+            state="{= ${userModel>/isAdmin} ? 'Success' : 'None' }"
+            icon="{= ${userModel>/isAdmin} ? 'sap-icon://unlocked' : 'sap-icon://locked' }"
+            visible="{userModel>/loaded}"
+            tooltip="{= ${userModel>/userName} ? ${userModel>/userName} : (${userModel>/isAdmin} ? 'Admin (Dev)' : 'Viewer') }"
+            class="sapUiSmallMarginBegin" />
         </f:actions>
       </f:DynamicPageTitle>
     </f:title>

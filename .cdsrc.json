@@ -7,13 +7,11 @@
     "auth": {
       "kind": "mocked",
       "users": {
-        "admin": {
-          "password": "admin",
-          "roles": ["Admin", "authenticated-user"]
+        "anonymous": {
+          "roles": ["Admin", "Viewer", "authenticated-user"]
         },
-        "viewer": {
-          "password": "viewer",
-          "roles": ["Viewer", "authenticated-user"]
+        "*": {
+          "roles": ["Admin", "Viewer", "authenticated-user"]
         }
       }
     }
@@ -23,7 +21,8 @@
   },
   "[production]": {
     "requires": {
-      "db": { "kind": "postgres" }
+      "db":   { "kind": "postgres" },
+      "auth": { "kind": "xsuaa" }
     }
   }
 }

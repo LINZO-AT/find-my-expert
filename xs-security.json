@@ -1,38 +1,51 @@
 {
   "xsappname": "find-my-expert",
   "tenant-mode": "dedicated",
+  "description": "Find My Expert — SAP Austria Internal Expert Directory",
   "scopes": [
     {
       "name": "$XSAPPNAME.Viewer",
-      "description": "Viewer Access"
+      "description": "Read-only access to expert directory and search"
     },
     {
       "name": "$XSAPPNAME.Admin",
-      "description": "Admin Access"
+      "description": "Full admin access: manage experts, topics, solutions"
     }
   ],
+  "attributes": [],
   "role-templates": [
     {
       "name": "Viewer",
-      "description": "Viewer Role",
-      "scope-references": ["$XSAPPNAME.Viewer"]
+      "description": "Can search and view experts",
+      "scope-references": [
+        "$XSAPPNAME.Viewer"
+      ],
+      "attribute-references": []
     },
     {
       "name": "Admin",
-      "description": "Admin Role",
-      "scope-references": ["$XSAPPNAME.Admin"]
+      "description": "Can manage all master data",
+      "scope-references": [
+        "$XSAPPNAME.Admin",
+        "$XSAPPNAME.Viewer"
+      ],
+      "attribute-references": []
     }
   ],
   "role-collections": [
     {
       "name": "FindMyExpert_Viewer",
-      "description": "Viewer Role Collection for Find My Expert",
-      "role-template-references": ["$XSAPPNAME.Viewer"]
+      "description": "Viewer-Zugang für Find My Expert (Suche & Verzeichnis)",
+      "role-template-references": [
+        "$XSAPPNAME.Viewer"
+      ]
     },
     {
       "name": "FindMyExpert_Admin",
-      "description": "Admin Role Collection for Find My Expert",
-      "role-template-references": ["$XSAPPNAME.Admin"]
+      "description": "Admin-Zugang für Find My Expert (Verwaltung aller Daten)",
+      "role-template-references": [
+        "$XSAPPNAME.Admin"
+      ]
     }
   ]
 }
