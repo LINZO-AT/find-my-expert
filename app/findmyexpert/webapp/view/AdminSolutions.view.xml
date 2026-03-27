@@ -2,29 +2,30 @@
   controllerName="com.sap.austria.findmyexpert.controller.AdminSolutions"
   xmlns:mvc="sap.ui.core.mvc"
   xmlns="sap.m"
-  xmlns:f="sap.f">
+  xmlns:core="sap.ui.core">
 
-  <f:DynamicPage id="adminSolutionsPage" fitContent="true">
+  <Page
+    id="adminSolutionsPage">
 
-    <f:title>
-      <f:DynamicPageTitle>
-        <f:navigationActions>
-          <Button icon="sap-icon://nav-back" type="Transparent" press=".onNavBack" />
-        </f:navigationActions>
-        <f:heading>
-          <Title text="{i18n>adminSolutionsTitle}" level="H2" wrapping="true" />
-        </f:heading>
-        <f:actions>
-          <Button text="{i18n>adminSolutionsSave}" type="Emphasized" press=".onSave" />
-        </f:actions>
-      </f:DynamicPageTitle>
-    </f:title>
+    <customHeader>
+      <Bar>
+        <contentLeft>
+          <Button icon="sap-icon://nav-back" press=".onNavBack" tooltip="{i18n>backBtn}" type="Transparent" />
+        </contentLeft>
+        <contentMiddle>
+          <VBox class="sapUiTinyMarginTopBottom">
+            <Title text="{i18n>adminSolutionsTitle}" level="H2" titleStyle="H4" wrapping="true" textAlign="Center" />
+            <Label text="{i18n>adminSolutionsSubtitle}" design="Light" textAlign="Center" wrapping="true" class="sapUiTinyMarginTop" />
+          </VBox>
+        </contentMiddle>
+      </Bar>
+    </customHeader>
 
-    <f:content>
-      <HBox class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom" alignItems="Stretch" width="100%">
+    <content>
+      <FlexBox alignItems="Stretch" justifyContent="Start" width="100%" class="sapUiSmallMarginTop sapUiSmallMarginBeginEnd" direction="Row">
 
         <!-- Topics column -->
-        <VBox width="280px" class="sapUiSmallMarginEnd">
+        <VBox class="sapUiSmallMarginEnd" width="50%">
           <Toolbar style="Clear">
             <Title text="{i18n>adminSolutionsTopics}" level="H4" />
             <ToolbarSpacer />
@@ -39,73 +40,75 @@
             items="{admin>/Topics}"
             selectionChange=".onTopicSelect"
             mode="SingleSelectMaster"
-            backgroundDesign="Solid">
-            <StandardListItem
-              title="{admin>name}"
-              description="{admin>description}"
-              type="Active" />
+            backgroundDesign="Solid"
+            class="sapUiTinyMarginTop">
+            <CustomListItem type="Active" class="sapUiTinyMarginBottom">
+              <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%" class="sapUiSmallMarginBeginEnd sapUiTinyMarginTopBottom">
+                <VBox class="sapUiSmallMarginEnd" width="100%">
+                  <Text text="{admin>name}" class="sapMTitle sapMTitleStyleH5" />
+                  <Text text="{admin>description}" class="sapUiTinyMarginTop sapMLabel" wrapping="true" />
+                </VBox>
+                <HBox>
+                  <Button icon="sap-icon://edit" press=".onEditTopic" type="Transparent" tooltip="{i18n>adminSolutionsEditTopic}" />
+                  <Button icon="sap-icon://delete" press=".onDeleteTopic" type="Transparent" tooltip="{i18n>adminSolutionsDeleteTopic}" />
+                </HBox>
+              </HBox>
+            </CustomListItem>
             <noData>
               <IllustratedMessage
                 illustrationType="sapIllus-EmptyList"
                 title="{i18n>adminSolutionsTopics}"
-                description="" />
+                description="{i18n>adminSolutionsNoTopics}" />
             </noData>
           </List>
         </VBox>
 
         <!-- Divider -->
-        <VBox class="sapUiSmallMarginEnd">
-          <core:HTML content="&lt;div style='width:1px;background:#e5e5e5;height:100%;min-height:200px'&gt;&lt;/div&gt;" xmlns:core="sap.ui.core" />
+        <VBox width="1px" class="sapUiSmallMarginEnd">
+          <core:HTML content="&lt;div style='width:1px;background:#e5e5e5;height:100%;min-height:300px'&gt;&lt;/div&gt;" />
         </VBox>
 
         <!-- Solutions column -->
-        <VBox class="sapUiContentPadding" width="100%">
+        <VBox width="50%">
           <Toolbar style="Clear">
             <Title text="{i18n>adminSolutionsSolutions}" level="H4" />
             <ToolbarSpacer />
             <Button
+              id="addSolutionBtn"
               icon="sap-icon://add"
               tooltip="{i18n>adminSolutionsAddSolution}"
               press=".onAddSolution"
-              type="Transparent" />
+              type="Transparent"
+              enabled="{viewModel>/topicSelected}" />
           </Toolbar>
-          <Table
-            id="solutionTable"
+          <List
+            id="solutionList"
             items="{viewModel>/solutions}"
-            growing="true"
-            growingThreshold="20"
-            backgroundDesign="Solid">
-            <columns>
-              <Column><Text text="Name" /></Column>
-              <Column minScreenWidth="Tablet" demandPopin="true">
-                <Text text="Beschreibung" />
-              </Column>
-              <Column hAlign="End" width="3rem"><Text text="" /></Column>
-            </columns>
-            <items>
-              <ColumnListItem>
-                <cells>
-                  <Input value="{viewModel>name}" required="true" />
-                  <Input value="{viewModel>description}" />
-                  <Button
-                    icon="sap-icon://delete"
-                    tooltip="{i18n>expertListDeleteBtn}"
-                    press=".onDeleteSolution"
-                    type="Transparent" />
-                </cells>
-              </ColumnListItem>
-            </items>
+            backgroundDesign="Solid"
+            class="sapUiTinyMarginTop">
+            <CustomListItem class="sapUiTinyMarginBottom">
+              <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%" class="sapUiSmallMarginBeginEnd sapUiTinyMarginTopBottom">
+                <VBox class="sapUiSmallMarginEnd" width="100%">
+                  <Text text="{viewModel>name}" class="sapMTitle sapMTitleStyleH5" />
+                  <Text text="{viewModel>description}" class="sapUiTinyMarginTop sapMLabel" wrapping="true" />
+                </VBox>
+                <HBox>
+                  <Button icon="sap-icon://edit" press=".onEditSolution" type="Transparent" tooltip="{i18n>adminSolutionsEditSolution}" />
+                  <Button icon="sap-icon://delete" press=".onDeleteSolution" type="Transparent" tooltip="{i18n>adminSolutionsDeleteSolution}" />
+                </HBox>
+              </HBox>
+            </CustomListItem>
             <noData>
               <IllustratedMessage
                 illustrationType="sapIllus-EmptyList"
                 title="{i18n>adminSolutionsSolutions}"
                 description="{i18n>adminSolutionsSelectTopicFirst}" />
             </noData>
-          </Table>
+          </List>
         </VBox>
 
-      </HBox>
-    </f:content>
+      </FlexBox>
+    </content>
 
-  </f:DynamicPage>
+  </Page>
 </mvc:View>

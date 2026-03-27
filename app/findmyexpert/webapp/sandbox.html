@@ -6,6 +6,16 @@
   <title>Find My Expert – Fiori Launchpad Sandbox</title>
 
   <script>
+    // Redirect to self with sap-ushell-sandbox-config parameter if not already set.
+    // This ensures sandbox.js loads OUR fioriSandboxConfig.json LAST, overriding CDN sample apps.
+    if (!window.location.search.includes("sap-ushell-sandbox-config")) {
+      window.location.replace(
+        window.location.pathname + "?sap-ushell-sandbox-config=./appconfig/fioriSandboxConfig.json" + window.location.hash
+      );
+    }
+  </script>
+
+  <script>
     // FLP Sandbox Config — loaded before bootstrap
     window["sap-ushell-config"] = {
       defaultRenderer: "fiori2",
@@ -123,7 +133,7 @@
   <script
     id="sap-ui-bootstrap"
     src="https://ui5.sap.com/1.132.1/resources/sap-ui-core.js"
-    data-sap-ui-libs="sap.m,sap.ushell,sap.f,sap.f.cards,sap.uxap,sap.ui.layout,sap.ui.unified"
+    data-sap-ui-libs="sap.m,sap.ushell,sap.f,sap.uxap,sap.ui.layout,sap.ui.unified"
     data-sap-ui-theme="sap_horizon"
     data-sap-ui-compat-version="edge"
     data-sap-ui-async="true"

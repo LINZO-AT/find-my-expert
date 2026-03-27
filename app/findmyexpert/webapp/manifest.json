@@ -43,8 +43,7 @@
         "sap.f": {},
         "sap.uxap": {},
         "sap.ui.layout": {},
-        "sap.ui.unified": {},
-        "sap.f.cards": {}
+        "sap.ui.unified": {}
       }
     },
     "models": {

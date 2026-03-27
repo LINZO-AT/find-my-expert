@@ -1,9 +1,9 @@
 ID,name,description
-t-ai,AI,Artificial Intelligence & Joule — SAP Business AI Portfolio und Custom AI
-t-bdc,BDC,Business Data Cloud — SAP Datasphere Analytics und Reporting
-t-btp,BTP,SAP Business Technology Platform — Integration Suite Build und Extensions
-t-erp,CloudERP,Cloud ERP & S/4HANA — Finance Logistics Manufacturing und Sales
-t-hcm,HCM,Human Capital Management — SuccessFactors und S/4HANA HCM
-t-itc,Integrated Toolchain,Integrated Toolchain — Signavio LeanIX WalkMe CALM Tricentis
-t-rise,RISE,RISE with SAP — Cloud Migrations Lift & Shift und System Conversions
-t-tni,T&I,Transformation & Innovation — Clean Core Strategy und Extensibility
+7a1ff5de-98fa-4939-8362-541c0e24d42c,AI,Artificial Intelligence & Joule — SAP Business AI Portfolio und Custom AI
+8f4e3029-6306-4c5b-aefc-0f8e727a9d41,BDC,Business Data Cloud — SAP Datasphere Analytics und Reporting
+8fc57158-be0d-4026-9624-f6be61220cbb,BTP,SAP Business Technology Platform — Integration Suite Build und Extensions
+9f6ae2e5-fbac-4aa9-bd5b-a4908e5738ff,CloudERP,Cloud ERP & S/4HANA — Finance Logistics Manufacturing und Sales
+81387606-29ed-401c-8831-e0e55277d8b4,HCM,Human Capital Management — SuccessFactors und S/4HANA HCM
+12b09edf-de37-49e5-8d47-decc75caa0dd,Integrated Toolchain,Integrated Toolchain — Signavio LeanIX WalkMe CALM Tricentis
+0543aac7-f758-4049-9f7b-e749424d86df,RISE,RISE with SAP — Cloud Migrations Lift & Shift und System Conversions
+3b90f3e6-d237-4e95-9acf-90429a522865,T&I,Transformation & Innovation — Clean Core Strategy und Extensibility
