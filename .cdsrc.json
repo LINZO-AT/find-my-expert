@@ -1,18 +1,6 @@
 {
   "requires": {
-    "auth": {
-      "kind": "mocked",
-      "users": {
-        "admin@sap.com": {
-          "password": "admin",
-          "roles": ["ExpertAdmin", "ExpertViewer"]
-        },
-        "viewer@sap.com": {
-          "password": "viewer",
-          "roles": ["ExpertViewer"]
-        }
-      }
-    },
+    "auth": "dummy",
     "db": {
       "kind": "sqlite",
       "database": "db.sqlite"

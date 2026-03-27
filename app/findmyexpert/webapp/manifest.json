@@ -24,10 +24,10 @@
     "deviceTypes": { "desktop": true, "tablet": true, "phone": false }
   },
   "sap.ui5": {
-    "minUI5Version": "1.132.0",
+    "minUI5Version": "1.132.1",
     "theme": "sap_horizon",
     "dependencies": {
-      "minUI5Version": "1.132.0",
+      "minUI5Version": "1.132.1",
       "libs": {
         "sap.ui.core": {},
         "sap.m": {},
@@ -60,13 +60,20 @@
         "settings": { "bundleName": "com.sap.austria.findmyexpert.i18n.i18n" }
       }
     },
+    "rootView": {
+      "viewName": "com.sap.austria.findmyexpert.view.App",
+      "type": "XML",
+      "async": true,
+      "id": "app"
+    },
     "routing": {
       "config": {
         "routerClass": "sap.m.routing.Router",
-        "type": "Hash",
-        "path": "com.sap.austria.findmyexpert.view",
+        "viewType": "XML",
+        "viewPath": "com.sap.austria.findmyexpert.view",
         "controlId": "app",
-        "controlAggregation": "pages"
+        "controlAggregation": "pages",
+        "async": true
       },
       "routes": [
         { "name": "search",         "pattern": "",                         "target": "Search" },
@@ -77,11 +84,11 @@
         { "name": "adminSolutions", "pattern": "admin/solutions",          "target": "AdminSolutions" }
       ],
       "targets": {
-        "Search":         { "id": "Search",         "name": "Search" },
-        "ExpertList":     { "id": "ExpertList",     "name": "ExpertList" },
-        "ExpertDetail":   { "id": "ExpertDetail",   "name": "ExpertDetail" },
-        "AdminExpert":    { "id": "AdminExpert",    "name": "AdminExpert" },
-        "AdminSolutions": { "id": "AdminSolutions", "name": "AdminSolutions" }
+        "Search":         { "id": "Search",         "viewName": "Search" },
+        "ExpertList":     { "id": "ExpertList",     "viewName": "ExpertList" },
+        "ExpertDetail":   { "id": "ExpertDetail",   "viewName": "ExpertDetail" },
+        "AdminExpert":    { "id": "AdminExpert",    "viewName": "AdminExpert" },
+        "AdminSolutions": { "id": "AdminSolutions", "viewName": "AdminSolutions" }
       }
     }
   }

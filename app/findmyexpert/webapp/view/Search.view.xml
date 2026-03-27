@@ -44,10 +44,10 @@
         id="searchBusy"
         visible="false"
         class="sapUiMediumMarginTop"
-        size="Large" />
+        size="2rem" />
 
       <!-- Empty state -->
-      <l:IllustratedMessage
+      <IllustratedMessage
         id="emptyState"
         illustrationType="sapIllus-SearchEarth"
         title="{i18n>searchEmptyTitle}"

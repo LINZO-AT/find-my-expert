@@ -4,7 +4,7 @@ metadata:
 type: application
 framework:
   name: SAPUI5
-  version: "1.132"
+  version: "1.132.1"
   libraries:
     - name: sap.m
     - name: sap.f
@@ -17,4 +17,4 @@ server:
       afterMiddleware: compression
       mountPath: /odata
       configuration:
-        baseUri: http://localhost:4004/odata
+        baseUri: http://100.110.130.119:4004/odata
