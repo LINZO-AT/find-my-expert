@@ -1,0 +1,8 @@
+node_modules/
+gen/
+*.mtar
+.DS_Store
+*.db
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal

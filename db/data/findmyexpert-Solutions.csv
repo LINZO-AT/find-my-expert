@@ -1,0 +1,45 @@
+ID,name,topic_ID,description
+s-itc-gen,Integrated Toolchain (generic),t-itc,Übergreifendes Thema Integrated Toolchain für SAP Austria
+s-signavio,Signavio,t-itc,SAP Signavio Process Intelligence & Process Manager
+s-leanix,LeanIX,t-itc,LeanIX Enterprise Architecture Management
+s-walkme,WalkMe,t-itc,WalkMe Digital Adoption Platform
+s-calm-impl,CALM for Implementation,t-itc,SAP Cloud ALM for Implementation & Project Management
+s-calm-ops,CALM for Operations,t-itc,SAP Cloud ALM for Operations & Monitoring
+s-tricentis,Tricentis,t-itc,Tricentis Test Automation & Continuous Testing
+s-btp-gen,SAP BTP (generic),t-btp,SAP Business Technology Platform — übergreifend
+s-btp-is,Integration Suite,t-btp,SAP Integration Suite — API Management & Event Mesh
+s-btp-build,SAP Build,t-btp,SAP Build Low-Code/No-Code Platform
+s-btp-wz,Build Work Zone,t-btp,SAP Build Work Zone — Digital Workplace
+s-btp-rap,ABAP RESTful / RAP,t-btp,ABAP RESTful Application Programming Model
+s-btp-cap,CAP / SAP Build Code,t-btp,SAP Cloud Application Programming Model & Build Code
+s-joule-gen,Joule (generic),t-ai,SAP Joule AI Copilot — übergreifend
+s-joule-biz,Joule für Business,t-ai,SAP Joule für Business User — Self-Service Analytics
+s-joule-cons,Joule für Consultants,t-ai,SAP Joule für Consultants — Assisted Implementation
+s-joule-dev,Joule für Developer,t-ai,SAP Joule für Developer — AI-Assisted Coding
+s-biz-ai,SAP Business AI,t-ai,SAP Business AI Portfolio — Embedded AI in S/4HANA & BTP
+s-ai-core,GenAI / AI Core,t-ai,SAP AI Core & Custom AI — LLM Integration & AI Launchpad
+s-erp-gen,Cloud ERP (generic),t-erp,S/4HANA Cloud ERP — übergreifend
+s-erp-fi,Cloud ERP: Finance (FI),t-erp,S/4HANA Finance — FI GL AP AR AA
+s-erp-co,Cloud ERP: Controlling (CO),t-erp,S/4HANA Controlling — CO-PA Profit Center Cost Center
+s-erp-mm,Cloud ERP: Procurement (MM),t-erp,S/4HANA Procurement — MM Purchasing & Invoice
+s-erp-sd,Cloud ERP: Sales (SD),t-erp,S/4HANA Sales — SD Order-to-Cash
+s-erp-pp,Cloud ERP: Manufacturing (PP),t-erp,S/4HANA Manufacturing — PP Production Planning
+s-erp-pm,Cloud ERP: Plant Maintenance (PM),t-erp,S/4HANA Plant Maintenance & Service
+s-erp-scm,Cloud ERP: Supply Chain (SCM),t-erp,S/4HANA Supply Chain — EWM TM IBP
+s-rise-gen,RISE (generic),t-rise,RISE with SAP — Cloud Migration Package
+s-rise-ls,Lift & Shift,t-rise,Lift & Shift Migrations — IaaS Move & System Copy
+s-rise-conv,Conversions,t-rise,S/4HANA System Conversions — Brownfield Transition
+s-rise-bt,RISE Business Transformation,t-rise,RISE Business Transformation Services
+s-cc-gen,Clean Core (generic),t-tni,Clean Core Strategy — übergreifend
+s-cc-ext,Clean Core Extensibility,t-tni,Clean Core Extensibility — BAdIs Key User Apps
+s-cc-int,Clean Core Integration,t-tni,Clean Core Integration — Standard APIs & Events
+s-cc-ops,Clean Core Operations,t-tni,Clean Core Operations — CALM & Monitoring
+s-sap-activate,SAP Activate,t-tni,SAP Activate Methodology — Agile Project Framework
+s-hcm-gen,HCM (generic),t-hcm,Human Capital Management — übergreifend
+s-sf-ec,SuccessFactors (EC),t-hcm,SuccessFactors Employee Central — Core HR
+s-sf-rpm,SuccessFactors (RPM),t-hcm,SuccessFactors Recruiting & Performance Management
+s-s4-hcm,S/4HANA HCM,t-hcm,S/4HANA HCM — Payroll & Time Management
+s-datasphere,Datasphere,t-bdc,SAP Datasphere — Data Fabric & Virtual Models
+s-sac,SAC (generic),t-bdc,SAP Analytics Cloud — Reporting & Planning
+s-sac-plan,SAC Planning,t-bdc,SAP Analytics Cloud Planning — Integrated Business Planning
+s-bw4,BW/4HANA,t-bdc,BW/4HANA — Data Warehouse Migration & Modeling

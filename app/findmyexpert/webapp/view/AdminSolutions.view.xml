@@ -1,0 +1,94 @@
+<mvc:View
+  controllerName="com.sap.austria.findmyexpert.controller.AdminSolutions"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:f="sap.f">
+
+  <Page
+    id="adminSolutionsPage"
+    title="{i18n>adminSolutionsTitle}"
+    showNavButton="true"
+    navButtonPress=".onNavBack">
+
+    <headerContent>
+      <Button
+        text="{i18n>adminSolutionsSave}"
+        type="Emphasized"
+        press=".onSave" />
+    </headerContent>
+
+    <content>
+      <f:FlexibleColumnLayout
+        id="fcl"
+        layout="TwoColumnsMidExpanded">
+
+        <f:beginColumnPages>
+          <Page title="{i18n>adminSolutionsTopics}" showHeader="false">
+            <headerToolbar>
+              <OverflowToolbar>
+                <Title text="{i18n>adminSolutionsTopics}" />
+                <ToolbarSpacer />
+                <Button
+                  icon="sap-icon://add"
+                  tooltip="{i18n>adminSolutionsAddTopic}"
+                  press=".onAddTopic" />
+              </OverflowToolbar>
+            </headerToolbar>
+            <content>
+              <List
+                id="topicList"
+                items="{admin>/Topics}"
+                selectionChange=".onTopicSelect"
+                mode="SingleSelectMaster">
+                <StandardListItem
+                  title="{admin>name}"
+                  description="{admin>description}"
+                  type="Active" />
+              </List>
+            </content>
+          </Page>
+        </f:beginColumnPages>
+
+        <f:midColumnPages>
+          <Page showHeader="false">
+            <headerToolbar>
+              <OverflowToolbar>
+                <Title text="{i18n>adminSolutionsSolutions}" />
+                <ToolbarSpacer />
+                <Button
+                  icon="sap-icon://add"
+                  tooltip="{i18n>adminSolutionsAddSolution}"
+                  press=".onAddSolution" />
+              </OverflowToolbar>
+            </headerToolbar>
+            <content>
+              <Table
+                id="solutionTable"
+                items="{viewModel>/solutions}">
+                <columns>
+                  <Column><Text text="Name" /></Column>
+                  <Column><Text text="Beschreibung" /></Column>
+                  <Column hAlign="Center"><Text text="" /></Column>
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <Input value="{viewModel>name}" required="true" />
+                      <Input value="{viewModel>description}" />
+                      <Button
+                        icon="sap-icon://delete"
+                        tooltip="{i18n>expertListDeleteBtn}"
+                        press=".onDeleteSolution"
+                        type="Transparent" />
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </content>
+          </Page>
+        </f:midColumnPages>
+
+      </f:FlexibleColumnLayout>
+    </content>
+  </Page>
+</mvc:View>

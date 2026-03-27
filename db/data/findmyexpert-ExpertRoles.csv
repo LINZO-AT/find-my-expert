@@ -1,0 +1,86 @@
+ID,expert_ID,solution_ID,role,canPresent5M,canPresent30M,canPresent2H,canPresentDemo,notes
+er-001,e-001,s-itc-gen,TOPIC_OWNER,true,true,true,true,Topic Owner Integrated Toolchain AT
+er-002,e-001,s-signavio,THEMEN_LEAD,true,true,true,true,Lead Signavio AT — langjährige Projekterfahrung
+er-003,e-001,s-leanix,SOLUTIONING_ARCH,true,true,false,false,LeanIX Enterprise Architecture Advisory
+er-004,e-002,s-signavio,REALIZATION_LEAD,false,true,true,true,Signavio Realization Lead mehrere Kundenprojekte
+er-005,e-002,s-calm-impl,REALIZATION_CONSULTANT,true,true,true,false,CALM Implementation Consultant
+er-006,e-002,s-walkme,SERVICE_SELLER,true,true,false,false,WalkMe Service Selling AT
+er-007,e-003,s-leanix,TOPIC_OWNER,true,true,true,true,Topic Owner LeanIX — EAM Spezialist
+er-008,e-003,s-itc-gen,SOLUTIONING_ARCH,true,true,true,false,Integrated Toolchain Architecture Advisory
+er-009,e-003,s-tricentis,REALIZATION_LEAD,false,true,true,true,Tricentis Test Automation Lead
+er-010,e-004,s-calm-impl,TOPIC_OWNER,true,true,true,false,Topic Owner CALM for Implementation AT
+er-011,e-004,s-calm-ops,REALIZATION_LEAD,true,true,true,true,CALM Operations Lead — ITSM Integration
+er-012,e-004,s-signavio,REALIZATION_CONSULTANT,false,false,true,false,Signavio Process Mining Consultant
+er-013,e-005,s-btp-gen,TOPIC_OWNER,true,true,true,true,Topic Owner BTP AT — Platform Architecture
+er-014,e-005,s-btp-is,THEMEN_LEAD,true,true,true,true,Integration Suite Lead — API Management Spezialist
+er-015,e-005,s-btp-cap,SOLUTIONING_ARCH,false,true,true,true,CAP & Build Code Advisory
+er-016,e-006,s-btp-build,REALIZATION_LEAD,true,true,true,true,SAP Build Low-Code Lead AT
+er-017,e-006,s-btp-wz,REALIZATION_CONSULTANT,true,true,false,false,Build Work Zone Consultant
+er-018,e-006,s-btp-is,REALIZATION_CONSULTANT,false,true,true,false,Integration Suite Consultant
+er-019,e-007,s-rise-gen,TOPIC_OWNER,true,true,true,false,Topic Owner RISE AT — Cloud Migration Lead
+er-020,e-007,s-rise-conv,THEMEN_LEAD,true,true,true,false,Brownfield Conversion Spezialist — S/4HANA
+er-021,e-007,s-rise-ls,REALIZATION_LEAD,false,true,true,false,Lift & Shift Lead mehrere SAP Austria Projekte
+er-022,e-008,s-rise-conv,SOLUTIONING_ARCH,true,true,true,false,Conversion Architecture Advisory
+er-023,e-008,s-cc-gen,THEMEN_LEAD,true,true,false,false,Clean Core Strategy Lead AT
+er-024,e-008,s-cc-ext,REALIZATION_LEAD,false,true,true,false,Clean Core Extensibility Lead
+er-025,e-009,s-joule-gen,TOPIC_OWNER,true,true,true,true,Topic Owner Joule AT — AI Copilot Champion
+er-026,e-009,s-biz-ai,THEMEN_LEAD,true,true,true,true,SAP Business AI Lead AT
+er-027,e-009,s-joule-dev,REALIZATION_LEAD,false,true,true,true,Joule für Developer Lead — AI-Assisted Coding
+er-028,e-009,s-ai-core,REALIZATION_CONSULTANT,true,true,false,false,AI Core Custom AI Consultant
+er-029,e-010,s-erp-gen,TOPIC_OWNER,true,true,true,false,Topic Owner Cloud ERP AT
+er-030,e-010,s-erp-fi,THEMEN_LEAD,true,true,true,true,FI Lead AT — Finance Transformation
+er-031,e-010,s-erp-co,REALIZATION_LEAD,false,true,true,false,CO Controlling Lead
+er-032,e-011,s-erp-mm,THEMEN_LEAD,true,true,true,true,MM Procurement Lead AT — Ariba Integration
+er-033,e-011,s-erp-sd,REALIZATION_LEAD,false,true,true,true,SD Sales Lead mehrere Rollouts
+er-034,e-011,s-erp-scm,REALIZATION_CONSULTANT,false,false,true,false,SCM EWM Consultant
+er-035,e-012,s-sf-ec,TOPIC_OWNER,true,true,true,false,Topic Owner SuccessFactors AT — EC Lead
+er-036,e-012,s-hcm-gen,THEMEN_LEAD,true,true,false,false,HCM Lead AT übergreifend
+er-037,e-012,s-sf-rpm,REALIZATION_LEAD,false,true,true,false,SuccessFactors RPM Lead
+er-038,e-013,s-datasphere,TOPIC_OWNER,true,true,true,true,Topic Owner Datasphere AT — Data Fabric
+er-039,e-013,s-sac,THEMEN_LEAD,true,true,true,true,SAC Lead AT — Analytics & Reporting
+er-040,e-013,s-bw4,REALIZATION_LEAD,false,true,true,false,BW/4HANA Migration Lead
+er-041,e-014,s-cc-gen,TOPIC_OWNER,true,true,false,false,Topic Owner T&I AT — Clean Core Strategy
+er-042,e-014,s-sap-activate,THEMEN_LEAD,true,true,true,false,SAP Activate Lead AT — Methodology Champion
+er-043,e-014,s-cc-int,REALIZATION_LEAD,false,true,true,false,Clean Core Integration Lead
+er-044,e-015,s-erp-pp,THEMEN_LEAD,true,true,true,true,PP Manufacturing Lead AT
+er-045,e-015,s-erp-pm,REALIZATION_LEAD,false,true,true,true,Plant Maintenance Lead
+er-046,e-015,s-erp-scm,REALIZATION_CONSULTANT,true,true,false,false,SCM IBP Consultant
+er-047,e-016,s-rise-conv,SERVICE_SELLER,true,true,false,false,RISE Conversion Service Selling DE
+er-048,e-016,s-rise-ls,SERVICE_SELLER,true,false,false,false,Lift & Shift Service Selling DE
+er-049,e-016,s-btp-is,OTHER_CONTACT_NON_AT,false,true,false,false,Integration Suite Kontakt DE
+er-050,e-017,s-erp-fi,SERVICE_SELLER,true,true,false,false,Finance Service Selling DE — Banking Fokus
+er-051,e-017,s-erp-co,SERVICE_SELLER,true,true,false,false,Controlling Service Selling DE
+er-052,e-017,s-sf-ec,OTHER_CONTACT_NON_AT,false,true,false,false,SuccessFactors Kontakt DE
+er-053,e-018,s-sac,SERVICE_SELLER,true,true,false,false,SAC Service Selling DE — Enterprise Planung
+er-054,e-018,s-sac-plan,REALIZATION_CONSULTANT,false,true,true,false,SAC Planning Consultant DE
+er-055,e-018,s-datasphere,OTHER_CONTACT_NON_AT,false,true,false,false,Datasphere Kontakt DE
+er-056,e-019,s-btp-is,SOLUTIONING_ARCH,true,true,true,false,Integration Suite Architecture CH — Banking
+er-057,e-019,s-btp-gen,SERVICE_SELLER,true,true,false,false,BTP Service Selling CH
+er-058,e-019,s-ai-core,REALIZATION_CONSULTANT,true,true,false,false,AI Core Consultant CH
+er-059,e-020,s-cc-ext,SOLUTIONING_ARCH,true,true,true,true,Clean Core Extensibility Advisory CH — BTP Extension
+er-060,e-020,s-cc-gen,SERVICE_SELLER,true,true,false,false,Clean Core Service Selling CH
+er-061,e-009,s-joule-biz,REALIZATION_LEAD,true,true,true,true,Joule für Business Lead AT
+er-062,e-009,s-joule-cons,REALIZATION_LEAD,true,true,true,false,Joule für Consultants Lead AT
+er-063,e-005,s-btp-rap,THEMEN_LEAD,false,true,true,true,ABAP RESTful / RAP Lead AT
+er-064,e-007,s-rise-bt,SERVICE_SELLER,true,true,false,false,RISE Business Transformation Selling AT
+er-065,e-010,s-erp-mm,SERVICE_SELLER,true,true,false,false,Procurement Service Selling AT
+er-066,e-011,s-erp-pp,REALIZATION_CONSULTANT,false,false,true,false,Manufacturing PP Consultant
+er-067,e-012,s-s4-hcm,REALIZATION_CONSULTANT,false,true,true,false,S/4HANA HCM Payroll Consultant
+er-068,e-013,s-sac-plan,REALIZATION_CONSULTANT,false,true,true,true,SAC Planning Consultant AT
+er-069,e-014,s-cc-ops,REALIZATION_LEAD,false,true,true,false,Clean Core Operations Lead AT
+er-070,e-015,s-rise-conv,PROJECT_MANAGEMENT,true,true,false,false,RISE Conversion Project Manager AT
+er-071,e-001,s-calm-ops,PROJECT_MANAGEMENT,false,true,false,false,CALM Operations PM AT
+er-072,e-004,s-walkme,REALIZATION_CONSULTANT,true,true,false,true,WalkMe Digital Adoption Consultant
+er-073,e-006,s-tricentis,REALIZATION_CONSULTANT,false,true,true,false,Tricentis Continuous Testing Consultant
+er-074,e-008,s-rise-ls,PROJECT_MANAGEMENT,true,true,false,false,Lift & Shift Project Management AT
+er-075,e-016,s-erp-sd,OTHER_CONTACT_NON_AT,false,true,false,false,SD Sales Kontakt DE
+er-076,e-017,s-erp-mm,OTHER_CONTACT_NON_AT,false,true,false,false,Procurement Kontakt DE
+er-077,e-019,s-cc-int,OTHER_CONTACT_NON_AT,false,true,false,false,Clean Core Integration Kontakt CH
+er-078,e-020,s-btp-cap,REALIZATION_CONSULTANT,false,true,true,false,CAP Entwicklung Consultant CH
+er-079,e-002,s-leanix,REALIZATION_CONSULTANT,false,false,true,false,LeanIX Consultant AT
+er-080,e-003,s-calm-impl,SERVICE_SELLER,true,true,false,false,CALM Implementation Service Selling AT
+er-081,e-011,s-erp-fi,REALIZATION_CONSULTANT,false,true,true,false,FI Consultant mit SCM Fokus
+er-082,e-010,s-erp-sd,REALIZATION_CONSULTANT,false,true,true,false,SD Consultant AT
+er-083,e-013,s-datasphere,SOLUTIONING_ARCH,true,true,true,false,BDC Data Architecture Advisory AT
+er-084,e-014,s-sap-activate,SERVICE_SELLER,true,false,false,false,SAP Activate Service Selling AT
+er-085,e-018,s-bw4,SERVICE_SELLER,true,true,false,false,BW/4HANA Service Selling DE

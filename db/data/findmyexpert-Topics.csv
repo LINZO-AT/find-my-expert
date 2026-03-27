@@ -1,0 +1,9 @@
+ID,name,description
+t-ai,AI,Artificial Intelligence & Joule — SAP Business AI Portfolio und Custom AI
+t-bdc,BDC,Business Data Cloud — SAP Datasphere Analytics und Reporting
+t-btp,BTP,SAP Business Technology Platform — Integration Suite Build und Extensions
+t-erp,CloudERP,Cloud ERP & S/4HANA — Finance Logistics Manufacturing und Sales
+t-hcm,HCM,Human Capital Management — SuccessFactors und S/4HANA HCM
+t-itc,Integrated Toolchain,Integrated Toolchain — Signavio LeanIX WalkMe CALM Tricentis
+t-rise,RISE,RISE with SAP — Cloud Migrations Lift & Shift und System Conversions
+t-tni,T&I,Transformation & Innovation — Clean Core Strategy und Extensibility

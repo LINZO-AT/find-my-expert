@@ -1,0 +1,67 @@
+<mvc:View
+  controllerName="com.sap.austria.findmyexpert.controller.Search"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:f="sap.f"
+  xmlns:l="sap.ui.layout"
+  xmlns:card="sap.f.cards"
+  xmlns:core="sap.ui.core">
+
+  <Page id="searchPage" title="{i18n>appTitle}">
+    <headerContent>
+      <Button
+        text="{i18n>expertListTitle}"
+        press=".onNavToExpertList"
+        type="Transparent" />
+    </headerContent>
+
+    <content>
+      <!-- Mock mode banner -->
+      <MessageStrip
+        id="mockModeBanner"
+        text="{i18n>searchMockMode}"
+        type="Information"
+        showIcon="true"
+        visible="false"
+        class="sapUiSmallMargin" />
+
+      <!-- Search bar -->
+      <Toolbar class="sapUiSmallMarginTop sapUiSmallMarginBegin sapUiSmallMarginEnd">
+        <SearchField
+          id="searchField"
+          placeholder="{i18n>searchPlaceholder}"
+          width="100%"
+          search=".onSearch"
+          ariaLabelledBy="searchLabel" />
+        <Button
+          text="{i18n>searchButton}"
+          type="Emphasized"
+          press=".onSearch" />
+      </Toolbar>
+
+      <!-- Busy indicator -->
+      <BusyIndicator
+        id="searchBusy"
+        visible="false"
+        class="sapUiMediumMarginTop"
+        size="Large" />
+
+      <!-- Empty state -->
+      <l:IllustratedMessage
+        id="emptyState"
+        illustrationType="sapIllus-SearchEarth"
+        title="{i18n>searchEmptyTitle}"
+        description="{i18n>searchEmptyDescription}"
+        visible="true" />
+
+      <!-- Results cards -->
+      <FlexBox
+        id="resultsContainer"
+        wrap="Wrap"
+        visible="false"
+        class="sapUiSmallMargin">
+      </FlexBox>
+
+    </content>
+  </Page>
+</mvc:View>

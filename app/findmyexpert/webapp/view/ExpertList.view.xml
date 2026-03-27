@@ -1,0 +1,123 @@
+<mvc:View
+  controllerName="com.sap.austria.findmyexpert.controller.ExpertList"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core">
+
+  <Page id="expertListPage" title="{i18n>expertListTitle}">
+    <headerContent>
+      <Button
+        text="{i18n>searchButton}"
+        press=".onNavToSearch"
+        type="Transparent"
+        icon="sap-icon://search" />
+      <Button
+        text="{i18n>adminExpertTitleNew}"
+        press=".onAddExpert"
+        type="Default"
+        icon="sap-icon://add"
+        visible="{userModel>/isAdmin}" />
+    </headerContent>
+
+    <subHeader>
+      <Toolbar>
+        <Select
+          id="topicFilter"
+          items="{
+            path: '/Topics',
+            parameters: { $orderby: 'name' }
+          }"
+          change=".onFilterChange"
+          ariaLabelledBy="topicFilterLabel">
+          <core:Item key="" text="{i18n>expertListAllTopics}" />
+          <items>
+            <core:Item key="{ID}" text="{name}" />
+          </items>
+        </Select>
+        <Select
+          id="solutionFilter"
+          change=".onFilterChange"
+          ariaLabelledBy="solutionFilterLabel">
+          <core:Item key="" text="{i18n>expertListAllSolutions}" />
+        </Select>
+        <Select
+          id="locationFilter"
+          change=".onFilterChange"
+          ariaLabelledBy="locationFilterLabel">
+          <core:Item key="" text="{i18n>expertListAllLocations}" />
+          <core:Item key="AT" text="{i18n>loc_AT}" />
+          <core:Item key="DE" text="{i18n>loc_DE}" />
+          <core:Item key="CH" text="{i18n>loc_CH}" />
+        </Select>
+        <SearchField
+          id="nameSearch"
+          width="200px"
+          search=".onFilterChange"
+          ariaLabelledBy="nameSearchLabel" />
+        <Button
+          text="{i18n>expertListResetFilter}"
+          press=".onResetFilters"
+          type="Transparent" />
+      </Toolbar>
+    </subHeader>
+
+    <content>
+      <Table
+        id="expertTable"
+        growing="true"
+        growingThreshold="20"
+        items="{
+          path: '/Experts',
+          parameters: {
+            $expand: 'roles($expand=solution($expand=topic))',
+            $orderby: 'lastName,firstName'
+          }
+        }"
+        selectionChange=".onExpertSelect">
+        <columns>
+          <Column>
+            <Text text="{i18n>expertListColName}" />
+          </Column>
+          <Column>
+            <Text text="{i18n>expertListColLocation}" />
+          </Column>
+          <Column>
+            <Text text="{i18n>expertListColSolutions}" />
+          </Column>
+          <Column visible="{userModel>/isAdmin}">
+            <Text text="{i18n>expertListColActions}" />
+          </Column>
+        </columns>
+        <items>
+          <ColumnListItem press=".onExpertPress" type="Navigation">
+            <cells>
+              <ObjectIdentifier
+                title="{= ${firstName} + ' ' + ${lastName}}"
+                text="{email}" />
+              <ObjectStatus text="{location}" />
+              <Text text="{= ${roles}.length + ' Lösungen'}" />
+              <HBox visible="{userModel>/isAdmin}">
+                <Button
+                  icon="sap-icon://edit"
+                  tooltip="{i18n>expertListEditBtn}"
+                  press=".onEditExpert"
+                  type="Transparent" />
+                <Button
+                  icon="sap-icon://delete"
+                  tooltip="{i18n>expertListDeleteBtn}"
+                  press=".onDeleteExpert"
+                  type="Transparent" />
+              </HBox>
+            </cells>
+          </ColumnListItem>
+        </items>
+        <noData>
+          <IllustratedMessage
+            illustrationType="sapIllus-SearchEarth"
+            title="{i18n>searchEmptyTitle}"
+            description="{i18n>searchEmptyDescription}" />
+        </noData>
+      </Table>
+    </content>
+  </Page>
+</mvc:View>

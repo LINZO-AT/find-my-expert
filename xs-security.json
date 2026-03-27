@@ -1,0 +1,41 @@
+{
+  "xsappname": "findmyexpert",
+  "tenant-mode": "dedicated",
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.ExpertViewer",
+      "description": "Read-only access — all SAP Austria employees"
+    },
+    {
+      "name": "$XSAPPNAME.ExpertAdmin",
+      "description": "Full CRUD access — Power Users only"
+    }
+  ],
+  "role-templates": [
+    {
+      "name": "ExpertViewer",
+      "description": "All SAP Austria employees",
+      "scope-references": ["$XSAPPNAME.ExpertViewer"]
+    },
+    {
+      "name": "ExpertAdmin",
+      "description": "Power Users — manage experts, solutions, topics",
+      "scope-references": [
+        "$XSAPPNAME.ExpertViewer",
+        "$XSAPPNAME.ExpertAdmin"
+      ]
+    }
+  ],
+  "role-collections": [
+    {
+      "name": "FindMyExpert_Viewer",
+      "description": "Standard viewer role",
+      "role-template-references": ["$XSAPPNAME.ExpertViewer"]
+    },
+    {
+      "name": "FindMyExpert_Admin",
+      "description": "Power user admin role",
+      "role-template-references": ["$XSAPPNAME.ExpertAdmin"]
+    }
+  ]
+}
