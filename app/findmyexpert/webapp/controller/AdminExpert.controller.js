@@ -15,7 +15,7 @@ sap.ui.define([
       this._bDirty = false;
 
       const oViewModel = new JSONModel({
-        pageTitle: this.getView().getModel("i18n").getResourceBundle().getText("adminExpertTitleNew"),
+        pageTitle: "Neuer Experte",
         expert: { firstName: "", lastName: "", email: "", location: "AT" },
         assignments: []
       });
@@ -33,8 +33,9 @@ sap.ui.define([
 
     _onNewExpert: function() {
       const oVM = this.getView().getModel("viewModel");
+      const oBundle = this.getView().getModel("i18n")?.getResourceBundle();
       oVM.setData({
-        pageTitle: this.getView().getModel("i18n").getResourceBundle().getText("adminExpertTitleNew"),
+        pageTitle: oBundle ? oBundle.getText("adminExpertTitleNew") : "Neuer Experte",
         expert: { firstName: "", lastName: "", email: "", location: "AT" },
         assignments: []
       });
@@ -53,7 +54,8 @@ sap.ui.define([
         );
         oCtx.requestObject().then(oData => {
           const oVM = this.getView().getModel("viewModel");
-          oVM.setProperty("/pageTitle", this.getView().getModel("i18n").getResourceBundle().getText("adminExpertTitleEdit"));
+          const oBundle2 = this.getView().getModel("i18n")?.getResourceBundle();
+          oVM.setProperty("/pageTitle", oBundle2 ? oBundle2.getText("adminExpertTitleEdit") : "Experte bearbeiten");
           oVM.setProperty("/expert", {
             firstName: oData.firstName,
             lastName: oData.lastName,
@@ -122,7 +124,7 @@ sap.ui.define([
         }
 
         const oModel = this.getView().getModel("admin");
-        const oBundle = this.getView().getModel("i18n").getResourceBundle();
+        const oBundle = this.getView().getModel("i18n")?.getResourceBundle();
 
         let oPromise;
         if (this._sExpertId) {
@@ -153,7 +155,7 @@ sap.ui.define([
     },
 
     onCancel: function() {
-      const oBundle = this.getView().getModel("i18n").getResourceBundle();
+      const oBundle = this.getView().getModel("i18n")?.getResourceBundle();
       if (this._bDirty) {
         MessageBox.confirm(oBundle.getText("adminExpertCancelConfirm"), {
           onClose: (sAction) => {
