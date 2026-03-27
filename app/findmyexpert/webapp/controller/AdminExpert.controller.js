@@ -23,6 +23,12 @@ sap.ui.define([
     },
 
     _onRouteMatched: function(oEvent) {
+      // Check admin authorization
+      var oUserModel = this.getOwnerComponent().getModel("userModel");
+      if (oUserModel && !oUserModel.getProperty("/isAdmin")) {
+        this._oRouter.navTo("search", {}, true);
+        return;
+      }
       try {
         const sExpertId = decodeURIComponent(oEvent.getParameter("arguments").expertId);
         this._loadExpert(sExpertId);
@@ -32,6 +38,12 @@ sap.ui.define([
     },
 
     _onNewExpert: function() {
+      // Check admin authorization
+      var oUserModel = this.getOwnerComponent().getModel("userModel");
+      if (oUserModel && !oUserModel.getProperty("/isAdmin")) {
+        this._oRouter.navTo("search", {}, true);
+        return;
+      }
       const oVM = this.getView().getModel("viewModel");
       const oBundle = this.getView().getModel("i18n")?.getResourceBundle();
       oVM.setData({

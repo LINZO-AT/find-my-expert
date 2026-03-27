@@ -1,9 +1,21 @@
 {
   "requires": {
-    "auth": "dummy",
     "db": {
       "kind": "sqlite",
       "database": "db.sqlite"
+    },
+    "auth": {
+      "kind": "mocked",
+      "users": {
+        "admin": {
+          "password": "admin",
+          "roles": ["Admin", "authenticated-user"]
+        },
+        "viewer": {
+          "password": "viewer",
+          "roles": ["Viewer", "authenticated-user"]
+        }
+      }
     }
   },
   "server": {

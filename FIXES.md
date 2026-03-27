@@ -24,7 +24,12 @@ All issues found during full project analysis and fixed to bring the project to 
 ### 4. AdminSolutions fetch URL uses V2-only `sModel.sServiceUrl`
 **File:** `app/findmyexpert/webapp/controller/AdminSolutions.controller.js`
 **Problem:** Used `oModel.sServiceUrl + "Solutions?..."` — the `sServiceUrl` property does not exist on OData V4 models, resulting in `undefined` in the fetch URL.
-**Fix:** Replaced with hardcoded `/odata/v4/admin/Solutions?...` path matching the AdminService service URL.
+**Fix:** Replaced with hardcoded `/api/admin/Solutions?...` path matching the AdminService `@(path: '/api/admin')` annotation.
+
+### 4b. DataSource URIs did not match CDS `@path` annotations (white page)
+**Files:** `app/findmyexpert/webapp/manifest.json`, `app/findmyexpert/webapp/controller/AdminSolutions.controller.js`
+**Problem:** Manifest dataSources used `/odata/v4/catalog/` and `/odata/v4/admin/` but CDS services are annotated with `@(path: '/api/catalog')` and `@(path: '/api/admin')`. The `/odata/v4/` paths returned 404, preventing the OData models from loading and causing a white page.
+**Fix:** Updated manifest dataSource URIs to `/api/catalog/` and `/api/admin/`. Updated all hardcoded `fetch()` URLs in AdminSolutions controller to use `/api/admin/` prefix.
 
 ---
 
@@ -41,7 +46,7 @@ All issues found during full project analysis and fixed to bring the project to 
 **Fix:**
 - Added `@UI.HeaderInfo` annotations on Topics, Solutions, Experts in both services
 - Added `@UI.LineItem` annotations on CatalogService projections
-- Added explicit `@(path: '/odata/v4/catalog')` and `@(path: '/odata/v4/admin')` annotations
+- Added explicit `@(path: '/api/catalog')` and `@(path: '/api/admin')` annotations
 - Added typed return types for `searchExperts` action and `userInfo` function in CatalogService
 
 ### 7. Manifest.json schema conformity issues

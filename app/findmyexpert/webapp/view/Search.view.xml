@@ -5,22 +5,44 @@
   xmlns:f="sap.f"
   xmlns:core="sap.ui.core">
 
-  <!--
-    No page title: FLP Shell already shows "Find My Expert".
-    showHeader="false" avoids redundant chrome.
-  -->
-  <Page id="searchPage" showHeader="false">
-    <content>
-      <VBox
-        class="sapUiMediumMarginBeginEnd"
-        alignItems="Center">
+  <f:DynamicPage id="searchPage" fitContent="false" showFooter="false">
 
-        <!-- Search bar row -->
-        <HBox
-          class="sapUiMediumMarginTop sapUiSmallMarginBottom"
-          alignItems="Center"
-          justifyContent="Start"
-          width="100%">
+    <f:title>
+      <f:DynamicPageTitle>
+        <f:heading>
+          <Title text="{i18n>appTitle}" level="H2" wrapping="true" />
+        </f:heading>
+        <f:actions>
+          <Button
+            text="{i18n>expertListTitle}"
+            type="Transparent"
+            icon="sap-icon://list"
+            press=".onNavToExpertList" />
+          <Button
+            text="{i18n>adminSolutionsTitle}"
+            type="Transparent"
+            icon="sap-icon://settings"
+            press=".onNavToAdminSolutions"
+            visible="{userModel>/isAdmin}" />
+          <Button
+            text="{i18n>loginButton}"
+            type="Transparent"
+            icon="sap-icon://person-placeholder"
+            press=".onLogin"
+            visible="{= !${userModel>/userName} || ${userModel>/userName} === 'anonymous' }" />
+          <Button
+            text="{= ${userModel>/userName} }"
+            type="Transparent"
+            icon="sap-icon://account"
+            press=".onLogout"
+            visible="{= !!${userModel>/userName} &amp;&amp; ${userModel>/userName} !== 'anonymous' }" />
+        </f:actions>
+      </f:DynamicPageTitle>
+    </f:title>
+
+    <f:header>
+      <f:DynamicPageHeader pinnable="false">
+        <HBox alignItems="Center" class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom" width="100%">
           <SearchField
             id="searchField"
             placeholder="{i18n>searchPlaceholder}"
@@ -32,14 +54,12 @@
             type="Emphasized"
             press=".onSearch"
             class="sapUiSmallMarginBegin" />
-          <ToolbarSpacer />
-          <Button
-            text="{i18n>expertListTitle}"
-            type="Transparent"
-            icon="sap-icon://list"
-            press=".onNavToExpertList"
-            class="sapUiSmallMarginBegin" />
         </HBox>
+      </f:DynamicPageHeader>
+    </f:header>
+
+    <f:content>
+      <VBox class="sapUiMediumMarginBeginEnd" alignItems="Center">
 
         <MessageStrip
           id="mockModeBanner"
@@ -47,8 +67,7 @@
           type="Information"
           showIcon="true"
           visible="false"
-          class="sapUiSmallMarginBottom"
-          width="100%" />
+          class="sapUiSmallMarginBottom" />
 
         <BusyIndicator
           id="searchBusy"
@@ -81,6 +100,7 @@
         </FlexBox>
 
       </VBox>
-    </content>
-  </Page>
+    </f:content>
+
+  </f:DynamicPage>
 </mvc:View>

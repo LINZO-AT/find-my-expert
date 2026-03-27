@@ -13,6 +13,13 @@
         <f:heading>
           <Title text="{viewModel>/pageTitle}" wrapping="true" />
         </f:heading>
+        <f:navigationActions>
+          <Button
+            icon="sap-icon://nav-back"
+            tooltip="{i18n>back}"
+            press=".onNavBack"
+            type="Transparent" />
+        </f:navigationActions>
         <f:actions>
           <Button
             text="{i18n>adminExpertSave}"

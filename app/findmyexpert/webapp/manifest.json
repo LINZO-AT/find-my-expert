@@ -6,14 +6,28 @@
     "title": "{{appTitle}}",
     "description": "{{appDescription}}",
     "applicationVersion": { "version": "1.0.0" },
+    "crossNavigation": {
+      "inbounds": {
+        "findmyexpert-display": {
+          "semanticObject": "findmyexpert",
+          "action": "display",
+          "title": "{{appTitle}}",
+          "icon": "sap-icon://employee",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    },
     "dataSources": {
       "CatalogService": {
-        "uri": "/odata/v4/catalog/",
+        "uri": "/api/catalog/",
         "type": "OData",
         "settings": { "odataVersion": "4.0" }
       },
       "AdminService": {
-        "uri": "/odata/v4/admin/",
+        "uri": "/api/admin/",
         "type": "OData",
         "settings": { "odataVersion": "4.0" }
       }
@@ -80,6 +94,7 @@
     "routing": {
       "config": {
         "routerClass": "sap.m.routing.Router",
+        "async": true,
         "viewType": "XML",
         "viewPath": "com.sap.austria.findmyexpert.view",
         "controlId": "app",
@@ -97,11 +112,11 @@
         { "name": "adminSolutions", "pattern": "admin/solutions",          "target": "AdminSolutions" }
       ],
       "targets": {
-        "Search":         { "id": "Search",         "name": "Search",         "viewName": "Search" },
-        "ExpertList":     { "id": "ExpertList",     "name": "ExpertList",     "viewName": "ExpertList" },
-        "ExpertDetail":   { "id": "ExpertDetail",   "name": "ExpertDetail",   "viewName": "ExpertDetail" },
-        "AdminExpert":    { "id": "AdminExpert",    "name": "AdminExpert",    "viewName": "AdminExpert" },
-        "AdminSolutions": { "id": "AdminSolutions", "name": "AdminSolutions", "viewName": "AdminSolutions" }
+        "Search":         { "viewName": "Search",         "viewLevel": 0 },
+        "ExpertList":     { "viewName": "ExpertList",     "viewLevel": 1 },
+        "ExpertDetail":   { "viewName": "ExpertDetail",   "viewLevel": 2 },
+        "AdminExpert":    { "viewName": "AdminExpert",    "viewLevel": 2 },
+        "AdminSolutions": { "viewName": "AdminSolutions", "viewLevel": 1 }
       }
     }
   }

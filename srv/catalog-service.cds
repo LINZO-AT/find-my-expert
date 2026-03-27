@@ -1,75 +1,20 @@
-using findmyexpert as db from '../db/schema';
+using findmyexpert from '../db/schema';
 
-@requires: 'ExpertViewer'
-service CatalogService @(path: '/odata/v4/catalog') {
+service CatalogService @(path: '/api/catalog') {
+    @readonly
+    entity Topics      as projection on findmyexpert.Topics;
+    @readonly
+    entity Solutions   as projection on findmyexpert.Solutions;
+    @readonly
+    entity Experts     as projection on findmyexpert.Experts;
+    @readonly
+    entity ExpertRoles as projection on findmyexpert.ExpertRoles;
 
-  @readonly
-  @UI.HeaderInfo: {
-    TypeName      : '{i18n>topic}',
-    TypeNamePlural: '{i18n>topics}',
-    Title         : { Value: name }
-  }
-  entity Topics      as projection on db.Topics;
-
-  @readonly
-  @UI.HeaderInfo: {
-    TypeName      : '{i18n>solution}',
-    TypeNamePlural: '{i18n>solutions}',
-    Title         : { Value: name }
-  }
-  entity Solutions   as projection on db.Solutions;
-
-  @readonly
-  @UI.HeaderInfo: {
-    TypeName      : '{i18n>expert}',
-    TypeNamePlural: '{i18n>experts}',
-    Title         : { Value: lastName },
-    Description   : { Value: firstName }
-  }
-  @UI.LineItem: [
-    { Value: firstName, Label: '{i18n>firstName}' },
-    { Value: lastName,  Label: '{i18n>lastName}' },
-    { Value: email,     Label: '{i18n>email}' },
-    { Value: location,  Label: '{i18n>location}' }
-  ]
-  entity Experts     as projection on db.Experts;
-
-  @readonly
-  entity ExpertRoles as projection on db.ExpertRoles;
-
-  /**
-   * AI-powered expert search.
-   * Returns experts ranked by relevance. Falls back to keyword search if AI Core not configured.
-   */
-  action searchExperts(query : String not null) returns array of ExpertSearchResult;
-
-  /**
-   * Returns current user roles for frontend authorization checks.
-   */
-  function userInfo() returns UserInfoResult;
-}
-
-type ExpertSearchResult {
-  expertId       : UUID;
-  firstName      : String;
-  lastName       : String;
-  email          : String;
-  location       : String;
-  solutionId     : UUID;
-  solutionName   : String;
-  topicName      : String;
-  role           : String;
-  roleLabel      : String;
-  score          : Integer;
-  reasoning      : String;
-  canPresent5M   : Boolean;
-  canPresent30M  : Boolean;
-  canPresent2H   : Boolean;
-  canPresentDemo : Boolean;
-  isMockMode     : Boolean;
-}
-
-type UserInfoResult {
-  isAdmin : Boolean;
-  roles   : array of String;
+    /**
+     * Returns current user info including role information
+     */
+    function userInfo() returns {
+        isAdmin  : Boolean;
+        userName : String;
+    };
 }

@@ -2,31 +2,35 @@
   controllerName="com.sap.austria.findmyexpert.controller.AdminSolutions"
   xmlns:mvc="sap.ui.core.mvc"
   xmlns="sap.m"
+  xmlns:f="sap.f"
   xmlns:core="sap.ui.core">
 
-  <Page
-    id="adminSolutionsPage">
+  <f:DynamicPage id="adminSolutionsPage" fitContent="true" showFooter="false">
 
-    <customHeader>
-      <Bar>
-        <contentLeft>
-          <Button icon="sap-icon://nav-back" press=".onNavBack" tooltip="{i18n>backBtn}" type="Transparent" />
-        </contentLeft>
-        <contentMiddle>
-          <VBox class="sapUiTinyMarginTopBottom">
-            <Title text="{i18n>adminSolutionsTitle}" level="H2" titleStyle="H4" wrapping="true" textAlign="Center" />
-            <Label text="{i18n>adminSolutionsSubtitle}" design="Light" textAlign="Center" wrapping="true" class="sapUiTinyMarginTop" />
-          </VBox>
-        </contentMiddle>
-      </Bar>
-    </customHeader>
+    <f:title>
+      <f:DynamicPageTitle>
+        <f:heading>
+          <Title text="{i18n>adminSolutionsTitle}" level="H2" wrapping="true" />
+        </f:heading>
+        <f:subheading>
+          <Label text="{i18n>adminSolutionsSubtitle}" design="Light" wrapping="true" />
+        </f:subheading>
+        <f:navigationActions>
+          <Button
+            icon="sap-icon://nav-back"
+            type="Transparent"
+            press=".onNavBack"
+            tooltip="{i18n>backBtn}" />
+        </f:navigationActions>
+      </f:DynamicPageTitle>
+    </f:title>
 
-    <content>
-      <FlexBox alignItems="Stretch" justifyContent="Start" width="100%" class="sapUiSmallMarginTop sapUiSmallMarginBeginEnd" direction="Row">
+    <f:content>
+      <HBox alignItems="Stretch" justifyContent="Start" width="100%" class="sapUiSmallMarginTop sapUiSmallMarginBeginEnd">
 
         <!-- Topics column -->
-        <VBox class="sapUiSmallMarginEnd" width="50%">
-          <Toolbar style="Clear">
+        <VBox width="50%">
+          <OverflowToolbar style="Clear">
             <Title text="{i18n>adminSolutionsTopics}" level="H4" />
             <ToolbarSpacer />
             <Button
@@ -34,7 +38,7 @@
               tooltip="{i18n>adminSolutionsAddTopic}"
               press=".onAddTopic"
               type="Transparent" />
-          </Toolbar>
+          </OverflowToolbar>
           <List
             id="topicList"
             items="{admin>/Topics}"
@@ -63,14 +67,14 @@
           </List>
         </VBox>
 
-        <!-- Divider -->
-        <VBox width="1px" class="sapUiSmallMarginEnd">
-          <core:HTML content="&lt;div style='width:1px;background:#e5e5e5;height:100%;min-height:300px'&gt;&lt;/div&gt;" />
+        <!-- Vertical Divider -->
+        <VBox width="1px" class="sapUiSmallMarginBeginEnd sapUiResponsiveContentPadding">
+          <ToolbarSeparator />
         </VBox>
 
         <!-- Solutions column -->
         <VBox width="50%">
-          <Toolbar style="Clear">
+          <OverflowToolbar style="Clear">
             <Title text="{i18n>adminSolutionsSolutions}" level="H4" />
             <ToolbarSpacer />
             <Button
@@ -80,7 +84,7 @@
               press=".onAddSolution"
               type="Transparent"
               enabled="{viewModel>/topicSelected}" />
-          </Toolbar>
+          </OverflowToolbar>
           <List
             id="solutionList"
             items="{viewModel>/solutions}"
@@ -107,8 +111,8 @@
           </List>
         </VBox>
 
-      </FlexBox>
-    </content>
+      </HBox>
+    </f:content>
 
-  </Page>
+  </f:DynamicPage>
 </mvc:View>

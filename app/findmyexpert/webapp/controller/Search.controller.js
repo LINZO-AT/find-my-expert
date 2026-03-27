@@ -9,8 +9,13 @@ sap.ui.define([
   "sap/m/HBox",
   "sap/m/ObjectStatus",
   "sap/m/ProgressIndicator",
-  "sap/ui/core/Icon"
-], function (BaseController, MessageToast, MessageBox, Avatar, Card, FCardHeader, VBox, HBox, ObjectStatus, ProgressIndicator, Icon) {
+  "sap/ui/core/Icon",
+  "sap/m/Dialog",
+  "sap/m/Button",
+  "sap/m/Input",
+  "sap/m/Label",
+  "sap/ui/layout/form/SimpleForm"
+], function (BaseController, MessageToast, MessageBox, Avatar, Card, FCardHeader, VBox, HBox, ObjectStatus, ProgressIndicator, Icon, Dialog, Button, Input, Label, SimpleForm) {
   "use strict";
 
   return BaseController.extend("com.sap.austria.findmyexpert.controller.Search", {
@@ -196,6 +201,127 @@ sap.ui.define([
 
     onNavToExpertList: function () {
       this._oRouter.navTo("expertList");
+    },
+
+    onNavToAdminSolutions: function () {
+      this._oRouter.navTo("adminSolutions");
+    },
+
+    /* ========================================
+     *  LOGIN / LOGOUT
+     * ======================================== */
+
+    onLogin: function () {
+      var that = this;
+      var oBundle = this.getView().getModel("i18n").getResourceBundle();
+
+      var oUserInput = new Input({
+        placeholder: oBundle.getText("loginUserPlaceholder"),
+        value: "admin"
+      });
+
+      var oPassInput = new Input({
+        placeholder: oBundle.getText("loginPassPlaceholder"),
+        type: "Password",
+        value: "admin"
+      });
+
+      var oDialog = new Dialog({
+        title: oBundle.getText("loginDialogTitle"),
+        contentWidth: "360px",
+        type: "Message",
+        content: [
+          new SimpleForm({
+            editable: true,
+            layout: "ResponsiveGridLayout",
+            labelSpanXL: 12, labelSpanL: 12, labelSpanM: 12, labelSpanS: 12,
+            emptySpanXL: 0, emptySpanL: 0, emptySpanM: 0, emptySpanS: 0,
+            columnsXL: 1, columnsL: 1, columnsM: 1,
+            content: [
+              new Label({ text: oBundle.getText("loginUser") }),
+              oUserInput,
+              new Label({ text: oBundle.getText("loginPass") }),
+              oPassInput
+            ]
+          })
+        ],
+        beginButton: new Button({
+          text: oBundle.getText("loginButton"),
+          type: "Emphasized",
+          press: function () {
+            var sUser = oUserInput.getValue().trim();
+            var sPass = oPassInput.getValue();
+            if (!sUser) {
+              oUserInput.setValueState("Error");
+              return;
+            }
+            oDialog.close();
+            that._doLogin(sUser, sPass);
+          }
+        }),
+        endButton: new Button({
+          text: oBundle.getText("adminExpertCancel"),
+          press: function () { oDialog.close(); }
+        }),
+        afterClose: function () { oDialog.destroy(); }
+      });
+
+      this.getView().addDependent(oDialog);
+      oDialog.open();
+    },
+
+    _doLogin: function (sUser, sPass) {
+      var that = this;
+      var sAuth = "Basic " + btoa(sUser + ":" + sPass);
+      var oBundle = this.getView().getModel("i18n").getResourceBundle();
+
+      // Verify credentials against the catalog service
+      fetch("/api/catalog/userInfo()", {
+        headers: { "Authorization": sAuth, "Accept": "application/json" }
+      }).then(function (r) {
+        if (!r.ok) { throw new Error("HTTP " + r.status); }
+        return r.json();
+      }).then(function (oData) {
+        // Store auth header on both OData models
+        var oComponent = that.getOwnerComponent();
+        var oCatalogModel = oComponent.getModel();
+        var oAdminModel = oComponent.getModel("admin");
+
+        oCatalogModel.changeHttpHeaders({ "Authorization": sAuth });
+        if (oAdminModel) {
+          oAdminModel.changeHttpHeaders({ "Authorization": sAuth });
+        }
+
+        // Update user model
+        var oUserModel = oComponent.getModel("userModel");
+        oUserModel.setData({
+          isAdmin: oData.isAdmin || false,
+          userName: oData.userName || sUser
+        });
+
+        MessageToast.show(oBundle.getText("loginSuccess", [oData.userName || sUser]));
+      }).catch(function (err) {
+        MessageBox.error(oBundle.getText("loginFailed", [err.message]));
+      });
+    },
+
+    onLogout: function () {
+      var oComponent = this.getOwnerComponent();
+      var oCatalogModel = oComponent.getModel();
+      var oAdminModel = oComponent.getModel("admin");
+
+      // Remove auth headers
+      oCatalogModel.changeHttpHeaders({ "Authorization": undefined });
+      if (oAdminModel) {
+        oAdminModel.changeHttpHeaders({ "Authorization": undefined });
+      }
+
+      // Reset user model
+      var oUserModel = oComponent.getModel("userModel");
+      oUserModel.setData({ isAdmin: false, userName: "" });
+
+      var oBundle = this.getView().getModel("i18n").getResourceBundle();
+      MessageToast.show(oBundle.getText("logoutSuccess"));
     }
   });
 });

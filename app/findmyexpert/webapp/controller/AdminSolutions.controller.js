@@ -17,12 +17,24 @@ sap.ui.define([
 
     onInit: function () {
       this._oRouter = this.getRouter();
+      this._oRouter.getRoute("adminSolutions").attachPatternMatched(this._onRouteMatched, this);
       var oViewModel = new JSONModel({
         solutions: [],
         topicSelected: false
       });
       this.getView().setModel(oViewModel, "viewModel");
       this._selectedTopicId = null;
+    },
+
+    _onRouteMatched: function () {
+      // Check admin authorization
+      var oUserModel = this.getOwnerComponent().getModel("userModel");
+      if (oUserModel && !oUserModel.getProperty("/isAdmin")) {
+        var oBundle = this.getView().getModel("i18n").getResourceBundle();
+        MessageToast.show(oBundle.getText("noAdminAccess"));
+        this._oRouter.navTo("search", {}, true);
+        return;
+      }
     },
 
     /* ========================================
@@ -43,7 +55,7 @@ sap.ui.define([
 
     _loadSolutions: function (sTopicId) {
       var that = this;
-      var sUrl = "/odata/v4/admin/Solutions?$filter=topic_ID eq '" + sTopicId + "'&$orderby=name";
+      var sUrl = "/api/admin/Solutions?$filter=topic_ID eq '" + sTopicId + "'&$orderby=name";
       fetch(sUrl, { headers: { "Accept": "application/json" } })
         .then(function (r) { return r.json(); })
         .then(function (data) {
@@ -188,7 +200,7 @@ sap.ui.define([
     _createTopic: function (sName, sDesc) {
       var that = this;
       var oBundle = this.getView().getModel("i18n").getResourceBundle();
-      fetch("/odata/v4/admin/Topics", {
+      fetch("/api/admin/Topics", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -214,7 +226,7 @@ sap.ui.define([
     _updateTopic: function (sId, sName, sDesc) {
       var that = this;
       var oBundle = this.getView().getModel("i18n").getResourceBundle();
-      fetch("/odata/v4/admin/Topics(" + sId + ")", {
+      fetch("/api/admin/Topics(" + sId + ")", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -240,7 +252,7 @@ sap.ui.define([
     _deleteTopic: function (sId) {
       var that = this;
       var oBundle = this.getView().getModel("i18n").getResourceBundle();
-      fetch("/odata/v4/admin/Topics(" + sId + ")", {
+      fetch("/api/admin/Topics(" + sId + ")", {
         method: "DELETE",
         headers: { "Accept": "application/json" }
       })
@@ -393,7 +405,7 @@ sap.ui.define([
     _createSolution: function (sName, sDesc) {
       var that = this;
       var oBundle = this.getView().getModel("i18n").getResourceBundle();
-      fetch("/odata/v4/admin/Solutions", {
+      fetch("/api/admin/Solutions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -423,7 +435,7 @@ sap.ui.define([
     _updateSolution: function (sId, sName, sDesc) {
       var that = this;
       var oBundle = this.getView().getModel("i18n").getResourceBundle();
-      fetch("/odata/v4/admin/Solutions(" + sId + ")", {
+      fetch("/api/admin/Solutions(" + sId + ")", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -449,7 +461,7 @@ sap.ui.define([
     _deleteSolution: function (sId) {
       var that = this;
       var oBundle = this.getView().getModel("i18n").getResourceBundle();
-      fetch("/odata/v4/admin/Solutions(" + sId + ")", {
+      fetch("/api/admin/Solutions(" + sId + ")", {
         method: "DELETE",
         headers: { "Accept": "application/json" }
       })
