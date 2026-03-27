@@ -14,7 +14,7 @@ sap.ui.define([
     init: function () {
       UIComponent.prototype.init.apply(this, arguments);
 
-      var oUserModel = new JSONModel({ isAdmin: false, userName: "", loaded: false });
+      var oUserModel = new JSONModel({ isAdmin: false, userName: "", loaded: false, authHeader: "" });
       this.setModel(oUserModel, "userModel");
 
       // Synchronously pre-inject DEV auth header into both OData models
@@ -30,31 +30,40 @@ sap.ui.define([
     },
 
     /**
-     * Pre-injects DEV auth header into both OData models synchronously.
+     * Pre-injects DEV auth header into OData models + userModel synchronously.
      * Prevents 401/browser-popup on Admin views loaded before userInfo resolves.
      */
     _injectDevAuth: function () {
-      var oCatalog = this.getModel();
-      var oAdmin   = this.getModel("admin");
+      var oCatalog   = this.getModel();
+      var oAdmin     = this.getModel("admin");
+      var oUserModel = this.getModel("userModel");
       if (oCatalog && oCatalog.changeHttpHeaders) {
         oCatalog.changeHttpHeaders({ "Authorization": DEV_AUTH });
       }
       if (oAdmin && oAdmin.changeHttpHeaders) {
         oAdmin.changeHttpHeaders({ "Authorization": DEV_AUTH });
       }
+      // Store in userModel so BaseController._authFetch() can read it for plain fetch() calls
+      if (oUserModel) {
+        oUserModel.setProperty("/authHeader", DEV_AUTH);
+      }
     },
 
     /**
-     * Removes DEV auth header from both OData models (used in PROD/XSUAA).
+     * Removes DEV auth header from OData models + userModel (used in PROD/XSUAA).
      */
     _clearDevAuth: function () {
-      var oCatalog = this.getModel();
-      var oAdmin   = this.getModel("admin");
+      var oCatalog   = this.getModel();
+      var oAdmin     = this.getModel("admin");
+      var oUserModel = this.getModel("userModel");
       if (oCatalog && oCatalog.changeHttpHeaders) {
         oCatalog.changeHttpHeaders({ "Authorization": undefined });
       }
       if (oAdmin && oAdmin.changeHttpHeaders) {
         oAdmin.changeHttpHeaders({ "Authorization": undefined });
+      }
+      if (oUserModel) {
+        oUserModel.setProperty("/authHeader", "");
       }
     },
 
@@ -94,9 +103,10 @@ sap.ui.define([
         }
 
         oUserModel.setData({
-          isAdmin:  !!oData.isAdmin,
-          userName: oData.userName || "",
-          loaded:   true
+          isAdmin:    !!oData.isAdmin,
+          userName:   oData.userName || "",
+          loaded:     true,
+          authHeader: bDevMode ? DEV_AUTH : ""
         });
       })
       .catch(function (err) {

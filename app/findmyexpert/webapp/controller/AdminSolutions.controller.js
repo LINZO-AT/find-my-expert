@@ -56,7 +56,7 @@ sap.ui.define([
     _loadSolutions: function (sTopicId) {
       var that = this;
       var sUrl = "/api/admin/Solutions?$filter=topic_ID eq '" + sTopicId + "'&$orderby=name";
-      fetch(sUrl, { headers: { "Accept": "application/json" } })
+      this._authFetch(sUrl, { headers: { "Accept": "application/json" } })
         .then(function (r) { return r.json(); })
         .then(function (data) {
           var aSolutions = (data.value || []).map(function (s) {
@@ -200,7 +200,7 @@ sap.ui.define([
     _createTopic: function (sName, sDesc) {
       var that = this;
       var oBundle = this.getView().getModel("i18n").getResourceBundle();
-      fetch("/api/admin/Topics", {
+      this._authFetch("/api/admin/Topics", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -226,7 +226,7 @@ sap.ui.define([
     _updateTopic: function (sId, sName, sDesc) {
       var that = this;
       var oBundle = this.getView().getModel("i18n").getResourceBundle();
-      fetch("/api/admin/Topics(" + sId + ")", {
+      this._authFetch("/api/admin/Topics(" + sId + ")", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -252,7 +252,7 @@ sap.ui.define([
     _deleteTopic: function (sId) {
       var that = this;
       var oBundle = this.getView().getModel("i18n").getResourceBundle();
-      fetch("/api/admin/Topics(" + sId + ")", {
+      this._authFetch("/api/admin/Topics(" + sId + ")", {
         method: "DELETE",
         headers: { "Accept": "application/json" }
       })
@@ -405,7 +405,7 @@ sap.ui.define([
     _createSolution: function (sName, sDesc) {
       var that = this;
       var oBundle = this.getView().getModel("i18n").getResourceBundle();
-      fetch("/api/admin/Solutions", {
+      this._authFetch("/api/admin/Solutions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -435,7 +435,7 @@ sap.ui.define([
     _updateSolution: function (sId, sName, sDesc) {
       var that = this;
       var oBundle = this.getView().getModel("i18n").getResourceBundle();
-      fetch("/api/admin/Solutions(" + sId + ")", {
+      this._authFetch("/api/admin/Solutions(" + sId + ")", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -461,7 +461,7 @@ sap.ui.define([
     _deleteSolution: function (sId) {
       var that = this;
       var oBundle = this.getView().getModel("i18n").getResourceBundle();
-      fetch("/api/admin/Solutions(" + sId + ")", {
+      this._authFetch("/api/admin/Solutions(" + sId + ")", {
         method: "DELETE",
         headers: { "Accept": "application/json" }
       })

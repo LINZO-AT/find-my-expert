@@ -55,6 +55,34 @@ sap.ui.define([
     },
 
     /**
+     * Authenticated fetch() — automatically injects the Authorization header
+     * that Component.js set on the OData models (DEV: Basic anonymous:, PROD: none).
+     *
+     * Use this for ALL manual fetch() calls to /api/admin/* and /api/catalog/*.
+     * Prevents browser Basic-Auth popups in DEV and works transparently in PROD.
+     *
+     * @param {string}  sUrl     Relative URL, e.g. "/api/admin/Topics"
+     * @param {object}  [oOpts]  fetch() options (method, body, etc.)
+     * @returns {Promise<Response>}
+     */
+    _authFetch: function (sUrl, oOpts) {
+      oOpts = oOpts || {};
+      var oHeaders = Object.assign({ "Accept": "application/json" }, oOpts.headers || {});
+
+      // Read the Authorization header stored in userModel by Component.js
+      // In DEV: "Basic anonymous:", in PROD (XSUAA): "" (empty — JWT via credentials:same-origin)
+      try {
+        var oUserModel = this.getOwnerComponent().getModel("userModel");
+        var sAuth = oUserModel && oUserModel.getProperty("/authHeader");
+        if (sAuth) {
+          oHeaders.Authorization = sAuth;
+        }
+      } catch (e) { /* no model available yet */ }
+
+      return fetch(sUrl, Object.assign({}, oOpts, { headers: oHeaders }));
+    },
+
+    /**
      * Convenience: get i18n resource bundle.
      */
     getResourceBundle: function () {
