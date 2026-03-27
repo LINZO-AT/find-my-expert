@@ -1,6 +1,6 @@
 sap.ui.define([
-  "sap/ui/core/mvc/Controller"
-], function(Controller) {
+  "com/sap/austria/findmyexpert/controller/BaseController"
+], function (BaseController) {
   "use strict";
-  return Controller.extend("com.sap.austria.findmyexpert.controller.App", {});
+  return BaseController.extend("com.sap.austria.findmyexpert.controller.App", {});
 });

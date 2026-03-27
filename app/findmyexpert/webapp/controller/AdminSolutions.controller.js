@@ -1,15 +1,15 @@
 sap.ui.define([
-  "sap/ui/core/mvc/Controller",
+  "com/sap/austria/findmyexpert/controller/BaseController",
   "sap/ui/model/json/JSONModel",
   "sap/m/MessageBox",
   "sap/m/MessageToast"
-], function(Controller, JSONModel, MessageBox, MessageToast) {
+], function (BaseController, JSONModel, MessageBox, MessageToast) {
   "use strict";
 
-  return Controller.extend("com.sap.austria.findmyexpert.controller.AdminSolutions", {
+  return BaseController.extend("com.sap.austria.findmyexpert.controller.AdminSolutions", {
 
-    onInit: function() {
-      this._oRouter = this.getOwnerComponent().getRouter();
+    onInit: function () {
+      this._oRouter = this.getRouter();
 
       const oViewModel = new JSONModel({ solutions: [] });
       this.getView().setModel(oViewModel, "viewModel");
@@ -97,8 +97,8 @@ sap.ui.define([
       }
     },
 
-    onNavBack: function() {
-      this._oRouter.navTo("expertList");
+    onNavBack: function () {
+      BaseController.prototype.onNavBack.apply(this, arguments);
     }
   });
 });

@@ -1,15 +1,15 @@
 sap.ui.define([
-  "sap/ui/core/mvc/Controller",
+  "com/sap/austria/findmyexpert/controller/BaseController",
   "sap/ui/model/json/JSONModel",
   "sap/m/MessageBox",
   "sap/m/MessageToast"
-], function(Controller, JSONModel, MessageBox, MessageToast) {
+], function (BaseController, JSONModel, MessageBox, MessageToast) {
   "use strict";
 
-  return Controller.extend("com.sap.austria.findmyexpert.controller.AdminExpert", {
+  return BaseController.extend("com.sap.austria.findmyexpert.controller.AdminExpert", {
 
-    onInit: function() {
-      this._oRouter = this.getOwnerComponent().getRouter();
+    onInit: function () {
+      this._oRouter = this.getRouter();
       this._oRouter.getRoute("adminExpert").attachPatternMatched(this._onRouteMatched, this);
       this._oRouter.getRoute("adminNew").attachPatternMatched(this._onNewExpert, this);
       this._bDirty = false;
@@ -169,7 +169,7 @@ sap.ui.define([
       }
     },
 
-    onNavBack: function() {
+    onNavBack: function () {
       this.onCancel();
     }
   });

@@ -1,0 +1,118 @@
+{
+  "defaultRenderer": "fiori2",
+  "renderers": {
+    "fiori2": {
+      "componentData": {
+        "config": {
+          "search": "hidden",
+          "moveAppTitleToHeader": true
+        }
+      }
+    }
+  },
+  "services": {
+    "NavTargetResolution": {
+      "config": {
+        "enableClientSideTargetResolution": true
+      }
+    },
+    "ClientSideTargetResolution": {
+      "adapter": {
+        "config": {
+          "inbounds": {
+            "FindMyExpert-display": {
+              "semanticObject": "FindMyExpert",
+              "action": "display",
+              "title": "Find My Expert",
+              "info": "Internes SAP Experten-Verzeichnis",
+              "icon": "sap-icon://employee-lookup",
+              "deviceTypes": { "desktop": true, "tablet": true, "phone": false },
+              "resolutionResult": {
+                "applicationType": "SAPUI5",
+                "additionalInformation": "SAPUI5.Component=com.sap.austria.findmyexpert",
+                "url": "./",
+                "text": "Find My Expert",
+                "ui5ComponentName": "com.sap.austria.findmyexpert"
+              },
+              "signature": {
+                "parameters": {},
+                "additionalParameters": "allowed"
+              }
+            },
+            "FindMyExpert-manage": {
+              "semanticObject": "FindMyExpert",
+              "action": "manage",
+              "title": "Experten verwalten",
+              "info": "Admin: Experten und Lösungen pflegen",
+              "icon": "sap-icon://manager",
+              "deviceTypes": { "desktop": true, "tablet": true, "phone": false },
+              "resolutionResult": {
+                "applicationType": "SAPUI5",
+                "additionalInformation": "SAPUI5.Component=com.sap.austria.findmyexpert",
+                "url": "./",
+                "text": "Experten verwalten",
+                "ui5ComponentName": "com.sap.austria.findmyexpert"
+              },
+              "signature": {
+                "parameters": {},
+                "additionalParameters": "allowed"
+              }
+            }
+          }
+        }
+      }
+    },
+    "LaunchPage": {
+      "adapter": {
+        "config": {
+          "groups": [
+            {
+              "id": "findmyexpert_group",
+              "title": "SAP Austria — Experten",
+              "isPreset": true,
+              "isVisible": true,
+              "isGroupLocked": false,
+              "tiles": [
+                {
+                  "id": "tile_fme_search",
+                  "tileType": "sap.ushell.ui.tile.StaticTile",
+                  "properties": {
+                    "title": "Find My Expert",
+                    "subtitle": "Experten-Suche",
+                    "info": "AI-powered Expert Directory",
+                    "icon": "sap-icon://employee-lookup",
+                    "targetURL": "#FindMyExpert-display"
+                  }
+                },
+                {
+                  "id": "tile_fme_manage",
+                  "tileType": "sap.ushell.ui.tile.StaticTile",
+                  "properties": {
+                    "title": "Experten verwalten",
+                    "subtitle": "Admin",
+                    "info": "Experten und Lösungen pflegen",
+                    "icon": "sap-icon://manager",
+                    "targetURL": "#FindMyExpert-manage"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "UserInfo": {
+      "adapter": {
+        "config": {
+          "user": {
+            "firstName": "Admin",
+            "lastName": "User",
+            "fullName": "Admin User",
+            "email": "admin@sap.com",
+            "id": "admin@sap.com"
+          }
+        }
+      }
+    }
+  }
+}

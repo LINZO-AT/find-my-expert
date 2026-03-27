@@ -1,23 +1,23 @@
 sap.ui.define([
-  "sap/ui/core/mvc/Controller",
+  "com/sap/austria/findmyexpert/controller/BaseController",
   "sap/ui/model/Filter",
   "sap/ui/model/FilterOperator",
   "sap/m/MessageBox",
   "sap/m/MessageToast"
-], function(Controller, Filter, FilterOperator, MessageBox, MessageToast) {
+], function (BaseController, Filter, FilterOperator, MessageBox, MessageToast) {
   "use strict";
 
-  return Controller.extend("com.sap.austria.findmyexpert.controller.ExpertList", {
+  return BaseController.extend("com.sap.austria.findmyexpert.controller.ExpertList", {
 
-    onInit: function() {
-      this._oRouter = this.getOwnerComponent().getRouter();
+    onInit: function () {
+      this._oRouter = this.getRouter();
     },
 
-    onNavToSearch: function() {
+    onNavToSearch: function () {
       this._oRouter.navTo("search");
     },
 
-    onAddExpert: function() {
+    onAddExpert: function () {
       this._oRouter.navTo("adminNew");
     },
 

@@ -23,6 +23,10 @@
     "technology": "UI5",
     "deviceTypes": { "desktop": true, "tablet": true, "phone": false }
   },
+  "sap.fiori": {
+    "registrationIds": ["F-FME-001"],
+    "archeType": "transactional"
+  },
   "sap.ui5": {
     "minUI5Version": "1.132.1",
     "theme": "sap_horizon",
@@ -73,7 +77,10 @@
         "viewPath": "com.sap.austria.findmyexpert.view",
         "controlId": "app",
         "controlAggregation": "pages",
-        "async": true
+        "async": true,
+        "bypassed": {
+          "target": "Search"
+        }
       },
       "routes": [
         { "name": "search",         "pattern": "",                         "target": "Search" },

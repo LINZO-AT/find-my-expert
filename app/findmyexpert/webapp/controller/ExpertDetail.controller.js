@@ -1,12 +1,12 @@
 sap.ui.define([
-  "sap/ui/core/mvc/Controller"
-], function(Controller) {
+  "com/sap/austria/findmyexpert/controller/BaseController"
+], function (BaseController) {
   "use strict";
 
-  return Controller.extend("com.sap.austria.findmyexpert.controller.ExpertDetail", {
+  return BaseController.extend("com.sap.austria.findmyexpert.controller.ExpertDetail", {
 
-    onInit: function() {
-      this._oRouter = this.getOwnerComponent().getRouter();
+    onInit: function () {
+      this._oRouter = this.getRouter();
       this._oRouter.getRoute("expertDetail").attachPatternMatched(this._onRouteMatched, this);
     },
 
@@ -25,8 +25,8 @@ sap.ui.define([
       }
     },
 
-    onNavBack: function() {
-      this._oRouter.navTo("expertList");
+    onNavBack: function () {
+      BaseController.prototype.onNavBack.apply(this, arguments);
     },
 
     onEditExpert: function() {
