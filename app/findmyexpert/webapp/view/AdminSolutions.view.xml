@@ -10,11 +10,11 @@
     <f:title>
       <f:DynamicPageTitle>
         <f:heading>
-          <Title text="{i18n>adminSolutionsTitle}" level="H2" wrapping="true" />
+          <VBox xmlns="sap.m">
+            <Title text="{i18n>adminSolutionsTitle}" level="H2" wrapping="true" />
+            <Label text="{i18n>adminSolutionsSubtitle}" wrapping="true" class="sapUiTinyMarginTop sapUiSmallMarginBottom" />
+          </VBox>
         </f:heading>
-        <f:subheading>
-          <Label text="{i18n>adminSolutionsSubtitle}" design="Light" wrapping="true" />
-        </f:subheading>
         <f:navigationActions>
           <Button
             icon="sap-icon://nav-back"

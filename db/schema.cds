@@ -1,13 +1,14 @@
 namespace findmyexpert;
 
-using { cuid, managed } from '@sap/cds/common';
+using { managed } from '@sap/cds/common';
 
 /**
  * Topic areas: AI, BDC, BTP, CloudERP, HCM,
  * Integrated Toolchain, RISE, T&I
  */
 @title: 'Topics'
-entity Topics : cuid, managed {
+entity Topics : managed {
+  key ID         : String(50);
   @title: 'Name'
   name        : String(100) not null;
   @title: 'Description'
@@ -19,7 +20,8 @@ entity Topics : cuid, managed {
  * SAP Products / Services
  */
 @title: 'Solutions'
-entity Solutions : cuid, managed {
+entity Solutions : managed {
+  key ID         : String(50);
   @title: 'Name'
   name        : String(200) not null;
   @title: 'Topic'
@@ -33,7 +35,8 @@ entity Solutions : cuid, managed {
  * People / Internal Experts
  */
 @title: 'Experts'
-entity Experts : cuid, managed {
+entity Experts : managed {
+  key ID         : String(50);
   @title: 'First Name'
   firstName   : String(100) not null;
   @title: 'Last Name'
@@ -64,7 +67,8 @@ entity Experts : cuid, managed {
  * Junction: Expert <-> Solution with role metadata
  */
 @title: 'Expert Roles'
-entity ExpertRoles : cuid, managed {
+entity ExpertRoles : managed {
+  key ID            : String(50);
   @title: 'Expert'
   expert            : Association to Experts   not null;
   @title: 'Solution'

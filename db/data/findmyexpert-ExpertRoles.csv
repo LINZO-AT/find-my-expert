@@ -1,86 +1,86 @@
-ID,expert_ID,solution_ID,role,canPresent5M,canPresent30M,canPresent2H,canPresentDemo,notes
-8705c73f-851b-4760-8022-f03abbbef08b,128bc64c-9699-4167-8088-f9e349437d12,05f904ff-dafb-4ed0-a9af-195148b6bed3,TOPIC_OWNER,true,true,true,true,Topic Owner Integrated Toolchain AT
-c1e5a9f6-f7f3-4037-8814-0e14645c7fb7,128bc64c-9699-4167-8088-f9e349437d12,837a8a6e-dec7-4bd4-93ba-6bbcbc198db0,THEMEN_LEAD,true,true,true,true,Lead Signavio AT — langjährige Projekterfahrung
-52768762-94f4-41fc-9ec2-f0a1f2f29ef6,128bc64c-9699-4167-8088-f9e349437d12,f5618506-715b-460f-9e5f-de63362cd7bc,SOLUTIONING_ARCH,true,true,false,false,LeanIX Enterprise Architecture Advisory
-7a382277-4519-4b06-ac0b-6c2e2bedcae5,2629030c-6161-4b75-a2d0-e3dae7277ebb,837a8a6e-dec7-4bd4-93ba-6bbcbc198db0,REALIZATION_LEAD,false,true,true,true,Signavio Realization Lead mehrere Kundenprojekte
-3fb6d7c8-4fc8-4d6b-b3aa-7e980d2c4f96,2629030c-6161-4b75-a2d0-e3dae7277ebb,2586f106-12bb-4011-8f29-454670ccd5da,REALIZATION_CONSULTANT,true,true,true,false,CALM Implementation Consultant
-730fad0e-7306-42fc-9938-783a6babbfbd,2629030c-6161-4b75-a2d0-e3dae7277ebb,b81e797d-7071-422d-94a4-24cdd1ad1ff3,SERVICE_SELLER,true,true,false,false,WalkMe Service Selling AT
-f7f67f31-568c-4126-8a20-78aa0dc1d0f9,83d0d692-4ec7-405a-8639-bd77da8cf36c,f5618506-715b-460f-9e5f-de63362cd7bc,TOPIC_OWNER,true,true,true,true,Topic Owner LeanIX — EAM Spezialist
-3bdd89cf-ebf3-48ff-9b33-5677fe888c45,83d0d692-4ec7-405a-8639-bd77da8cf36c,05f904ff-dafb-4ed0-a9af-195148b6bed3,SOLUTIONING_ARCH,true,true,true,false,Integrated Toolchain Architecture Advisory
-b2ca50a7-6d8c-4a65-8117-695cb37bcf05,83d0d692-4ec7-405a-8639-bd77da8cf36c,8c10f5a1-30d6-4afd-92db-914333eafa36,REALIZATION_LEAD,false,true,true,true,Tricentis Test Automation Lead
-923ebe4b-0a26-4aba-9112-809cd2bc8be3,b354dfa0-ccd2-4422-a80a-8233d262b851,2586f106-12bb-4011-8f29-454670ccd5da,TOPIC_OWNER,true,true,true,false,Topic Owner CALM for Implementation AT
-6987a940-708a-4557-857c-8cfff17045b9,b354dfa0-ccd2-4422-a80a-8233d262b851,51eba9e5-083e-4590-979b-f320a4bc1638,REALIZATION_LEAD,true,true,true,true,CALM Operations Lead — ITSM Integration
-3f2ce7e2-f417-46ee-86b9-17a98ace1c16,b354dfa0-ccd2-4422-a80a-8233d262b851,837a8a6e-dec7-4bd4-93ba-6bbcbc198db0,REALIZATION_CONSULTANT,false,false,true,false,Signavio Process Mining Consultant
-fc92ac5d-cdff-4b66-afe6-c29bdf842e45,6def95b5-e851-4bed-9cf2-e04cc4e9417f,715d900a-b59f-4c82-9242-11e48b41199c,TOPIC_OWNER,true,true,true,true,Topic Owner BTP AT — Platform Architecture
-c86f11a0-a522-4c24-9a78-4c83da462b42,6def95b5-e851-4bed-9cf2-e04cc4e9417f,ab562cea-75c8-4edb-834b-faf063498ea0,THEMEN_LEAD,true,true,true,true,Integration Suite Lead — API Management Spezialist
-a65c6e5a-2655-42b4-9365-2f71a3591d74,6def95b5-e851-4bed-9cf2-e04cc4e9417f,cf9849b6-5f85-4acf-97ed-c125a0d789c6,SOLUTIONING_ARCH,false,true,true,true,CAP & Build Code Advisory
-ba84c1c0-e441-433e-a4ef-0c4cb725a918,4f6f0100-aa0a-4d2c-81f1-e74a50f1dc83,a43493cd-8bb3-4195-9df0-8936b70364bd,REALIZATION_LEAD,true,true,true,true,SAP Build Low-Code Lead AT
-2707adef-7ca4-4168-97ee-08fb584b2671,4f6f0100-aa0a-4d2c-81f1-e74a50f1dc83,3755c492-a911-482f-9f09-66329a47d64e,REALIZATION_CONSULTANT,true,true,false,false,Build Work Zone Consultant
-b3ba8ab1-d53e-428e-8136-89e63c7bc33a,4f6f0100-aa0a-4d2c-81f1-e74a50f1dc83,ab562cea-75c8-4edb-834b-faf063498ea0,REALIZATION_CONSULTANT,false,true,true,false,Integration Suite Consultant
-910ad296-9dff-438d-9b7d-0b673bb681a7,244b32a0-7c30-4c1a-b566-6d1f680c7ff3,30e70237-61f9-4f35-82aa-47db7d8d039e,TOPIC_OWNER,true,true,true,false,Topic Owner RISE AT — Cloud Migration Lead
-767cb20f-6c16-4dd1-89f5-859312709627,244b32a0-7c30-4c1a-b566-6d1f680c7ff3,34b52b11-77cc-4637-b610-f54cd82b3b5e,THEMEN_LEAD,true,true,true,false,Brownfield Conversion Spezialist — S/4HANA
-8f0334cc-413f-4161-9dc3-2fd512067b4a,244b32a0-7c30-4c1a-b566-6d1f680c7ff3,096d0964-e18b-484d-ad09-f168bd9c9094,REALIZATION_LEAD,false,true,true,false,Lift & Shift Lead mehrere SAP Austria Projekte
-3c112c11-3d87-40da-ad22-b96903a164f4,14cc09a4-2380-48d1-b954-dd81c705b867,34b52b11-77cc-4637-b610-f54cd82b3b5e,SOLUTIONING_ARCH,true,true,true,false,Conversion Architecture Advisory
-44cf6913-8445-4a46-a4e6-ca07e0294a49,14cc09a4-2380-48d1-b954-dd81c705b867,717e65d7-3837-44b4-bb76-567334123dfa,THEMEN_LEAD,true,true,false,false,Clean Core Strategy Lead AT
-9b4a2a90-f3f1-4887-9183-a949e547a558,14cc09a4-2380-48d1-b954-dd81c705b867,2ebf6b08-0001-4fc5-ab63-9f24b60188d9,REALIZATION_LEAD,false,true,true,false,Clean Core Extensibility Lead
-f820f1ff-f2f5-455f-af9c-d7bae80b112d,7a04f6f1-74e6-4ecb-baaf-13e9240cfa52,d38c8587-2cdb-4e1f-881d-e066b29824a6,TOPIC_OWNER,true,true,true,true,Topic Owner Joule AT — AI Copilot Champion
-816d2e6b-5ce9-4a8b-a857-0846e92cf54d,7a04f6f1-74e6-4ecb-baaf-13e9240cfa52,042d4723-1649-404c-8451-86bf98cfc2f8,THEMEN_LEAD,true,true,true,true,SAP Business AI Lead AT
-e29ba7f9-192a-43e4-a43d-b9cc2da3838b,7a04f6f1-74e6-4ecb-baaf-13e9240cfa52,8cb935a9-a403-452f-a287-9d7bd88654a5,REALIZATION_LEAD,false,true,true,true,Joule für Developer Lead — AI-Assisted Coding
-92b59a08-783d-4442-ba8e-91eaf1edb5d0,7a04f6f1-74e6-4ecb-baaf-13e9240cfa52,e1d94de6-363b-4e4f-9fbe-48e022383149,REALIZATION_CONSULTANT,true,true,false,false,AI Core Custom AI Consultant
-548be34e-1688-44db-b54b-277605be2a33,f3c3119f-3bba-4b75-95ad-19293f352188,201c6c68-021f-4204-bd78-dd1be5ac7f19,TOPIC_OWNER,true,true,true,false,Topic Owner Cloud ERP AT
-c5dd28f7-74a8-4484-940b-ae3e1184eafb,f3c3119f-3bba-4b75-95ad-19293f352188,eda8c009-6d17-43fd-957c-d0e3a45d3c85,THEMEN_LEAD,true,true,true,true,FI Lead AT — Finance Transformation
-7f2ba4f6-3387-47cb-b040-0e5c5ce30bcd,f3c3119f-3bba-4b75-95ad-19293f352188,87ef57b3-5819-43b9-bfc6-f32c2f4f5853,REALIZATION_LEAD,false,true,true,false,CO Controlling Lead
-e452e83e-e1ec-4f2a-9ecf-e519bf1b403d,06b9fec6-fd89-4f87-a006-b896c2f596e4,bb37790c-8140-4257-8e96-c49606e0532e,THEMEN_LEAD,true,true,true,true,MM Procurement Lead AT — Ariba Integration
-c952835b-1fa1-4ccd-b57f-da9c5e608b37,06b9fec6-fd89-4f87-a006-b896c2f596e4,97a8512c-72b7-4590-9972-e82f9c7b61ab,REALIZATION_LEAD,false,true,true,true,SD Sales Lead mehrere Rollouts
-4cc2ace0-f08d-437a-949d-559ec69debb1,06b9fec6-fd89-4f87-a006-b896c2f596e4,fb39cb17-a907-4d79-a696-a7f0b71c9985,REALIZATION_CONSULTANT,false,false,true,false,SCM EWM Consultant
-e9c08c54-d9db-435a-bace-a2db045a2ab9,49803538-6c5b-4284-a454-f7566a633aa2,79191c61-a7a9-4c63-b08c-7a0fef6be60c,TOPIC_OWNER,true,true,true,false,Topic Owner SuccessFactors AT — EC Lead
-9a784eb5-bf3c-4292-bba7-a50bd5f421a1,49803538-6c5b-4284-a454-f7566a633aa2,b230b6f2-de58-4eb3-b122-e5ae56839147,THEMEN_LEAD,true,true,false,false,HCM Lead AT übergreifend
-ea263616-e992-4309-966d-b21d84b44270,49803538-6c5b-4284-a454-f7566a633aa2,75de6bad-ae95-4c17-878f-9979346d761a,REALIZATION_LEAD,false,true,true,false,SuccessFactors RPM Lead
-1a1c9652-2848-4080-9677-a1922e45cc4b,c77480e3-e5ca-4918-9c9c-ce1d068f3b62,3743cebf-9300-4fd1-b9a3-227012e55aa3,TOPIC_OWNER,true,true,true,true,Topic Owner Datasphere AT — Data Fabric
-a9ad0eb8-494a-4674-89c3-3a41b4db5427,c77480e3-e5ca-4918-9c9c-ce1d068f3b62,34389bc5-df06-4826-aa98-9a4ec12714d2,THEMEN_LEAD,true,true,true,true,SAC Lead AT — Analytics & Reporting
-2b1b6101-47ae-46e0-a76a-d8e0decd329b,c77480e3-e5ca-4918-9c9c-ce1d068f3b62,3384e65b-7ba6-42fe-b577-8dc506796f49,REALIZATION_LEAD,false,true,true,false,BW/4HANA Migration Lead
-cd43913a-1aa5-4269-a05b-52f265ff50cc,e9d1a118-dc30-41e4-8e8a-711f4b9aa382,717e65d7-3837-44b4-bb76-567334123dfa,TOPIC_OWNER,true,true,false,false,Topic Owner T&I AT — Clean Core Strategy
-ae4a0422-971a-40f0-98a0-ae31e79f14d6,e9d1a118-dc30-41e4-8e8a-711f4b9aa382,34ce2b8b-7633-4592-b25e-cf70c9a2db11,THEMEN_LEAD,true,true,true,false,SAP Activate Lead AT — Methodology Champion
-5cff56f3-d7e8-4c74-9909-29b3224d215e,e9d1a118-dc30-41e4-8e8a-711f4b9aa382,11795be3-e091-4fa0-9168-d50ce75dbfae,REALIZATION_LEAD,false,true,true,false,Clean Core Integration Lead
-24a769af-f033-4ad7-b1c2-a1fd59c6ed7b,67a42848-5bfb-4a70-a489-6a6c0c217cc4,f4a7b7e0-803a-4e4b-a799-78668bcfc4d2,THEMEN_LEAD,true,true,true,true,PP Manufacturing Lead AT
-423d6605-6193-4abe-8815-ec18109dfcbf,67a42848-5bfb-4a70-a489-6a6c0c217cc4,996bb10e-f972-446b-bff9-b3acdc232db7,REALIZATION_LEAD,false,true,true,true,Plant Maintenance Lead
-6ed1e647-40bc-4c9b-aa82-602341eca4e8,67a42848-5bfb-4a70-a489-6a6c0c217cc4,fb39cb17-a907-4d79-a696-a7f0b71c9985,REALIZATION_CONSULTANT,true,true,false,false,SCM IBP Consultant
-d01061f4-080d-4145-b6db-e0082dfd097e,fc867312-d0b9-4287-8c85-bdd8b83c778c,34b52b11-77cc-4637-b610-f54cd82b3b5e,SERVICE_SELLER,true,true,false,false,RISE Conversion Service Selling DE
-b3002876-4579-486c-8c4a-4409b3a98aa0,fc867312-d0b9-4287-8c85-bdd8b83c778c,096d0964-e18b-484d-ad09-f168bd9c9094,SERVICE_SELLER,true,false,false,false,Lift & Shift Service Selling DE
-a7c424ae-8a4d-4911-ae44-3e751c9019a9,fc867312-d0b9-4287-8c85-bdd8b83c778c,ab562cea-75c8-4edb-834b-faf063498ea0,OTHER_CONTACT_NON_AT,false,true,false,false,Integration Suite Kontakt DE
-09bff28a-518f-4ba5-b977-c7e0a6a7e2d6,054d1687-14c0-45d5-9622-1d3dcef13b1c,eda8c009-6d17-43fd-957c-d0e3a45d3c85,SERVICE_SELLER,true,true,false,false,Finance Service Selling DE — Banking Fokus
-c19f6585-5152-411f-bd2e-9a146da6bf5a,054d1687-14c0-45d5-9622-1d3dcef13b1c,87ef57b3-5819-43b9-bfc6-f32c2f4f5853,SERVICE_SELLER,true,true,false,false,Controlling Service Selling DE
-71c99176-0212-4f22-8748-b9dcc6fb9895,054d1687-14c0-45d5-9622-1d3dcef13b1c,79191c61-a7a9-4c63-b08c-7a0fef6be60c,OTHER_CONTACT_NON_AT,false,true,false,false,SuccessFactors Kontakt DE
-1031db13-0c7f-49ed-86b4-43b46dec880e,0fb46cbc-7243-4b82-add0-8ccb7f71d77d,34389bc5-df06-4826-aa98-9a4ec12714d2,SERVICE_SELLER,true,true,false,false,SAC Service Selling DE — Enterprise Planung
-3b3f0ba7-b357-478a-8117-edc3b60a8e70,0fb46cbc-7243-4b82-add0-8ccb7f71d77d,f22f49fa-53e8-41e4-8bf2-1b9fa2b1b7e8,REALIZATION_CONSULTANT,false,true,true,false,SAC Planning Consultant DE
-26caf807-8538-48ec-abdb-97360ee75baf,0fb46cbc-7243-4b82-add0-8ccb7f71d77d,3743cebf-9300-4fd1-b9a3-227012e55aa3,OTHER_CONTACT_NON_AT,false,true,false,false,Datasphere Kontakt DE
-daf29b37-486f-4052-99db-0806a3e02b6f,ea9e8495-7263-4eb5-a2cd-0584eac48ada,ab562cea-75c8-4edb-834b-faf063498ea0,SOLUTIONING_ARCH,true,true,true,false,Integration Suite Architecture CH — Banking
-a692cd13-0e86-44eb-8536-467aad90ccb5,ea9e8495-7263-4eb5-a2cd-0584eac48ada,715d900a-b59f-4c82-9242-11e48b41199c,SERVICE_SELLER,true,true,false,false,BTP Service Selling CH
-11c178d8-8dc3-4d5c-afea-08dbaa2b26c8,ea9e8495-7263-4eb5-a2cd-0584eac48ada,e1d94de6-363b-4e4f-9fbe-48e022383149,REALIZATION_CONSULTANT,true,true,false,false,AI Core Consultant CH
-682b5396-332c-4621-8fa5-df32e7e88180,062a6e3f-93a7-48c4-8a9b-3d6a4e21fa8a,2ebf6b08-0001-4fc5-ab63-9f24b60188d9,SOLUTIONING_ARCH,true,true,true,true,Clean Core Extensibility Advisory CH — BTP Extension
-15be020b-ccba-448c-87a0-a03b7921d4aa,062a6e3f-93a7-48c4-8a9b-3d6a4e21fa8a,717e65d7-3837-44b4-bb76-567334123dfa,SERVICE_SELLER,true,true,false,false,Clean Core Service Selling CH
-070e3117-538b-4968-be5b-72a7ec1e0f53,7a04f6f1-74e6-4ecb-baaf-13e9240cfa52,d759629e-cc17-438c-9d40-5deae95beb9e,REALIZATION_LEAD,true,true,true,true,Joule für Business Lead AT
-94080900-816a-4f7c-9dd0-ef2c75e8ce64,7a04f6f1-74e6-4ecb-baaf-13e9240cfa52,fd1440f2-e64f-421e-a6fa-f6850d7eed73,REALIZATION_LEAD,true,true,true,false,Joule für Consultants Lead AT
-82b58fe9-fe5f-4713-ad06-d1ebac3bc3f1,6def95b5-e851-4bed-9cf2-e04cc4e9417f,0437ee7a-87d9-47b3-a603-dc2ba1e70cf0,THEMEN_LEAD,false,true,true,true,ABAP RESTful / RAP Lead AT
-aeb9bffd-be97-4253-b054-2ea66775eba6,244b32a0-7c30-4c1a-b566-6d1f680c7ff3,ffce7709-3f35-4199-b0f5-0e00b50efcd3,SERVICE_SELLER,true,true,false,false,RISE Business Transformation Selling AT
-13a245ae-9b5b-4e6a-a7f5-1579680e97af,f3c3119f-3bba-4b75-95ad-19293f352188,bb37790c-8140-4257-8e96-c49606e0532e,SERVICE_SELLER,true,true,false,false,Procurement Service Selling AT
-fb2ab413-6dfb-4f5c-8469-ba25dc3cb053,06b9fec6-fd89-4f87-a006-b896c2f596e4,f4a7b7e0-803a-4e4b-a799-78668bcfc4d2,REALIZATION_CONSULTANT,false,false,true,false,Manufacturing PP Consultant
-54186aca-58c0-41c8-99dc-152feecdf5a7,49803538-6c5b-4284-a454-f7566a633aa2,ac94215f-2492-4421-80b6-500b8312809e,REALIZATION_CONSULTANT,false,true,true,false,S/4HANA HCM Payroll Consultant
-6097ab9d-b3bf-4355-aaf2-0441b7440063,c77480e3-e5ca-4918-9c9c-ce1d068f3b62,f22f49fa-53e8-41e4-8bf2-1b9fa2b1b7e8,REALIZATION_CONSULTANT,false,true,true,true,SAC Planning Consultant AT
-f6b7c1e3-6f15-4e9e-aba1-c5da29b299a4,e9d1a118-dc30-41e4-8e8a-711f4b9aa382,d5ed1fcd-93da-405f-a7f7-3253560d1bfa,REALIZATION_LEAD,false,true,true,false,Clean Core Operations Lead AT
-9da066e8-398f-4e65-a155-3b52a88cd300,67a42848-5bfb-4a70-a489-6a6c0c217cc4,34b52b11-77cc-4637-b610-f54cd82b3b5e,PROJECT_MANAGEMENT,true,true,false,false,RISE Conversion Project Manager AT
-f58aaff9-2514-4197-88b5-6a22aa7a960e,128bc64c-9699-4167-8088-f9e349437d12,51eba9e5-083e-4590-979b-f320a4bc1638,PROJECT_MANAGEMENT,false,true,false,false,CALM Operations PM AT
-75b0db4e-6d5c-4d6f-8aa6-5c04b87c36ab,b354dfa0-ccd2-4422-a80a-8233d262b851,b81e797d-7071-422d-94a4-24cdd1ad1ff3,REALIZATION_CONSULTANT,true,true,false,true,WalkMe Digital Adoption Consultant
-8ea956e2-ad5e-422b-b24b-fb7ea94bedec,4f6f0100-aa0a-4d2c-81f1-e74a50f1dc83,8c10f5a1-30d6-4afd-92db-914333eafa36,REALIZATION_CONSULTANT,false,true,true,false,Tricentis Continuous Testing Consultant
-78cca123-ca66-4c9e-aa47-d377f22977a6,14cc09a4-2380-48d1-b954-dd81c705b867,096d0964-e18b-484d-ad09-f168bd9c9094,PROJECT_MANAGEMENT,true,true,false,false,Lift & Shift Project Management AT
-dc28529b-9815-4452-8212-f2b74ae2a783,fc867312-d0b9-4287-8c85-bdd8b83c778c,97a8512c-72b7-4590-9972-e82f9c7b61ab,OTHER_CONTACT_NON_AT,false,true,false,false,SD Sales Kontakt DE
-8669778a-c31c-49d0-a2fc-6fb40f4c8f54,054d1687-14c0-45d5-9622-1d3dcef13b1c,bb37790c-8140-4257-8e96-c49606e0532e,OTHER_CONTACT_NON_AT,false,true,false,false,Procurement Kontakt DE
-877f5bac-92cb-4480-883b-66fafe1617fb,ea9e8495-7263-4eb5-a2cd-0584eac48ada,11795be3-e091-4fa0-9168-d50ce75dbfae,OTHER_CONTACT_NON_AT,false,true,false,false,Clean Core Integration Kontakt CH
-2ee43a3d-7a7d-4aae-aaf6-30e400f0cb56,062a6e3f-93a7-48c4-8a9b-3d6a4e21fa8a,cf9849b6-5f85-4acf-97ed-c125a0d789c6,REALIZATION_CONSULTANT,false,true,true,false,CAP Entwicklung Consultant CH
-a18b3c49-bbae-477c-9fd1-99f4f623df33,2629030c-6161-4b75-a2d0-e3dae7277ebb,f5618506-715b-460f-9e5f-de63362cd7bc,REALIZATION_CONSULTANT,false,false,true,false,LeanIX Consultant AT
-ec46334c-de55-44e6-9779-329930faed89,83d0d692-4ec7-405a-8639-bd77da8cf36c,2586f106-12bb-4011-8f29-454670ccd5da,SERVICE_SELLER,true,true,false,false,CALM Implementation Service Selling AT
-a3dcf184-6e28-4917-ac69-b47aef17c8d0,06b9fec6-fd89-4f87-a006-b896c2f596e4,eda8c009-6d17-43fd-957c-d0e3a45d3c85,REALIZATION_CONSULTANT,false,true,true,false,FI Consultant mit SCM Fokus
-b2af9f3d-1b4d-4243-b37a-03a53856a1ae,f3c3119f-3bba-4b75-95ad-19293f352188,97a8512c-72b7-4590-9972-e82f9c7b61ab,REALIZATION_CONSULTANT,false,true,true,false,SD Consultant AT
-48d927c5-d48e-4f61-b797-18255930d3bd,c77480e3-e5ca-4918-9c9c-ce1d068f3b62,3743cebf-9300-4fd1-b9a3-227012e55aa3,SOLUTIONING_ARCH,true,true,true,false,BDC Data Architecture Advisory AT
-0db052a1-9922-4a60-9db8-33fce8551d7c,e9d1a118-dc30-41e4-8e8a-711f4b9aa382,34ce2b8b-7633-4592-b25e-cf70c9a2db11,SERVICE_SELLER,true,false,false,false,SAP Activate Service Selling AT
-aade3c00-bd0b-4e5e-ae5c-b02354892bb8,0fb46cbc-7243-4b82-add0-8ccb7f71d77d,3384e65b-7ba6-42fe-b577-8dc506796f49,SERVICE_SELLER,true,true,false,false,BW/4HANA Service Selling DE
+ID,createdAt,createdBy,modifiedAt,modifiedBy,expert_ID,solution_ID,role,canPresent5M,canPresent30M,canPresent2H,canPresentDemo,notes
+er-001,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-001,s-itc-gen,TOPIC_OWNER,1,1,1,1,Topic Owner Integrated Toolchain AT
+er-002,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-001,s-signavio,THEMEN_LEAD,1,1,1,1,Lead Signavio AT — langjährige Projekterfahrung
+er-003,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-001,s-leanix,SOLUTIONING_ARCH,1,1,0,0,LeanIX Enterprise Architecture Advisory
+er-004,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-002,s-signavio,REALIZATION_LEAD,0,1,1,1,Signavio Realization Lead mehrere Kundenprojekte
+er-005,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-002,s-calm-impl,REALIZATION_CONSULTANT,1,1,1,0,CALM Implementation Consultant
+er-006,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-002,s-walkme,SERVICE_SELLER,1,1,0,0,WalkMe Service Selling AT
+er-007,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-003,s-leanix,TOPIC_OWNER,1,1,1,1,Topic Owner LeanIX — EAM Spezialist
+er-008,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-003,s-itc-gen,SOLUTIONING_ARCH,1,1,1,0,Integrated Toolchain Architecture Advisory
+er-009,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-003,s-tricentis,REALIZATION_LEAD,0,1,1,1,Tricentis Test Automation Lead
+er-010,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-004,s-calm-impl,TOPIC_OWNER,1,1,1,0,Topic Owner CALM for Implementation AT
+er-011,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-004,s-calm-ops,REALIZATION_LEAD,1,1,1,1,CALM Operations Lead — ITSM Integration
+er-012,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-004,s-signavio,REALIZATION_CONSULTANT,0,0,1,0,Signavio Process Mining Consultant
+er-013,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-005,s-btp-gen,TOPIC_OWNER,1,1,1,1,Topic Owner BTP AT — Platform Architecture
+er-014,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-005,s-btp-is,THEMEN_LEAD,1,1,1,1,Integration Suite Lead — API Management Spezialist
+er-015,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-005,s-btp-cap,SOLUTIONING_ARCH,0,1,1,1,CAP & Build Code Advisory
+er-016,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-006,s-btp-build,REALIZATION_LEAD,1,1,1,1,SAP Build Low-Code Lead AT
+er-017,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-006,s-btp-wz,REALIZATION_CONSULTANT,1,1,0,0,Build Work Zone Consultant
+er-018,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-006,s-btp-is,REALIZATION_CONSULTANT,0,1,1,0,Integration Suite Consultant
+er-019,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-007,s-rise-gen,TOPIC_OWNER,1,1,1,0,Topic Owner RISE AT — Cloud Migration Lead
+er-020,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-007,s-rise-conv,THEMEN_LEAD,1,1,1,0,Brownfield Conversion Spezialist — S/4HANA
+er-021,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-007,s-rise-ls,REALIZATION_LEAD,0,1,1,0,Lift & Shift Lead mehrere SAP Austria Projekte
+er-022,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-008,s-rise-conv,SOLUTIONING_ARCH,1,1,1,0,Conversion Architecture Advisory
+er-023,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-008,s-cc-gen,THEMEN_LEAD,1,1,0,0,Clean Core Strategy Lead AT
+er-024,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-008,s-cc-ext,REALIZATION_LEAD,0,1,1,0,Clean Core Extensibility Lead
+er-025,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-009,s-joule-gen,TOPIC_OWNER,1,1,1,1,Topic Owner Joule AT — AI Copilot Champion
+er-026,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-009,s-biz-ai,THEMEN_LEAD,1,1,1,1,SAP Business AI Lead AT
+er-027,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-009,s-joule-dev,REALIZATION_LEAD,0,1,1,1,Joule für Developer Lead — AI-Assisted Coding
+er-028,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-009,s-ai-core,REALIZATION_CONSULTANT,1,1,0,0,AI Core Custom AI Consultant
+er-029,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-010,s-erp-gen,TOPIC_OWNER,1,1,1,0,Topic Owner Cloud ERP AT
+er-030,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-010,s-erp-fi,THEMEN_LEAD,1,1,1,1,FI Lead AT — Finance Transformation
+er-031,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-010,s-erp-co,REALIZATION_LEAD,0,1,1,0,CO Controlling Lead
+er-032,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-011,s-erp-mm,THEMEN_LEAD,1,1,1,1,MM Procurement Lead AT — Ariba Integration
+er-033,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-011,s-erp-sd,REALIZATION_LEAD,0,1,1,1,SD Sales Lead mehrere Rollouts
+er-034,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-011,s-erp-scm,REALIZATION_CONSULTANT,0,0,1,0,SCM EWM Consultant
+er-035,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-012,s-sf-ec,TOPIC_OWNER,1,1,1,0,Topic Owner SuccessFactors AT — EC Lead
+er-036,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-012,s-hcm-gen,THEMEN_LEAD,1,1,0,0,HCM Lead AT übergreifend
+er-037,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-012,s-sf-rpm,REALIZATION_LEAD,0,1,1,0,SuccessFactors RPM Lead
+er-038,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-013,s-datasphere,TOPIC_OWNER,1,1,1,1,Topic Owner Datasphere AT — Data Fabric
+er-039,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-013,s-sac,THEMEN_LEAD,1,1,1,1,SAC Lead AT — Analytics & Reporting
+er-040,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-013,s-bw4,REALIZATION_LEAD,0,1,1,0,BW/4HANA Migration Lead
+er-041,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-014,s-cc-gen,TOPIC_OWNER,1,1,0,0,Topic Owner T&I AT — Clean Core Strategy
+er-042,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-014,s-sap-activate,THEMEN_LEAD,1,1,1,0,SAP Activate Lead AT — Methodology Champion
+er-043,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-014,s-cc-int,REALIZATION_LEAD,0,1,1,0,Clean Core Integration Lead
+er-044,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-015,s-erp-pp,THEMEN_LEAD,1,1,1,1,PP Manufacturing Lead AT
+er-045,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-015,s-erp-pm,REALIZATION_LEAD,0,1,1,1,Plant Maintenance Lead
+er-046,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-015,s-erp-scm,REALIZATION_CONSULTANT,1,1,0,0,SCM IBP Consultant
+er-047,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-016,s-rise-conv,SERVICE_SELLER,1,1,0,0,RISE Conversion Service Selling DE
+er-048,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-016,s-rise-ls,SERVICE_SELLER,1,0,0,0,Lift & Shift Service Selling DE
+er-049,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-016,s-btp-is,OTHER_CONTACT_NON_AT,0,1,0,0,Integration Suite Kontakt DE
+er-050,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-017,s-erp-fi,SERVICE_SELLER,1,1,0,0,Finance Service Selling DE — Banking Fokus
+er-051,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-017,s-erp-co,SERVICE_SELLER,1,1,0,0,Controlling Service Selling DE
+er-052,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-017,s-sf-ec,OTHER_CONTACT_NON_AT,0,1,0,0,SuccessFactors Kontakt DE
+er-053,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-018,s-sac,SERVICE_SELLER,1,1,0,0,SAC Service Selling DE — Enterprise Planung
+er-054,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-018,s-sac-plan,REALIZATION_CONSULTANT,0,1,1,0,SAC Planning Consultant DE
+er-055,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-018,s-datasphere,OTHER_CONTACT_NON_AT,0,1,0,0,Datasphere Kontakt DE
+er-056,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-019,s-btp-is,SOLUTIONING_ARCH,1,1,1,0,Integration Suite Architecture CH — Banking
+er-057,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-019,s-btp-gen,SERVICE_SELLER,1,1,0,0,BTP Service Selling CH
+er-058,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-019,s-ai-core,REALIZATION_CONSULTANT,1,1,0,0,AI Core Consultant CH
+er-059,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-020,s-cc-ext,SOLUTIONING_ARCH,1,1,1,1,Clean Core Extensibility Advisory CH — BTP Extension
+er-060,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-020,s-cc-gen,SERVICE_SELLER,1,1,0,0,Clean Core Service Selling CH
+er-061,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-009,s-joule-biz,REALIZATION_LEAD,1,1,1,1,Joule für Business Lead AT
+er-062,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-009,s-joule-cons,REALIZATION_LEAD,1,1,1,0,Joule für Consultants Lead AT
+er-063,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-005,s-btp-rap,THEMEN_LEAD,0,1,1,1,ABAP RESTful / RAP Lead AT
+er-064,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-007,s-rise-bt,SERVICE_SELLER,1,1,0,0,RISE Business Transformation Selling AT
+er-065,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-010,s-erp-mm,SERVICE_SELLER,1,1,0,0,Procurement Service Selling AT
+er-066,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-011,s-erp-pp,REALIZATION_CONSULTANT,0,0,1,0,Manufacturing PP Consultant
+er-067,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-012,s-s4-hcm,REALIZATION_CONSULTANT,0,1,1,0,S/4HANA HCM Payroll Consultant
+er-068,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-013,s-sac-plan,REALIZATION_CONSULTANT,0,1,1,1,SAC Planning Consultant AT
+er-069,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-014,s-cc-ops,REALIZATION_LEAD,0,1,1,0,Clean Core Operations Lead AT
+er-070,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-015,s-rise-conv,PROJECT_MANAGEMENT,1,1,0,0,RISE Conversion Project Manager AT
+er-071,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-001,s-calm-ops,PROJECT_MANAGEMENT,0,1,0,0,CALM Operations PM AT
+er-072,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-004,s-walkme,REALIZATION_CONSULTANT,1,1,0,1,WalkMe Digital Adoption Consultant
+er-073,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-006,s-tricentis,REALIZATION_CONSULTANT,0,1,1,0,Tricentis Continuous Testing Consultant
+er-074,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-008,s-rise-ls,PROJECT_MANAGEMENT,1,1,0,0,Lift & Shift Project Management AT
+er-075,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-016,s-erp-sd,OTHER_CONTACT_NON_AT,0,1,0,0,SD Sales Kontakt DE
+er-076,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-017,s-erp-mm,OTHER_CONTACT_NON_AT,0,1,0,0,Procurement Kontakt DE
+er-077,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-019,s-cc-int,OTHER_CONTACT_NON_AT,0,1,0,0,Clean Core Integration Kontakt CH
+er-078,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-020,s-btp-cap,REALIZATION_CONSULTANT,0,1,1,0,CAP Entwicklung Consultant CH
+er-079,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-002,s-leanix,REALIZATION_CONSULTANT,0,0,1,0,LeanIX Consultant AT
+er-080,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-003,s-calm-impl,SERVICE_SELLER,1,1,0,0,CALM Implementation Service Selling AT
+er-081,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-011,s-erp-fi,REALIZATION_CONSULTANT,0,1,1,0,FI Consultant mit SCM Fokus
+er-082,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-010,s-erp-sd,REALIZATION_CONSULTANT,0,1,1,0,SD Consultant AT
+er-083,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-013,s-datasphere,SOLUTIONING_ARCH,1,1,1,0,BDC Data Architecture Advisory AT
+er-084,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-014,s-sap-activate,SERVICE_SELLER,1,0,0,0,SAP Activate Service Selling AT
+er-085,2026-03-27T14:12:19.023Z,anonymous,2026-03-27T14:12:19.023Z,anonymous,e-018,s-bw4,SERVICE_SELLER,1,1,0,0,BW/4HANA Service Selling DE

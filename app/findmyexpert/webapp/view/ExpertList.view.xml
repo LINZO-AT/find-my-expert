@@ -111,6 +111,7 @@
               <ObjectStatus text="{location}" />
               <Text id="solutionCountText" text="{
                 path: 'roles',
+                targetType: 'any',
                 formatter: '.formatRoleCount'
               }" />
               <HBox visible="{userModel>/isAdmin}" justifyContent="End">

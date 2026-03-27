@@ -1,45 +1,45 @@
-ID,name,topic_ID,description
-05f904ff-dafb-4ed0-a9af-195148b6bed3,Integrated Toolchain (generic),12b09edf-de37-49e5-8d47-decc75caa0dd,Übergreifendes Thema Integrated Toolchain für SAP Austria
-837a8a6e-dec7-4bd4-93ba-6bbcbc198db0,Signavio,12b09edf-de37-49e5-8d47-decc75caa0dd,SAP Signavio Process Intelligence & Process Manager
-f5618506-715b-460f-9e5f-de63362cd7bc,LeanIX,12b09edf-de37-49e5-8d47-decc75caa0dd,LeanIX Enterprise Architecture Management
-b81e797d-7071-422d-94a4-24cdd1ad1ff3,WalkMe,12b09edf-de37-49e5-8d47-decc75caa0dd,WalkMe Digital Adoption Platform
-2586f106-12bb-4011-8f29-454670ccd5da,CALM for Implementation,12b09edf-de37-49e5-8d47-decc75caa0dd,SAP Cloud ALM for Implementation & Project Management
-51eba9e5-083e-4590-979b-f320a4bc1638,CALM for Operations,12b09edf-de37-49e5-8d47-decc75caa0dd,SAP Cloud ALM for Operations & Monitoring
-8c10f5a1-30d6-4afd-92db-914333eafa36,Tricentis,12b09edf-de37-49e5-8d47-decc75caa0dd,Tricentis Test Automation & Continuous Testing
-715d900a-b59f-4c82-9242-11e48b41199c,SAP BTP (generic),8fc57158-be0d-4026-9624-f6be61220cbb,SAP Business Technology Platform — übergreifend
-ab562cea-75c8-4edb-834b-faf063498ea0,Integration Suite,8fc57158-be0d-4026-9624-f6be61220cbb,SAP Integration Suite — API Management & Event Mesh
-a43493cd-8bb3-4195-9df0-8936b70364bd,SAP Build,8fc57158-be0d-4026-9624-f6be61220cbb,SAP Build Low-Code/No-Code Platform
-3755c492-a911-482f-9f09-66329a47d64e,Build Work Zone,8fc57158-be0d-4026-9624-f6be61220cbb,SAP Build Work Zone — Digital Workplace
-0437ee7a-87d9-47b3-a603-dc2ba1e70cf0,ABAP RESTful / RAP,8fc57158-be0d-4026-9624-f6be61220cbb,ABAP RESTful Application Programming Model
-cf9849b6-5f85-4acf-97ed-c125a0d789c6,CAP / SAP Build Code,8fc57158-be0d-4026-9624-f6be61220cbb,SAP Cloud Application Programming Model & Build Code
-d38c8587-2cdb-4e1f-881d-e066b29824a6,Joule (generic),7a1ff5de-98fa-4939-8362-541c0e24d42c,SAP Joule AI Copilot — übergreifend
-d759629e-cc17-438c-9d40-5deae95beb9e,Joule für Business,7a1ff5de-98fa-4939-8362-541c0e24d42c,SAP Joule für Business User — Self-Service Analytics
-fd1440f2-e64f-421e-a6fa-f6850d7eed73,Joule für Consultants,7a1ff5de-98fa-4939-8362-541c0e24d42c,SAP Joule für Consultants — Assisted Implementation
-8cb935a9-a403-452f-a287-9d7bd88654a5,Joule für Developer,7a1ff5de-98fa-4939-8362-541c0e24d42c,SAP Joule für Developer — AI-Assisted Coding
-042d4723-1649-404c-8451-86bf98cfc2f8,SAP Business AI,7a1ff5de-98fa-4939-8362-541c0e24d42c,SAP Business AI Portfolio — Embedded AI in S/4HANA & BTP
-e1d94de6-363b-4e4f-9fbe-48e022383149,GenAI / AI Core,7a1ff5de-98fa-4939-8362-541c0e24d42c,SAP AI Core & Custom AI — LLM Integration & AI Launchpad
-201c6c68-021f-4204-bd78-dd1be5ac7f19,Cloud ERP (generic),9f6ae2e5-fbac-4aa9-bd5b-a4908e5738ff,S/4HANA Cloud ERP — übergreifend
-eda8c009-6d17-43fd-957c-d0e3a45d3c85,Cloud ERP: Finance (FI),9f6ae2e5-fbac-4aa9-bd5b-a4908e5738ff,S/4HANA Finance — FI GL AP AR AA
-87ef57b3-5819-43b9-bfc6-f32c2f4f5853,Cloud ERP: Controlling (CO),9f6ae2e5-fbac-4aa9-bd5b-a4908e5738ff,S/4HANA Controlling — CO-PA Profit Center Cost Center
-bb37790c-8140-4257-8e96-c49606e0532e,Cloud ERP: Procurement (MM),9f6ae2e5-fbac-4aa9-bd5b-a4908e5738ff,S/4HANA Procurement — MM Purchasing & Invoice
-97a8512c-72b7-4590-9972-e82f9c7b61ab,Cloud ERP: Sales (SD),9f6ae2e5-fbac-4aa9-bd5b-a4908e5738ff,S/4HANA Sales — SD Order-to-Cash
-f4a7b7e0-803a-4e4b-a799-78668bcfc4d2,Cloud ERP: Manufacturing (PP),9f6ae2e5-fbac-4aa9-bd5b-a4908e5738ff,S/4HANA Manufacturing — PP Production Planning
-996bb10e-f972-446b-bff9-b3acdc232db7,Cloud ERP: Plant Maintenance (PM),9f6ae2e5-fbac-4aa9-bd5b-a4908e5738ff,S/4HANA Plant Maintenance & Service
-fb39cb17-a907-4d79-a696-a7f0b71c9985,Cloud ERP: Supply Chain (SCM),9f6ae2e5-fbac-4aa9-bd5b-a4908e5738ff,S/4HANA Supply Chain — EWM TM IBP
-30e70237-61f9-4f35-82aa-47db7d8d039e,RISE (generic),0543aac7-f758-4049-9f7b-e749424d86df,RISE with SAP — Cloud Migration Package
-096d0964-e18b-484d-ad09-f168bd9c9094,Lift & Shift,0543aac7-f758-4049-9f7b-e749424d86df,Lift & Shift Migrations — IaaS Move & System Copy
-34b52b11-77cc-4637-b610-f54cd82b3b5e,Conversions,0543aac7-f758-4049-9f7b-e749424d86df,S/4HANA System Conversions — Brownfield Transition
-ffce7709-3f35-4199-b0f5-0e00b50efcd3,RISE Business Transformation,0543aac7-f758-4049-9f7b-e749424d86df,RISE Business Transformation Services
-717e65d7-3837-44b4-bb76-567334123dfa,Clean Core (generic),3b90f3e6-d237-4e95-9acf-90429a522865,Clean Core Strategy — übergreifend
-2ebf6b08-0001-4fc5-ab63-9f24b60188d9,Clean Core Extensibility,3b90f3e6-d237-4e95-9acf-90429a522865,Clean Core Extensibility — BAdIs Key User Apps
-11795be3-e091-4fa0-9168-d50ce75dbfae,Clean Core Integration,3b90f3e6-d237-4e95-9acf-90429a522865,Clean Core Integration — Standard APIs & Events
-d5ed1fcd-93da-405f-a7f7-3253560d1bfa,Clean Core Operations,3b90f3e6-d237-4e95-9acf-90429a522865,Clean Core Operations — CALM & Monitoring
-34ce2b8b-7633-4592-b25e-cf70c9a2db11,SAP Activate,3b90f3e6-d237-4e95-9acf-90429a522865,SAP Activate Methodology — Agile Project Framework
-b230b6f2-de58-4eb3-b122-e5ae56839147,HCM (generic),81387606-29ed-401c-8831-e0e55277d8b4,Human Capital Management — übergreifend
-79191c61-a7a9-4c63-b08c-7a0fef6be60c,SuccessFactors (EC),81387606-29ed-401c-8831-e0e55277d8b4,SuccessFactors Employee Central — Core HR
-75de6bad-ae95-4c17-878f-9979346d761a,SuccessFactors (RPM),81387606-29ed-401c-8831-e0e55277d8b4,SuccessFactors Recruiting & Performance Management
-ac94215f-2492-4421-80b6-500b8312809e,S/4HANA HCM,81387606-29ed-401c-8831-e0e55277d8b4,S/4HANA HCM — Payroll & Time Management
-3743cebf-9300-4fd1-b9a3-227012e55aa3,Datasphere,8f4e3029-6306-4c5b-aefc-0f8e727a9d41,SAP Datasphere — Data Fabric & Virtual Models
-34389bc5-df06-4826-aa98-9a4ec12714d2,SAC (generic),8f4e3029-6306-4c5b-aefc-0f8e727a9d41,SAP Analytics Cloud — Reporting & Planning
-f22f49fa-53e8-41e4-8bf2-1b9fa2b1b7e8,SAC Planning,8f4e3029-6306-4c5b-aefc-0f8e727a9d41,SAP Analytics Cloud Planning — Integrated Business Planning
-3384e65b-7ba6-42fe-b577-8dc506796f49,BW/4HANA,8f4e3029-6306-4c5b-aefc-0f8e727a9d41,BW/4HANA — Data Warehouse Migration & Modeling
+ID,createdAt,createdBy,modifiedAt,modifiedBy,name,description,topic_ID
+s-itc-gen,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Integrated Toolchain (generic),Übergreifendes Thema Integrated Toolchain für SAP Austria,t-itc
+s-signavio,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Signavio,SAP Signavio Process Intelligence & Process Manager,t-itc
+s-leanix,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,LeanIX,LeanIX Enterprise Architecture Management,t-itc
+s-walkme,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,WalkMe,WalkMe Digital Adoption Platform,t-itc
+s-calm-impl,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,CALM for Implementation,SAP Cloud ALM for Implementation & Project Management,t-itc
+s-calm-ops,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,CALM for Operations,SAP Cloud ALM for Operations & Monitoring,t-itc
+s-tricentis,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Tricentis,Tricentis Test Automation & Continuous Testing,t-itc
+s-btp-gen,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,SAP BTP (generic),SAP Business Technology Platform — übergreifend,t-btp
+s-btp-is,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Integration Suite,SAP Integration Suite — API Management & Event Mesh,t-btp
+s-btp-build,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,SAP Build,SAP Build Low-Code/No-Code Platform,t-btp
+s-btp-wz,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Build Work Zone,SAP Build Work Zone — Digital Workplace,t-btp
+s-btp-rap,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,ABAP RESTful / RAP,ABAP RESTful Application Programming Model,t-btp
+s-btp-cap,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,CAP / SAP Build Code,SAP Cloud Application Programming Model & Build Code,t-btp
+s-joule-gen,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Joule (generic),SAP Joule AI Copilot — übergreifend,t-ai
+s-joule-biz,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Joule für Business,SAP Joule für Business User — Self-Service Analytics,t-ai
+s-joule-cons,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Joule für Consultants,SAP Joule für Consultants — Assisted Implementation,t-ai
+s-joule-dev,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Joule für Developer,SAP Joule für Developer — AI-Assisted Coding,t-ai
+s-biz-ai,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,SAP Business AI,SAP Business AI Portfolio — Embedded AI in S/4HANA & BTP,t-ai
+s-ai-core,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,GenAI / AI Core,SAP AI Core & Custom AI — LLM Integration & AI Launchpad,t-ai
+s-erp-gen,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Cloud ERP (generic),S/4HANA Cloud ERP — übergreifend,t-erp
+s-erp-fi,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Cloud ERP: Finance (FI),S/4HANA Finance — FI GL AP AR AA,t-erp
+s-erp-co,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Cloud ERP: Controlling (CO),S/4HANA Controlling — CO-PA Profit Center Cost Center,t-erp
+s-erp-mm,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Cloud ERP: Procurement (MM),S/4HANA Procurement — MM Purchasing & Invoice,t-erp
+s-erp-sd,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Cloud ERP: Sales (SD),S/4HANA Sales — SD Order-to-Cash,t-erp
+s-erp-pp,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Cloud ERP: Manufacturing (PP),S/4HANA Manufacturing — PP Production Planning,t-erp
+s-erp-pm,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Cloud ERP: Plant Maintenance (PM),S/4HANA Plant Maintenance & Service,t-erp
+s-erp-scm,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Cloud ERP: Supply Chain (SCM),S/4HANA Supply Chain — EWM TM IBP,t-erp
+s-rise-gen,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,RISE (generic),RISE with SAP — Cloud Migration Package,t-rise
+s-rise-ls,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Lift & Shift,Lift & Shift Migrations — IaaS Move & System Copy,t-rise
+s-rise-conv,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Conversions,S/4HANA System Conversions — Brownfield Transition,t-rise
+s-rise-bt,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,RISE Business Transformation,RISE Business Transformation Services,t-rise
+s-cc-gen,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Clean Core (generic),Clean Core Strategy — übergreifend,t-tni
+s-cc-ext,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Clean Core Extensibility,Clean Core Extensibility — BAdIs Key User Apps,t-tni
+s-cc-int,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Clean Core Integration,Clean Core Integration — Standard APIs & Events,t-tni
+s-cc-ops,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Clean Core Operations,Clean Core Operations — CALM & Monitoring,t-tni
+s-sap-activate,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,SAP Activate,SAP Activate Methodology — Agile Project Framework,t-tni
+s-hcm-gen,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,HCM (generic),Human Capital Management — übergreifend,t-hcm
+s-sf-ec,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,SuccessFactors (EC),SuccessFactors Employee Central — Core HR,t-hcm
+s-sf-rpm,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,SuccessFactors (RPM),SuccessFactors Recruiting & Performance Management,t-hcm
+s-s4-hcm,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,S/4HANA HCM,S/4HANA HCM — Payroll & Time Management,t-hcm
+s-datasphere,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,Datasphere,SAP Datasphere — Data Fabric & Virtual Models,t-bdc
+s-sac,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,SAC (generic),SAP Analytics Cloud — Reporting & Planning,t-bdc
+s-sac-plan,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,SAC Planning,SAP Analytics Cloud Planning — Integrated Business Planning,t-bdc
+s-bw4,2026-03-27T14:12:19.012Z,anonymous,2026-03-27T14:12:19.012Z,anonymous,BW/4HANA,BW/4HANA — Data Warehouse Migration & Modeling,t-bdc

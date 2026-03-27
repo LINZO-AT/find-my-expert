@@ -17,4 +17,25 @@ service CatalogService @(path: '/api/catalog') {
         isAdmin  : Boolean;
         userName : String;
     };
+
+    /**
+     * AI Expert Search — returns ranked list of experts matching the query
+     */
+    action searchExperts(query: String) returns array of {
+        expertId      : UUID;
+        firstName     : String;
+        lastName      : String;
+        email         : String;
+        location      : String;
+        topicName     : String;
+        solutionName  : String;
+        role          : String;
+        roleLabel     : String;
+        canPresent5M  : Boolean;
+        canPresent30M : Boolean;
+        canPresent2H  : Boolean;
+        canPresentDemo: Boolean;
+        score         : Integer;
+        isMockMode    : Boolean;
+    };
 }

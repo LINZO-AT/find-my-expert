@@ -17,32 +17,41 @@ sap.ui.define([
         window.history.go(-1);
       } else {
         // No history — navigate to FLP home if available, else to search
-        var oFLP = this._getFLPContainer();
-        if (oFLP) {
-          var oCrossAppNav = oFLP.getService("CrossApplicationNavigation");
-          if (oCrossAppNav && oCrossAppNav.toExternal) {
-            oCrossAppNav.toExternal({ target: { shellHash: "#" } });
-            return;
-          }
-        }
-        this.getOwnerComponent().getRouter().navTo("search", {}, true);
+        this._navigateToFLPHome().catch(function () {
+          // FLP not available — fallback to search route
+          this.getOwnerComponent().getRouter().navTo("search", {}, true);
+        }.bind(this));
       }
     },
 
     /**
-     * Get the FLP ushell Container safely without global access.
-     * @returns {object|null} The ushell Container or null
+     * Navigate to FLP home via async ushell Container access.
+     * @returns {Promise}
      */
-    _getFLPContainer: function () {
-      try {
-        var oContainer = null;
+    _navigateToFLPHome: function () {
+      return new Promise(function (resolve, reject) {
         sap.ui.require(["sap/ushell/Container"], function (Container) {
-          oContainer = Container;
+          try {
+            var oCrossAppNav = Container && Container.getServiceAsync("CrossApplicationNavigation");
+            if (oCrossAppNav) {
+              oCrossAppNav.then(function (oNav) {
+                if (oNav && oNav.toExternal) {
+                  oNav.toExternal({ target: { shellHash: "#" } });
+                  resolve();
+                } else {
+                  reject();
+                }
+              }).catch(reject);
+            } else {
+              reject();
+            }
+          } catch (e) {
+            reject();
+          }
+        }, function () {
+          reject(); // module not available
         });
-        return oContainer;
-      } catch (e) {
-        return null;
-      }
+      });
     },
 
     /**

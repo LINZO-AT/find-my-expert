@@ -103,7 +103,7 @@ sap.ui.define([
       const sInitials = ((oExpert.firstName || "?")[0] + (oExpert.lastName || "?")[0]).toUpperCase();
       const sAvatarColor = this._getAvatarColor(oExpert.role);
 
-      const oCard = new Card({ width: "320px", class: "sapUiSmallMarginEnd sapUiSmallMarginBottom" });
+      const oCard = new Card({ width: "320px", class: "sapUiSmallMarginEnd sapUiSmallMarginBottom", semanticRole: "ListItem" });
 
       // Header with avatar
       oCard.setHeader(new FCardHeader({
@@ -144,7 +144,7 @@ sap.ui.define([
             oIconBar.addItem(new Icon({
               src: icon,
               tooltip: tooltip,
-              color: "var(--sapPositiveTextColor, #107e3e)",
+              color: "Positive",
               size: "1rem",
               class: "sapUiTinyMarginEnd"
             }));

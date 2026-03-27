@@ -3,6 +3,18 @@ sap.ui.define([
 ], function (BaseController) {
   "use strict";
 
+  var ROLE_LABELS = {
+    TOPIC_OWNER:              "Topic Owner",
+    SOLUTIONING_ARCH:         "Solutioning Architect",
+    THEMEN_LEAD:              "Themen Lead",
+    SERVICE_SELLER:           "Service Seller",
+    REALIZATION_LEAD:         "Realization Lead",
+    REALIZATION_CONSULTANT:   "Realization Consultant",
+    PROJECT_MANAGEMENT:       "Project Management",
+    OTHER_CONTACT_AT:         "Other Contact (AT)",
+    OTHER_CONTACT_NON_AT:     "Other Contact"
+  };
+
   return BaseController.extend("com.sap.austria.findmyexpert.controller.ExpertDetail", {
 
     onInit: function () {
@@ -23,6 +35,10 @@ sap.ui.define([
       } catch (err) {
         console.error("ExpertDetail route error:", err.message);
       }
+    },
+
+    formatRoleLabel: function(sRole) {
+      return ROLE_LABELS[sRole] || sRole || "";
     },
 
     onNavBack: function () {

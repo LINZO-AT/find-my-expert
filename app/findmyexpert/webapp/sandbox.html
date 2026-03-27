@@ -17,16 +17,6 @@
 					}
 				},
 				bootstrapPlugins: {},
-				applications: {
-					"findmyexpert-display": {
-						title: "Find My Expert",
-						description: "Experten-Suche & Verwaltung",
-						additionalInformation: "SAPUI5.Component=com.sap.austria.findmyexpert",
-						applicationType: "URL",
-						url: "/findmyexpert/webapp",
-						navigationMode: "embedded"
-					}
-				},
 				services: {
 					NavTargetResolution: {
 						config: {
@@ -90,29 +80,39 @@
 				}
 			};
 		</script>
+		<!-- ushell standalone sandbox bootstrap (UI5 1.120+) -->
 		<script id="sap-ushell-bootstrap"
 			src="https://ui5.sap.com/1.132.1/test-resources/sap/ushell/bootstrap/sandbox.js">
 		</script>
 		<script id="sap-ui-bootstrap"
 			src="https://ui5.sap.com/1.132.1/resources/sap-ui-core.js"
-			data-sap-ui-libs="sap.m,sap.f,sap.ui.layout,sap.ui.unified,sap.ushell"
-			data-sap-ui-compatVersion="edge"
+			data-sap-ui-libs="sap.m,sap.f,sap.ui.layout,sap.ui.unified,sap.uxap"
+			data-sap-ui-compat-version="edge"
 			data-sap-ui-theme="sap_horizon"
 			data-sap-ui-async="true"
-			data-sap-ui-frameOptions="trusted"
-			data-sap-ui-resourceroots='{ "com.sap.austria.findmyexpert": "/findmyexpert/webapp" }'>
+			data-sap-ui-preload=""
+			data-sap-ui-frame-options="trusted"
+			data-sap-ui-resource-roots='{ "com.sap.austria.findmyexpert": "/findmyexpert/webapp" }'>
 		</script>
 		<script>
-			sap.ui.require(["sap/ushell/Container"], function (Container) {
-				if (Container) {
-					Container.createRenderer("fiori2", true).then(function (oContent) {
-						oContent.placeAt("content");
+			sap.ui.getCore
+				? sap.ui.getCore().attachInit(function () {
+					sap.ui.require(["sap/ushell/Container"], function (Container) {
+						if (Container) {
+							Container.createRenderer("fiori2", true).then(function (oContent) {
+								oContent.placeAt("content");
+							}).catch(function (oError) {
+								document.getElementById("content").innerHTML =
+									"<h2 style='padding:2rem;color:#cc0000'>FLP Renderer failed: " + (oError && oError.message) + "</h2>";
+							});
+						} else {
+							document.getElementById("content").innerHTML =
+								"<h2 style='padding:2rem;color:#cc0000'>FLP Container not available. Check console.</h2>";
+						}
 					});
-				} else {
-					document.getElementById("content").innerHTML =
-						"<h2 style='padding:2rem;color:#cc0000'>FLP Container failed to initialize. Check console for errors.</h2>";
-				}
-			});
+				})
+				: (document.getElementById("content").innerHTML =
+					"<h2 style='padding:2rem;color:#cc0000'>UI5 Core not loaded. Check network/CSP.</h2>");
 		</script>
 	</head>
 	<body class="sapUiBody" id="content"></body>
