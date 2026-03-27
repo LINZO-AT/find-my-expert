@@ -115,11 +115,11 @@ sap.ui.define([
 
         // Validate
         if (!oExpert.firstName?.trim() || !oExpert.lastName?.trim()) {
-          MessageBox.error("Vorname und Nachname sind Pflichtfelder.");
+          MessageBox.error(oBundle.getText("adminExpertValidationRequired"));
           return;
         }
         if (oExpert.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(oExpert.email)) {
-          MessageBox.error("Ungültige E-Mail-Adresse.");
+          MessageBox.error(oBundle.getText("adminExpertValidationEmail"));
           return;
         }
 
@@ -150,7 +150,7 @@ sap.ui.define([
           MessageBox.error(oBundle.getText("adminExpertSaveError", [err.message]));
         });
       } catch (err) {
-        MessageBox.error("Fehler: " + err.message);
+        MessageBox.error(oBundle.getText("adminExpertGenericError", [err.message]));
       }
     },
 

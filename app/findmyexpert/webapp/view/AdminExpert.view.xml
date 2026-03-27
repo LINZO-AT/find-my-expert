@@ -2,61 +2,68 @@
   controllerName="com.sap.austria.findmyexpert.controller.AdminExpert"
   xmlns:mvc="sap.ui.core.mvc"
   xmlns="sap.m"
-  xmlns:f="sap.ui.layout.form"
+  xmlns:f="sap.f"
+  xmlns:form="sap.ui.layout.form"
   xmlns:core="sap.ui.core">
 
-  <Page
-    id="adminExpertPage"
-    title="{viewModel>/pageTitle}"
-    showNavButton="true"
-    navButtonPress=".onNavBack">
+  <f:DynamicPage id="adminExpertPage" fitContent="true" headerExpanded="false">
 
-    <footer>
-      <OverflowToolbar>
-        <ToolbarSpacer />
-        <Button
-          text="{i18n>adminExpertSave}"
-          type="Emphasized"
-          press=".onSave" />
-        <Button
-          text="{i18n>adminExpertCancel}"
-          press=".onCancel" />
-      </OverflowToolbar>
-    </footer>
+    <f:title>
+      <f:DynamicPageTitle>
+        <f:heading>
+          <Title text="{viewModel>/pageTitle}" wrapping="true" />
+        </f:heading>
+        <f:actions>
+          <Button
+            text="{i18n>adminExpertSave}"
+            type="Emphasized"
+            press=".onSave" />
+          <Button
+            text="{i18n>adminExpertCancel}"
+            type="Transparent"
+            press=".onCancel" />
+        </f:actions>
+      </f:DynamicPageTitle>
+    </f:title>
 
-    <content>
-      <f:SimpleForm
-        id="expertForm"
-        editable="true"
-        layout="ResponsiveGridLayout"
-        labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
-        columnsXL="2" columnsL="2" columnsM="1">
+    <f:content>
+      <VBox class="sapUiMediumMarginBeginEnd sapUiSmallMarginTopBottom">
 
-        <f:content>
-          <Label text="{i18n>adminExpertFirstName}" required="true" labelFor="firstNameInput" />
-          <Input id="firstNameInput" value="{viewModel>/expert/firstName}" />
+        <form:SimpleForm
+          id="expertForm"
+          editable="true"
+          layout="ResponsiveGridLayout"
+          labelSpanXL="3" labelSpanL="3" labelSpanM="12" labelSpanS="12"
+          columnsXL="2" columnsL="2" columnsM="1"
+          class="sapUiSmallMarginBottom">
 
-          <Label text="{i18n>adminExpertLastName}" required="true" labelFor="lastNameInput" />
-          <Input id="lastNameInput" value="{viewModel>/expert/lastName}" />
+          <form:title>
+            <core:Title />
+          </form:title>
 
-          <Label text="{i18n>adminExpertEmail}" labelFor="emailInput" />
-          <Input id="emailInput" value="{viewModel>/expert/email}" type="Email" />
+          <form:content>
+            <Label text="{i18n>adminExpertFirstName}" required="true" labelFor="firstNameInput" />
+            <Input id="firstNameInput" value="{viewModel>/expert/firstName}" />
 
-          <Label text="{i18n>adminExpertLocation}" required="true" labelFor="locationSelect" />
-          <Select id="locationSelect" selectedKey="{viewModel>/expert/location}">
-            <core:Item key="AT" text="{i18n>loc_AT}" />
-            <core:Item key="DE" text="{i18n>loc_DE}" />
-            <core:Item key="CH" text="{i18n>loc_CH}" />
-          </Select>
-        </f:content>
-      </f:SimpleForm>
+            <Label text="{i18n>adminExpertLastName}" required="true" labelFor="lastNameInput" />
+            <Input id="lastNameInput" value="{viewModel>/expert/lastName}" />
 
-      <Panel
-        headerText="{i18n>adminExpertAssignments}"
-        class="sapUiMediumMarginTop">
-        <Table id="assignmentsTable" items="{viewModel>/assignments}">
+            <Label text="{i18n>adminExpertEmail}" labelFor="emailInput" />
+            <Input id="emailInput" value="{viewModel>/expert/email}" type="Email" />
+
+            <Label text="{i18n>adminExpertLocation}" required="true" labelFor="locationSelect" />
+            <Select id="locationSelect" selectedKey="{viewModel>/expert/location}">
+              <core:Item key="AT" text="{i18n>loc_AT}" />
+              <core:Item key="DE" text="{i18n>loc_DE}" />
+              <core:Item key="CH" text="{i18n>loc_CH}" />
+            </Select>
+          </form:content>
+        </form:SimpleForm>
+
+        <Panel class="sapUiNoContentPadding">
           <headerToolbar>
             <OverflowToolbar>
+              <Title text="{i18n>adminExpertAssignments}" />
               <ToolbarSpacer />
               <Button
                 text="{i18n>adminExpertAddAssignment}"
@@ -64,55 +71,66 @@
                 press=".onAddAssignment" />
             </OverflowToolbar>
           </headerToolbar>
-          <columns>
-            <Column><Text text="{i18n>adminExpertColSolution}" /></Column>
-            <Column><Text text="{i18n>adminExpertColRole}" /></Column>
-            <Column hAlign="Center"><Text text="{i18n>adminExpertCol5M}" /></Column>
-            <Column hAlign="Center"><Text text="{i18n>adminExpertCol30M}" /></Column>
-            <Column hAlign="Center"><Text text="{i18n>adminExpertCol2H}" /></Column>
-            <Column hAlign="Center"><Text text="{i18n>adminExpertColDemo}" /></Column>
-            <Column><Text text="{i18n>adminExpertColNotes}" /></Column>
-            <Column hAlign="Center"><Text text="{i18n>adminExpertColDelete}" /></Column>
-          </columns>
-          <items>
-            <ColumnListItem>
-              <cells>
-                <Select
-                  selectedKey="{viewModel>solution_ID}"
-                  items="{
-                    path: '/Solutions',
-                    parameters: { $orderby: 'name' }
-                  }">
-                  <items>
-                    <core:Item key="{ID}" text="{name}" />
-                  </items>
-                </Select>
-                <Select selectedKey="{viewModel>role}">
-                  <core:Item key="TOPIC_OWNER"          text="{i18n>role_TOPIC_OWNER}" />
-                  <core:Item key="SOLUTIONING_ARCH"     text="{i18n>role_SOLUTIONING_ARCH}" />
-                  <core:Item key="THEMEN_LEAD"          text="{i18n>role_THEMEN_LEAD}" />
-                  <core:Item key="SERVICE_SELLER"       text="{i18n>role_SERVICE_SELLER}" />
-                  <core:Item key="REALIZATION_LEAD"     text="{i18n>role_REALIZATION_LEAD}" />
-                  <core:Item key="REALIZATION_CONSULTANT" text="{i18n>role_REALIZATION_CONSULTANT}" />
-                  <core:Item key="PROJECT_MANAGEMENT"   text="{i18n>role_PROJECT_MANAGEMENT}" />
-                  <core:Item key="OTHER_CONTACT_AT"     text="{i18n>role_OTHER_CONTACT_AT}" />
-                  <core:Item key="OTHER_CONTACT_NON_AT" text="{i18n>role_OTHER_CONTACT_NON_AT}" />
-                </Select>
-                <CheckBox selected="{viewModel>canPresent5M}" />
-                <CheckBox selected="{viewModel>canPresent30M}" />
-                <CheckBox selected="{viewModel>canPresent2H}" />
-                <CheckBox selected="{viewModel>canPresentDemo}" />
-                <Input value="{viewModel>notes}" maxLength="500" />
-                <Button
-                  icon="sap-icon://delete"
-                  tooltip="{i18n>expertListDeleteBtn}"
-                  press=".onDeleteAssignment"
-                  type="Transparent" />
-              </cells>
-            </ColumnListItem>
-          </items>
-        </Table>
-      </Panel>
-    </content>
-  </Page>
+          <Table id="assignmentsTable" items="{viewModel>/assignments}">
+            <columns>
+              <Column><Text text="{i18n>adminExpertColSolution}" /></Column>
+              <Column><Text text="{i18n>adminExpertColRole}" /></Column>
+              <Column hAlign="Center" width="3.5rem"><Text text="{i18n>adminExpertCol5M}" /></Column>
+              <Column hAlign="Center" width="3.5rem"><Text text="{i18n>adminExpertCol30M}" /></Column>
+              <Column hAlign="Center" width="3.5rem"><Text text="{i18n>adminExpertCol2H}" /></Column>
+              <Column hAlign="Center" width="3.5rem"><Text text="{i18n>adminExpertColDemo}" /></Column>
+              <Column minScreenWidth="Tablet" demandPopin="true">
+                <Text text="{i18n>adminExpertColNotes}" />
+              </Column>
+              <Column hAlign="End" width="3rem"><Text text="" /></Column>
+            </columns>
+            <items>
+              <ColumnListItem>
+                <cells>
+                  <Select
+                    selectedKey="{viewModel>solution_ID}"
+                    items="{
+                      path: '/Solutions',
+                      parameters: { $orderby: 'name' }
+                    }">
+                    <items>
+                      <core:Item key="{ID}" text="{name}" />
+                    </items>
+                  </Select>
+                  <Select selectedKey="{viewModel>role}">
+                    <core:Item key="TOPIC_OWNER"            text="{i18n>role_TOPIC_OWNER}" />
+                    <core:Item key="SOLUTIONING_ARCH"       text="{i18n>role_SOLUTIONING_ARCH}" />
+                    <core:Item key="THEMEN_LEAD"            text="{i18n>role_THEMEN_LEAD}" />
+                    <core:Item key="SERVICE_SELLER"         text="{i18n>role_SERVICE_SELLER}" />
+                    <core:Item key="REALIZATION_LEAD"       text="{i18n>role_REALIZATION_LEAD}" />
+                    <core:Item key="REALIZATION_CONSULTANT" text="{i18n>role_REALIZATION_CONSULTANT}" />
+                    <core:Item key="PROJECT_MANAGEMENT"     text="{i18n>role_PROJECT_MANAGEMENT}" />
+                    <core:Item key="OTHER_CONTACT_AT"       text="{i18n>role_OTHER_CONTACT_AT}" />
+                    <core:Item key="OTHER_CONTACT_NON_AT"   text="{i18n>role_OTHER_CONTACT_NON_AT}" />
+                  </Select>
+                  <CheckBox selected="{viewModel>canPresent5M}" />
+                  <CheckBox selected="{viewModel>canPresent30M}" />
+                  <CheckBox selected="{viewModel>canPresent2H}" />
+                  <CheckBox selected="{viewModel>canPresentDemo}" />
+                  <Input value="{viewModel>notes}" maxLength="500" />
+                  <Button
+                    icon="sap-icon://delete"
+                    type="Transparent"
+                    press=".onDeleteAssignment" />
+                </cells>
+              </ColumnListItem>
+            </items>
+            <noData>
+              <IllustratedMessage
+                illustrationType="sapIllus-EmptyList"
+                title="{i18n>adminExpertAssignments}"
+                description="" />
+            </noData>
+          </Table>
+        </Panel>
+
+      </VBox>
+    </f:content>
+
+  </f:DynamicPage>
 </mvc:View>

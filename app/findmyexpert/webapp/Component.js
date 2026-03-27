@@ -14,25 +14,40 @@ sap.ui.define([
     init: function () {
       UIComponent.prototype.init.apply(this, arguments);
 
-      // Device model
       this.setModel(models.createDeviceModel(), "device");
 
-      // User model — populated after FLP shell is ready
       const oUserModel = models.createUserModel();
       this.setModel(oUserModel, "userModel");
-
       this._loadUserInfo(oUserModel);
 
-      // Initialize router
+      // Intent-based startup: detect before router.initialize() but navTo after
+      const sAction = this._getStartupAction();
+
       this.getRouter().initialize();
+
+      // Navigate to admin view if launched via manage intent
+      if (sAction === "manage") {
+        this.getRouter().navTo("adminSolutions", {}, true);
+      }
     },
 
     /**
-     * Load user info — try FLP UserInfo service first, fall back to backend.
+     * Parse the FLP startup action from the URL hash.
+     * Returns "manage", "display" or null.
      */
+    _getStartupAction: function () {
+      try {
+        const sHash = window.location.hash || "";
+        // Hash format: #FindMyExpert-manage or #FindMyExpert-display
+        const match = sHash.match(/#FindMyExpert-(\w+)/);
+        return match ? match[1] : null;
+      } catch (e) {
+        return null;
+      }
+    },
+
     _loadUserInfo: function (oUserModel) {
       try {
-        // FLP UserInfo service (available when running inside Fiori Launchpad)
         const oContainer = sap.ushell && sap.ushell.Container;
         if (oContainer) {
           const oUserInfoService = oContainer.getService("UserInfo");
@@ -44,10 +59,9 @@ sap.ui.define([
           return;
         }
       } catch (e) {
-        // FLP not available — fall back to backend
+        // FLP not available
       }
 
-      // Fallback: call backend /userInfo function
       try {
         const oCatalogModel = this.getModel();
         if (!oCatalogModel) return;
@@ -68,16 +82,10 @@ sap.ui.define([
       }
     },
 
-    /**
-     * FLP lifecycle: called when app is destroyed via back-navigation in FLP.
-     */
     destroy: function () {
       UIComponent.prototype.destroy.apply(this, arguments);
     },
 
-    /**
-     * Returns the router instance.
-     */
     getRouter: function () {
       return UIComponent.prototype.getRouter.apply(this, arguments);
     }

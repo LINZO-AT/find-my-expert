@@ -8,6 +8,7 @@ framework:
   libraries:
     - name: sap.m
     - name: sap.f
+    - name: sap.uxap
     - name: sap.ui.core
     - name: sap.ui.layout
     - name: sap.ui.unified

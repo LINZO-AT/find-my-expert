@@ -3,65 +3,79 @@
   xmlns:mvc="sap.ui.core.mvc"
   xmlns="sap.m"
   xmlns:f="sap.f"
-  xmlns:l="sap.ui.layout"
-  xmlns:card="sap.f.cards"
   xmlns:core="sap.ui.core">
 
-  <Page id="searchPage" title="{i18n>appTitle}">
-    <headerContent>
-      <Button
-        text="{i18n>expertListTitle}"
-        press=".onNavToExpertList"
-        type="Transparent" />
-    </headerContent>
-
+  <!--
+    No page title: FLP Shell already shows "Find My Expert".
+    showHeader="false" avoids redundant chrome.
+  -->
+  <Page id="searchPage" showHeader="false">
     <content>
-      <!-- Mock mode banner -->
-      <MessageStrip
-        id="mockModeBanner"
-        text="{i18n>searchMockMode}"
-        type="Information"
-        showIcon="true"
-        visible="false"
-        class="sapUiSmallMargin" />
+      <VBox
+        class="sapUiMediumMarginBeginEnd"
+        alignItems="Center">
 
-      <!-- Search bar -->
-      <Toolbar class="sapUiSmallMarginTop sapUiSmallMarginBegin sapUiSmallMarginEnd">
-        <SearchField
-          id="searchField"
-          placeholder="{i18n>searchPlaceholder}"
-          width="100%"
-          search=".onSearch"
-          ariaLabelledBy="searchLabel" />
-        <Button
-          text="{i18n>searchButton}"
-          type="Emphasized"
-          press=".onSearch" />
-      </Toolbar>
+        <!-- Search bar row -->
+        <HBox
+          class="sapUiMediumMarginTop sapUiSmallMarginBottom"
+          alignItems="Center"
+          justifyContent="Start"
+          width="100%">
+          <SearchField
+            id="searchField"
+            placeholder="{i18n>searchPlaceholder}"
+            width="560px"
+            search=".onSearch" />
+          <Button
+            text="{i18n>searchButton}"
+            type="Emphasized"
+            press=".onSearch"
+            class="sapUiSmallMarginBegin" />
+          <ToolbarSpacer />
+          <Button
+            text="{i18n>expertListTitle}"
+            type="Transparent"
+            icon="sap-icon://list"
+            press=".onNavToExpertList"
+            class="sapUiSmallMarginBegin" />
+        </HBox>
 
-      <!-- Busy indicator -->
-      <BusyIndicator
-        id="searchBusy"
-        visible="false"
-        class="sapUiMediumMarginTop"
-        size="2rem" />
+        <MessageStrip
+          id="mockModeBanner"
+          text="{i18n>searchMockMode}"
+          type="Information"
+          showIcon="true"
+          visible="false"
+          class="sapUiSmallMarginBottom"
+          width="100%" />
 
-      <!-- Empty state -->
-      <IllustratedMessage
-        id="emptyState"
-        illustrationType="sapIllus-SearchEarth"
-        title="{i18n>searchEmptyTitle}"
-        description="{i18n>searchEmptyDescription}"
-        visible="true" />
+        <BusyIndicator
+          id="searchBusy"
+          visible="false"
+          class="sapUiMediumMarginTop"
+          size="2rem" />
 
-      <!-- Results cards -->
-      <FlexBox
-        id="resultsContainer"
-        wrap="Wrap"
-        visible="false"
-        class="sapUiSmallMargin">
-      </FlexBox>
+        <IllustratedMessage
+          id="emptyState"
+          illustrationType="sapIllus-SearchEarth"
+          title="{i18n>searchEmptyTitle}"
+          description="{i18n>searchEmptyDescription}"
+          visible="true" />
 
+        <Title
+          id="resultsTitle"
+          level="H4"
+          visible="false"
+          class="sapUiSmallMarginBottom" />
+
+        <FlexBox
+          id="resultsContainer"
+          wrap="Wrap"
+          visible="false"
+          class="sapUiTinyMarginTop"
+          width="100%" />
+
+      </VBox>
     </content>
   </Page>
 </mvc:View>

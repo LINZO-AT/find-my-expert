@@ -23,38 +23,43 @@ sap.ui.define([
         const sTopicId = oCtx.getProperty("ID");
         this._selectedTopicId = sTopicId;
 
+        // Use direct OData fetch for reliable result
         const oModel = this.getView().getModel("admin");
-        const oBinding = oModel.bindList(
-          "/Solutions",
-          null, null,
-          [new sap.ui.model.Filter("topic_ID", sap.ui.model.FilterOperator.EQ, sTopicId)],
-          { $orderby: "name" }
-        );
-
-        oBinding.requestContexts().then(aCtxs => {
-          const aSolutions = aCtxs.map(c => c.getObject());
-          this.getView().getModel("viewModel").setProperty("/solutions", aSolutions);
-        }).catch(err => {
-          console.error("Load solutions failed:", err.message);
-        });
+        const sUrl = oModel.sServiceUrl + "Solutions?$filter=topic_ID eq '" + sTopicId + "'&$orderby=name";
+        fetch(sUrl, { headers: { "Accept": "application/json" } })
+          .then(r => r.json())
+          .then(data => {
+            const aSolutions = (data.value || []).map(s => ({
+              ID: s.ID,
+              name: s.name,
+              description: s.description || "",
+              topic_ID: s.topic_ID
+            }));
+            this.getView().getModel("viewModel").setProperty("/solutions", aSolutions);
+          })
+          .catch(err => {
+            console.error("Load solutions failed:", err.message);
+          });
       } catch (err) {
         console.error("TopicSelect error:", err.message);
       }
     },
 
     onAddTopic: function() {
+      const oBundle = this.getView().getModel("i18n").getResourceBundle();
       try {
         const oModel = this.getView().getModel("admin");
         const oListBinding = oModel.bindList("/Topics");
-        oListBinding.create({ name: "Neues Thema", description: "" });
+        oListBinding.create({ name: oBundle.getText("adminSolutionsNewTopicName"), description: "" });
       } catch (err) {
-        MessageBox.error("Fehler: " + err.message);
+        MessageBox.error(oBundle.getText("adminSolutionsGenericError", [err.message]));
       }
     },
 
     onAddSolution: function() {
+      const oBundle = this.getView().getModel("i18n").getResourceBundle();
       if (!this._selectedTopicId) {
-        MessageToast.show("Bitte zuerst ein Thema auswählen.");
+        MessageToast.show(oBundle.getText("adminSolutionsSelectTopicFirst"));
         return;
       }
       const oVM = this.getView().getModel("viewModel");
@@ -77,7 +82,7 @@ sap.ui.define([
             aSolutions.splice(iIdx, 1);
             oVM.setProperty("/solutions", [...aSolutions]);
           } catch (err) {
-            MessageBox.error("Fehler: " + err.message);
+            MessageBox.error(oBundle.getText("adminSolutionsGenericError", [err.message]));
           }
         }
       });

@@ -2,81 +2,101 @@
   controllerName="com.sap.austria.findmyexpert.controller.ExpertDetail"
   xmlns:mvc="sap.ui.core.mvc"
   xmlns="sap.m"
+  xmlns:uxap="sap.uxap"
   xmlns:core="sap.ui.core">
 
-  <Page id="expertDetailPage" title="{i18n>expertDetailTitle}" showNavButton="true" navButtonPress=".onNavBack">
-    <headerContent>
-      <Button
-        text="{i18n>expertDetailEditBtn}"
-        icon="sap-icon://edit"
-        press=".onEditExpert"
-        type="Emphasized"
-        visible="{userModel>/isAdmin}" />
-    </headerContent>
+  <uxap:ObjectPageLayout
+    id="expertDetailPage"
+    showNavButton="true"
+    navButtonPress=".onNavBack"
+    upperCaseAnchorBar="false">
 
-    <content>
-      <ObjectHeader
-        id="expertHeader"
-        title="{= ${/firstName} + ' ' + ${/lastName}}"
-        intro="{email}">
-        <attributes>
-          <ObjectAttribute title="{i18n>expertListColLocation}" text="{location}" />
-        </attributes>
-      </ObjectHeader>
+    <uxap:headerTitle>
+      <uxap:ObjectPageDynamicHeaderTitle>
+        <uxap:heading>
+          <Title text="{= ${/firstName} + ' ' + ${/lastName}}" wrapping="true" level="H2" />
+        </uxap:heading>
+        <uxap:snappedHeading>
+          <Title text="{= ${/firstName} + ' ' + ${/lastName}}" wrapping="true" level="H3" />
+        </uxap:snappedHeading>
+        <uxap:actions>
+          <Button
+            text="{i18n>expertDetailEditBtn}"
+            icon="sap-icon://edit"
+            type="Emphasized"
+            press=".onEditExpert"
+            visible="{userModel>/isAdmin}" />
+        </uxap:actions>
+      </uxap:ObjectPageDynamicHeaderTitle>
+    </uxap:headerTitle>
 
-      <Panel
-        headerText="{i18n>expertDetailExpertise}"
-        class="sapUiMediumMarginTop">
-        <Table
-          id="expertiseTable"
-          items="{
-            path: '/roles',
-            parameters: {
-              $expand: 'solution($expand=topic)'
-            }
-          }">
-          <columns>
-            <Column><Text text="{i18n>expertDetailColTopic}" /></Column>
-            <Column><Text text="{i18n>expertDetailColSolution}" /></Column>
-            <Column><Text text="{i18n>expertDetailColRole}" /></Column>
-            <Column hAlign="Center"><Text text="{i18n>expertDetailCol5M}" /></Column>
-            <Column hAlign="Center"><Text text="{i18n>expertDetailCol30M}" /></Column>
-            <Column hAlign="Center"><Text text="{i18n>expertDetailCol2H}" /></Column>
-            <Column hAlign="Center"><Text text="{i18n>expertDetailColDemo}" /></Column>
-            <Column><Text text="{i18n>expertDetailColNotes}" /></Column>
-          </columns>
-          <items>
-            <ColumnListItem>
-              <cells>
-                <Text text="{solution/topic/name}" />
-                <Text text="{solution/name}" />
-                <ObjectStatus text="{role}" />
-                <core:Icon
-                  src="sap-icon://accept"
-                  tooltip="{i18n>tooltip_5M}"
-                  visible="{canPresent5M}"
-                  color="Positive" />
-                <core:Icon
-                  src="sap-icon://accept"
-                  tooltip="{i18n>tooltip_30M}"
-                  visible="{canPresent30M}"
-                  color="Positive" />
-                <core:Icon
-                  src="sap-icon://accept"
-                  tooltip="{i18n>tooltip_2H}"
-                  visible="{canPresent2H}"
-                  color="Positive" />
-                <core:Icon
-                  src="sap-icon://accept"
-                  tooltip="{i18n>tooltip_Demo}"
-                  visible="{canPresentDemo}"
-                  color="Positive" />
-                <ExpandableText text="{notes}" maxCharacters="60" />
-              </cells>
-            </ColumnListItem>
-          </items>
-        </Table>
-      </Panel>
-    </content>
-  </Page>
+    <uxap:headerContent>
+      <VBox>
+        <ObjectAttribute title="{i18n>adminExpertEmail}" text="{email}" />
+        <ObjectAttribute title="{i18n>expertListColLocation}" text="{location}" />
+      </VBox>
+    </uxap:headerContent>
+
+    <uxap:sections>
+      <uxap:ObjectPageSection title="{i18n>expertDetailExpertise}" titleUppercase="false">
+        <uxap:subSections>
+          <uxap:ObjectPageSubSection>
+            <uxap:blocks>
+              <Table
+                id="expertiseTable"
+                sticky="ColumnHeaders"
+                items="{
+                  path: '/roles',
+                  parameters: { $expand: 'solution($expand=topic)' }
+                }">
+                <columns>
+                  <Column><Text text="{i18n>expertDetailColTopic}" /></Column>
+                  <Column><Text text="{i18n>expertDetailColSolution}" /></Column>
+                  <Column><Text text="{i18n>expertDetailColRole}" /></Column>
+                  <Column hAlign="Center" width="3.5rem"><Text text="{i18n>expertDetailCol5M}" /></Column>
+                  <Column hAlign="Center" width="3.5rem"><Text text="{i18n>expertDetailCol30M}" /></Column>
+                  <Column hAlign="Center" width="3.5rem"><Text text="{i18n>expertDetailCol2H}" /></Column>
+                  <Column hAlign="Center" width="3.5rem"><Text text="{i18n>expertDetailColDemo}" /></Column>
+                  <Column minScreenWidth="Tablet" demandPopin="true">
+                    <Text text="{i18n>expertDetailColNotes}" />
+                  </Column>
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <Text text="{solution/topic/name}" />
+                      <Text text="{solution/name}" />
+                      <ObjectStatus text="{role}" />
+                      <core:Icon
+                        src="sap-icon://accept"
+                        tooltip="{i18n>tooltip_5M}"
+                        visible="{canPresent5M}"
+                        color="Positive" />
+                      <core:Icon
+                        src="sap-icon://accept"
+                        tooltip="{i18n>tooltip_30M}"
+                        visible="{canPresent30M}"
+                        color="Positive" />
+                      <core:Icon
+                        src="sap-icon://accept"
+                        tooltip="{i18n>tooltip_2H}"
+                        visible="{canPresent2H}"
+                        color="Positive" />
+                      <core:Icon
+                        src="sap-icon://accept"
+                        tooltip="{i18n>tooltip_Demo}"
+                        visible="{canPresentDemo}"
+                        color="Positive" />
+                      <ExpandableText text="{notes}" maxCharacters="80" />
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </uxap:blocks>
+          </uxap:ObjectPageSubSection>
+        </uxap:subSections>
+      </uxap:ObjectPageSection>
+    </uxap:sections>
+
+  </uxap:ObjectPageLayout>
 </mvc:View>

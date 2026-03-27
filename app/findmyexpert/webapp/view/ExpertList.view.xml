@@ -2,89 +2,101 @@
   controllerName="com.sap.austria.findmyexpert.controller.ExpertList"
   xmlns:mvc="sap.ui.core.mvc"
   xmlns="sap.m"
+  xmlns:f="sap.f"
   xmlns:core="sap.ui.core">
 
-  <Page id="expertListPage" title="{i18n>expertListTitle}">
-    <headerContent>
-      <Button
-        text="{i18n>searchButton}"
-        press=".onNavToSearch"
-        type="Transparent"
-        icon="sap-icon://search" />
-      <Button
-        text="{i18n>adminExpertTitleNew}"
-        press=".onAddExpert"
-        type="Default"
-        icon="sap-icon://add"
-        visible="{userModel>/isAdmin}" />
-    </headerContent>
+  <f:DynamicPage id="expertListPage" fitContent="true" showFooter="false">
 
-    <subHeader>
-      <Toolbar>
-        <Select
-          id="topicFilter"
-          items="{
-            path: '/Topics',
-            parameters: { $orderby: 'name' }
-          }"
-          change=".onFilterChange"
-          ariaLabelledBy="topicFilterLabel">
-          <core:Item key="" text="{i18n>expertListAllTopics}" />
-          <items>
-            <core:Item key="{ID}" text="{name}" />
-          </items>
-        </Select>
-        <Select
-          id="solutionFilter"
-          change=".onFilterChange"
-          ariaLabelledBy="solutionFilterLabel">
-          <core:Item key="" text="{i18n>expertListAllSolutions}" />
-        </Select>
-        <Select
-          id="locationFilter"
-          change=".onFilterChange"
-          ariaLabelledBy="locationFilterLabel">
-          <core:Item key="" text="{i18n>expertListAllLocations}" />
-          <core:Item key="AT" text="{i18n>loc_AT}" />
-          <core:Item key="DE" text="{i18n>loc_DE}" />
-          <core:Item key="CH" text="{i18n>loc_CH}" />
-        </Select>
-        <SearchField
-          id="nameSearch"
-          width="200px"
-          search=".onFilterChange"
-          ariaLabelledBy="nameSearchLabel" />
-        <Button
-          text="{i18n>expertListResetFilter}"
-          press=".onResetFilters"
-          type="Transparent" />
-      </Toolbar>
-    </subHeader>
+    <f:title>
+      <f:DynamicPageTitle>
+        <f:heading>
+          <Title text="{i18n>expertListTitle}" level="H2" wrapping="true" />
+        </f:heading>
+        <f:navigationActions>
+          <Button
+            icon="sap-icon://nav-back"
+            type="Transparent"
+            press=".onNavToSearch"
+            tooltip="{i18n>searchButton}" />
+        </f:navigationActions>
+        <f:actions>
+          <Button
+            text="{i18n>adminExpertTitleNew}"
+            type="Emphasized"
+            icon="sap-icon://add"
+            press=".onAddExpert"
+            visible="{userModel>/isAdmin}" />
+        </f:actions>
+        <f:snappedContent>
+          <HBox wrap="Wrap" alignItems="Center">
+            <Select id="topicFilterSnapped"
+              width="auto"
+              items="{ path: '/Topics', parameters: { $orderby: 'name' } }"
+              change=".onFilterChange">
+              <core:Item key="" text="{i18n>expertListAllTopics}" />
+              <items><core:Item key="{ID}" text="{name}" /></items>
+            </Select>
+            <Select id="locationFilterSnapped" width="auto" change=".onFilterChange" class="sapUiTinyMarginBegin">
+              <core:Item key="" text="{i18n>expertListAllLocations}" />
+              <core:Item key="AT" text="{i18n>loc_AT}" />
+              <core:Item key="DE" text="{i18n>loc_DE}" />
+              <core:Item key="CH" text="{i18n>loc_CH}" />
+            </Select>
+            <SearchField id="nameSearchSnapped" width="200px" search=".onFilterChange" class="sapUiTinyMarginBegin" />
+          </HBox>
+        </f:snappedContent>
+      </f:DynamicPageTitle>
+    </f:title>
 
-    <content>
+    <f:header>
+      <f:DynamicPageHeader pinnable="true">
+        <HBox wrap="Wrap" alignItems="Center" class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom">
+          <Select
+            id="topicFilter"
+            width="auto"
+            items="{ path: '/Topics', parameters: { $orderby: 'name' } }"
+            change=".onFilterChange">
+            <core:Item key="" text="{i18n>expertListAllTopics}" />
+            <items><core:Item key="{ID}" text="{name}" /></items>
+          </Select>
+          <Select id="locationFilter" width="auto" change=".onFilterChange" class="sapUiTinyMarginBegin">
+            <core:Item key="" text="{i18n>expertListAllLocations}" />
+            <core:Item key="AT" text="{i18n>loc_AT}" />
+            <core:Item key="DE" text="{i18n>loc_DE}" />
+            <core:Item key="CH" text="{i18n>loc_CH}" />
+          </Select>
+          <SearchField id="nameSearch" width="200px" search=".onFilterChange" class="sapUiTinyMarginBegin" />
+          <Button
+            text="{i18n>expertListResetFilter}"
+            press=".onResetFilters"
+            type="Transparent"
+            class="sapUiTinyMarginBegin" />
+        </HBox>
+      </f:DynamicPageHeader>
+    </f:header>
+
+    <f:content>
       <Table
         id="expertTable"
         growing="true"
-        growingThreshold="20"
+        growingThreshold="25"
+        sticky="ColumnHeaders"
         items="{
           path: '/Experts',
           parameters: {
             $expand: 'roles($expand=solution($expand=topic))',
             $orderby: 'lastName,firstName'
           }
-        }"
-        selectionChange=".onExpertSelect">
+        }">
         <columns>
-          <Column>
-            <Text text="{i18n>expertListColName}" />
-          </Column>
-          <Column>
+          <Column><Text text="{i18n>expertListColName}" /></Column>
+          <Column minScreenWidth="Tablet" demandPopin="true" width="6rem">
             <Text text="{i18n>expertListColLocation}" />
           </Column>
-          <Column>
+          <Column minScreenWidth="Tablet" demandPopin="true">
             <Text text="{i18n>expertListColSolutions}" />
           </Column>
-          <Column visible="{userModel>/isAdmin}">
+          <Column visible="{userModel>/isAdmin}" hAlign="End" width="6rem">
             <Text text="{i18n>expertListColActions}" />
           </Column>
         </columns>
@@ -95,8 +107,11 @@
                 title="{= ${firstName} + ' ' + ${lastName}}"
                 text="{email}" />
               <ObjectStatus text="{location}" />
-              <Text text="{= ${roles}.length + ' Lösungen'}" />
-              <HBox visible="{userModel>/isAdmin}">
+              <Text id="solutionCountText" text="{
+                path: 'roles',
+                formatter: '.formatRoleCount'
+              }" />
+              <HBox visible="{userModel>/isAdmin}" justifyContent="End">
                 <Button
                   icon="sap-icon://edit"
                   tooltip="{i18n>expertListEditBtn}"
@@ -118,6 +133,7 @@
             description="{i18n>searchEmptyDescription}" />
         </noData>
       </Table>
-    </content>
-  </Page>
+    </f:content>
+
+  </f:DynamicPage>
 </mvc:View>

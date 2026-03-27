@@ -1,0 +1,50 @@
+{
+  "mcpServers": {
+    "io.github.SAP/open-ux-tools": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@sap-ux/fiori-mcp-server@0.6.44", "fiori-mcp"],
+      "autoApprove": [
+        "search_docs",
+        "list_fiori_apps",
+        "list_functionality",
+        "get_functionality_details",
+        "execute_functionality"
+      ]
+    },
+    "cds-mcp": {
+      "command": "npx",
+      "args": ["-y", "@cap-js/mcp-server"],
+      "env": {},
+      "autoApprove": ["search_model", "search_docs"]
+    },
+    "ui5-mcp": {
+      "command": "npx",
+      "args": ["-y", "@ui5/mcp-server"],
+      "env": {},
+      "autoApprove": [
+        "get_guidelines",
+        "get_api_reference",
+        "get_project_info",
+        "create_ui5_app",
+        "get_version_info",
+        "get_integration_cards_guidelines",
+        "create_integration_card",
+        "get_typescript_conversion_guidelines",
+        "run_ui5_linter",
+        "run_manifest_validation"
+      ]
+    },
+    "ui5-webc-mcp": {
+      "command": "npx",
+      "args": ["-y", "@ui5/webcomponents-mcp-server"],
+      "env": {},
+      "autoApprove": [
+        "get_component_api",
+        "get_doc",
+        "get_guidelines",
+        "list_docs"
+      ]
+    }
+  }
+}

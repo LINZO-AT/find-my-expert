@@ -13,6 +13,22 @@ sap.ui.define([
       this._oRouter = this.getRouter();
     },
 
+    formatSolutionCount: function(aRoles, sPattern) {
+      const iCount = Array.isArray(aRoles) ? aRoles.length : 0;
+      if (sPattern) { return sPattern.replace("{0}", iCount); }
+      return iCount + " Solutions";
+    },
+
+    formatRoleCount: function(aRoles) {
+      const iCount = Array.isArray(aRoles) ? aRoles.length : 0;
+      try {
+        const sPattern = this.getView().getModel("i18n").getResourceBundle().getText("expertListSolutions", [iCount]);
+        return sPattern;
+      } catch(e) {
+        return iCount + " Solutions";
+      }
+    },
+
     onNavToSearch: function () {
       this._oRouter.navTo("search");
     },
@@ -50,12 +66,12 @@ sap.ui.define([
             if (sAction === MessageBox.Action.OK) {
               try {
                 oCtx.delete().then(() => {
-                  MessageToast.show(sName + " gelöscht.");
+                  MessageToast.show(oBundle.getText("expertListDeletedMsg", [sName]));
                 }).catch(err => {
-                  MessageBox.error("Löschen fehlgeschlagen: " + err.message);
+                  MessageBox.error(oBundle.getText("expertListDeleteError", [err.message]));
                 });
               } catch (err) {
-                MessageBox.error("Fehler: " + err.message);
+                MessageBox.error(oBundle.getText("adminExpertGenericError", [err.message]));
               }
             }
           }

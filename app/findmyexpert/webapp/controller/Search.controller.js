@@ -1,8 +1,16 @@
 sap.ui.define([
   "com/sap/austria/findmyexpert/controller/BaseController",
   "sap/m/MessageToast",
-  "sap/m/MessageBox"
-], function (BaseController, MessageToast, MessageBox) {
+  "sap/m/MessageBox",
+  "sap/m/Avatar",
+  "sap/f/Card",
+  "sap/f/cards/Header",
+  "sap/m/VBox",
+  "sap/m/HBox",
+  "sap/m/ObjectStatus",
+  "sap/m/ProgressIndicator",
+  "sap/ui/core/Icon"
+], function (BaseController, MessageToast, MessageBox, Avatar, Card, FCardHeader, VBox, HBox, ObjectStatus, ProgressIndicator, Icon) {
   "use strict";
 
   return BaseController.extend("com.sap.austria.findmyexpert.controller.Search", {
@@ -11,9 +19,8 @@ sap.ui.define([
       this._oRouter = this.getRouter();
     },
 
-    onSearch: function() {
-      const oSearchField = this.byId("searchField");
-      const sQuery = oSearchField.getValue().trim();
+    onSearch: function(oEvent) {
+      const sQuery = (oEvent && oEvent.getParameter("query")) || this.byId("searchField").getValue().trim();
       if (!sQuery) {
         MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("searchEmptyTitle"));
         return;
@@ -32,11 +39,15 @@ sap.ui.define([
       oEmpty.setVisible(false);
       oResults.setVisible(false);
       oMockBanner.setVisible(false);
+      const oTitle = oView.byId("resultsTitle");
+      if (oTitle) oTitle.setVisible(false);
 
       try {
         const oModel = oView.getModel();
         const oActionBinding = oModel.bindContext("/searchExperts(...)");
         oActionBinding.setParameter("query", sQuery);
+
+        const oBundle = oView.getModel("i18n").getResourceBundle();
 
         oActionBinding.execute().then(() => {
           try {
@@ -54,6 +65,12 @@ sap.ui.define([
             const bMock = aResults.some(r => r.isMockMode);
             oMockBanner.setVisible(bMock);
 
+            // Update title with result count
+            const oBundle2 = oView.getModel("i18n").getResourceBundle();
+            const sCountTitle = oBundle2.getText("searchResultsCount", [aResults.length]);
+            const oTitle = oView.byId("resultsTitle");
+            if (oTitle) oTitle.setText(sCountTitle).setVisible(true);
+
             aResults.forEach(oExpert => {
               oResults.addItem(this._createExpertCard(oExpert));
             });
@@ -61,90 +78,119 @@ sap.ui.define([
             oResults.setVisible(true);
           } catch (err) {
             oBusy.setVisible(false);
-            MessageBox.error("Fehler beim Verarbeiten der Ergebnisse: " + err.message);
+            MessageBox.error(oBundle.getText("searchResultError", [err.message]));
           }
         }).catch(err => {
           oBusy.setVisible(false);
-          MessageBox.error("Suche fehlgeschlagen: " + (err.message || "Unbekannter Fehler"));
+          MessageBox.error(oBundle.getText("searchFailed", [err.message || ""]));
         });
       } catch (err) {
         oBusy.setVisible(false);
-        MessageBox.error("Suchfehler: " + err.message);
+        MessageBox.error(oBundle.getText("searchError", [err.message]));
       }
     },
 
     _createExpertCard: function(oExpert) {
-      const oCard = new sap.f.Card({
-        width: "360px"
-      });
-
       const oBundle = this.getView().getModel("i18n").getResourceBundle();
+      const sRoleState = this._getRoleState(oExpert.role);
 
-      // Card Header
-      oCard.setHeader(new sap.f.cards.Header({
+      // Avatar initials (first letters of first + last name)
+      const sInitials = ((oExpert.firstName || "?")[0] + (oExpert.lastName || "?")[0]).toUpperCase();
+      const sAvatarColor = this._getAvatarColor(oExpert.role);
+
+      const oCard = new Card({ width: "320px", class: "sapUiSmallMarginEnd sapUiSmallMarginBottom" });
+
+      // Header with avatar
+      oCard.setHeader(new FCardHeader({
         title: oExpert.firstName + " " + oExpert.lastName,
         subtitle: oExpert.topicName + " › " + oExpert.solutionName,
-        statusText: oExpert.location
+        statusText: oExpert.location,
+        avatar: new Avatar({
+          initials: sInitials,
+          backgroundColor: sAvatarColor,
+          displaySize: "XS"
+        })
       }));
 
-      // Card Content via VBox
-      const oVBox = new sap.m.VBox({ class: "sapUiSmallMargin" });
+      // Card content
+      const oVBox = new VBox({ class: "sapUiSmallMarginBeginEnd sapUiTinyMarginBottom" });
 
-      // Role status
-      const sRoleState = this._getRoleState(oExpert.role);
-      oVBox.addItem(new sap.m.ObjectStatus({
+      // Role as ObjectStatus with consistent semantic color
+      oVBox.addItem(new ObjectStatus({
+        title: "",
         text: oExpert.roleLabel || oExpert.role,
-        state: sRoleState
+        state: sRoleState,
+        inverted: sRoleState !== "None",
+        class: "sapUiTinyMarginBottom"
       }));
 
-      // Presentation icons
-      const oIconBar = new sap.m.HBox({ class: "sapUiTinyMarginTop" });
+      // Presentation capabilities — only show if at least one is enabled
       const aCaps = [
         { cap: oExpert.canPresent5M,   icon: "sap-icon://time-entry-request", tooltip: oBundle.getText("tooltip_5M")   },
         { cap: oExpert.canPresent30M,  icon: "sap-icon://calendar",            tooltip: oBundle.getText("tooltip_30M")  },
         { cap: oExpert.canPresent2H,   icon: "sap-icon://education",           tooltip: oBundle.getText("tooltip_2H")   },
         { cap: oExpert.canPresentDemo, icon: "sap-icon://show",                tooltip: oBundle.getText("tooltip_Demo") }
       ];
-
-      aCaps.forEach(({ cap, icon, tooltip }) => {
-        oIconBar.addItem(new sap.ui.core.Icon({
-          src: icon,
-          tooltip: tooltip,
-          color: cap ? "#107e3e" : "#d9d9d9",
-          class: "sapUiTinyMarginEnd"
-        }));
-      });
-      oVBox.addItem(oIconBar);
-
-      // Score
-      oVBox.addItem(new sap.m.ProgressIndicator({
-        percentValue: oExpert.score || 0,
-        displayValue: oBundle.getText("scoreLabel", [oExpert.score || 0]),
-        class: "sapUiTinyMarginTop",
-        state: oExpert.score >= 70 ? "Success" : oExpert.score >= 40 ? "Warning" : "None"
-      }));
-
-      // AI reasoning
-      if (oExpert.reasoning) {
-        oVBox.addItem(new sap.m.ExpandableText({
-          text: oExpert.reasoning,
-          maxCharacters: 80,
-          class: "sapUiTinyMarginTop"
-        }));
+      const bAny = aCaps.some(c => c.cap);
+      if (bAny) {
+        const oIconBar = new HBox({ class: "sapUiTinyMarginBottom" });
+        aCaps.forEach(({ cap, icon, tooltip }) => {
+          if (cap) {
+            oIconBar.addItem(new Icon({
+              src: icon,
+              tooltip: tooltip,
+              color: "var(--sapPositiveTextColor, #107e3e)",
+              size: "1rem",
+              class: "sapUiTinyMarginEnd"
+            }));
+          }
+        });
+        oVBox.addItem(oIconBar);
       }
 
+      // Relevance bar
+      const iScore = oExpert.score || 0;
+      const sState = iScore >= 70 ? "Success" : iScore >= 40 ? "Warning" : "None";
+      oVBox.addItem(new ProgressIndicator({
+        percentValue: iScore,
+        displayValue: oBundle.getText("scoreLabel", [iScore]),
+        state: sState,
+        class: "sapUiTinyMarginBottom"
+      }));
+
       oCard.setContent(oVBox);
+
+      // Navigate to detail on click
+      oCard.attachPress(() => {
+        this._oRouter.navTo("expertDetail", { expertId: encodeURIComponent(oExpert.expertId) });
+      });
+
       return oCard;
     },
 
     _getRoleState: function(sRole) {
       switch (sRole) {
-        case "TOPIC_OWNER":         return "Error";
-        case "SOLUTIONING_ARCH":    return "Warning";
-        case "THEMEN_LEAD":         return "Warning";
-        case "SERVICE_SELLER":      return "Success";
-        case "REALIZATION_LEAD":    return "Information";
-        default:                    return "None";
+        case "TOPIC_OWNER":           return "Error";      // red — highest priority
+        case "SOLUTIONING_ARCH":      return "Warning";    // orange
+        case "THEMEN_LEAD":           return "Warning";    // orange
+        case "SERVICE_SELLER":        return "Success";    // green
+        case "REALIZATION_LEAD":      return "Information";// blue
+        case "REALIZATION_CONSULTANT":return "Information";// blue
+        case "PROJECT_MANAGEMENT":    return "None";
+        default:                      return "None";
+      }
+    },
+
+    _getAvatarColor: function(sRole) {
+      // Consistent avatar colors by role tier
+      switch (sRole) {
+        case "TOPIC_OWNER":           return "Accent6"; // dark teal
+        case "SOLUTIONING_ARCH":      return "Accent5"; // blue
+        case "THEMEN_LEAD":           return "Accent5";
+        case "SERVICE_SELLER":        return "Accent4"; // green
+        case "REALIZATION_LEAD":      return "Accent3";
+        case "REALIZATION_CONSULTANT":return "Accent3";
+        default:                      return "Accent1";
       }
     },
 

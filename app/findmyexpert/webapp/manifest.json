@@ -21,7 +21,7 @@
   },
   "sap.ui": {
     "technology": "UI5",
-    "deviceTypes": { "desktop": true, "tablet": true, "phone": false }
+    "deviceTypes": { "desktop": true, "tablet": true, "phone": true }
   },
   "sap.fiori": {
     "registrationIds": ["F-FME-001"],
@@ -36,6 +36,7 @@
         "sap.ui.core": {},
         "sap.m": {},
         "sap.f": {},
+        "sap.uxap": {},
         "sap.ui.layout": {},
         "sap.ui.unified": {}
       }
@@ -61,7 +62,11 @@
       },
       "i18n": {
         "type": "sap.ui.model.resource.ResourceModel",
-        "settings": { "bundleName": "com.sap.austria.findmyexpert.i18n.i18n" }
+        "settings": {
+          "bundleName": "com.sap.austria.findmyexpert.i18n.i18n",
+          "supportedLocales": ["de", "en", ""],
+          "fallbackLocale": "de"
+        }
       }
     },
     "rootView": {

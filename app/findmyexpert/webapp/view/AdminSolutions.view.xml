@@ -2,96 +2,110 @@
   controllerName="com.sap.austria.findmyexpert.controller.AdminSolutions"
   xmlns:mvc="sap.ui.core.mvc"
   xmlns="sap.m"
-  xmlns:l="sap.ui.layout">
+  xmlns:f="sap.f">
 
-  <Page
-    id="adminSolutionsPage"
-    title="{i18n>adminSolutionsTitle}"
-    showNavButton="true"
-    navButtonPress=".onNavBack">
+  <f:DynamicPage id="adminSolutionsPage" fitContent="true">
 
-    <headerContent>
-      <Button
-        text="{i18n>adminSolutionsSave}"
-        type="Emphasized"
-        press=".onSave" />
-    </headerContent>
+    <f:title>
+      <f:DynamicPageTitle>
+        <f:navigationActions>
+          <Button icon="sap-icon://nav-back" type="Transparent" press=".onNavBack" />
+        </f:navigationActions>
+        <f:heading>
+          <Title text="{i18n>adminSolutionsTitle}" level="H2" wrapping="true" />
+        </f:heading>
+        <f:actions>
+          <Button text="{i18n>adminSolutionsSave}" type="Emphasized" press=".onSave" />
+        </f:actions>
+      </f:DynamicPageTitle>
+    </f:title>
 
-    <content>
-      <l:HorizontalLayout width="100%" class="sapUiSmallMargin">
+    <f:content>
+      <HBox class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom" alignItems="Stretch" width="100%">
 
-        <!-- Topics Panel -->
-        <Panel
-          id="topicsPanel"
-          headerText="{i18n>adminSolutionsTopics}"
-          width="320px"
-          class="sapUiSmallMarginEnd">
-          <headerToolbar>
-            <OverflowToolbar>
-              <Title text="{i18n>adminSolutionsTopics}" />
-              <ToolbarSpacer />
-              <Button
-                icon="sap-icon://add"
-                tooltip="{i18n>adminSolutionsAddTopic}"
-                press=".onAddTopic" />
-            </OverflowToolbar>
-          </headerToolbar>
-          <content>
-            <List
-              id="topicList"
-              items="{admin>/Topics}"
-              selectionChange=".onTopicSelect"
-              mode="SingleSelectMaster">
-              <StandardListItem
-                title="{admin>name}"
-                description="{admin>description}"
-                type="Active" />
-            </List>
-          </content>
-        </Panel>
+        <!-- Topics column -->
+        <VBox width="280px" class="sapUiSmallMarginEnd">
+          <Toolbar style="Clear">
+            <Title text="{i18n>adminSolutionsTopics}" level="H4" />
+            <ToolbarSpacer />
+            <Button
+              icon="sap-icon://add"
+              tooltip="{i18n>adminSolutionsAddTopic}"
+              press=".onAddTopic"
+              type="Transparent" />
+          </Toolbar>
+          <List
+            id="topicList"
+            items="{admin>/Topics}"
+            selectionChange=".onTopicSelect"
+            mode="SingleSelectMaster"
+            backgroundDesign="Solid">
+            <StandardListItem
+              title="{admin>name}"
+              description="{admin>description}"
+              type="Active" />
+            <noData>
+              <IllustratedMessage
+                illustrationType="sapIllus-EmptyList"
+                title="{i18n>adminSolutionsTopics}"
+                description="" />
+            </noData>
+          </List>
+        </VBox>
 
-        <!-- Solutions Panel -->
-        <Panel
-          id="solutionsPanel"
-          headerText="{i18n>adminSolutionsSolutions}"
-          width="700px">
-          <headerToolbar>
-            <OverflowToolbar>
-              <Title text="{i18n>adminSolutionsSolutions}" />
-              <ToolbarSpacer />
-              <Button
-                icon="sap-icon://add"
-                tooltip="{i18n>adminSolutionsAddSolution}"
-                press=".onAddSolution" />
-            </OverflowToolbar>
-          </headerToolbar>
-          <content>
-            <Table
-              id="solutionTable"
-              items="{viewModel>/solutions}">
-              <columns>
-                <Column><Text text="Name" /></Column>
-                <Column><Text text="Beschreibung" /></Column>
-                <Column hAlign="Center" width="60px"><Text text="" /></Column>
-              </columns>
-              <items>
-                <ColumnListItem>
-                  <cells>
-                    <Input value="{viewModel>name}" required="true" />
-                    <Input value="{viewModel>description}" />
-                    <Button
-                      icon="sap-icon://delete"
-                      tooltip="{i18n>expertListDeleteBtn}"
-                      press=".onDeleteSolution"
-                      type="Transparent" />
-                  </cells>
-                </ColumnListItem>
-              </items>
-            </Table>
-          </content>
-        </Panel>
+        <!-- Divider -->
+        <VBox class="sapUiSmallMarginEnd">
+          <core:HTML content="&lt;div style='width:1px;background:#e5e5e5;height:100%;min-height:200px'&gt;&lt;/div&gt;" xmlns:core="sap.ui.core" />
+        </VBox>
 
-      </l:HorizontalLayout>
-    </content>
-  </Page>
+        <!-- Solutions column -->
+        <VBox class="sapUiContentPadding" width="100%">
+          <Toolbar style="Clear">
+            <Title text="{i18n>adminSolutionsSolutions}" level="H4" />
+            <ToolbarSpacer />
+            <Button
+              icon="sap-icon://add"
+              tooltip="{i18n>adminSolutionsAddSolution}"
+              press=".onAddSolution"
+              type="Transparent" />
+          </Toolbar>
+          <Table
+            id="solutionTable"
+            items="{viewModel>/solutions}"
+            growing="true"
+            growingThreshold="20"
+            backgroundDesign="Solid">
+            <columns>
+              <Column><Text text="Name" /></Column>
+              <Column minScreenWidth="Tablet" demandPopin="true">
+                <Text text="Beschreibung" />
+              </Column>
+              <Column hAlign="End" width="3rem"><Text text="" /></Column>
+            </columns>
+            <items>
+              <ColumnListItem>
+                <cells>
+                  <Input value="{viewModel>name}" required="true" />
+                  <Input value="{viewModel>description}" />
+                  <Button
+                    icon="sap-icon://delete"
+                    tooltip="{i18n>expertListDeleteBtn}"
+                    press=".onDeleteSolution"
+                    type="Transparent" />
+                </cells>
+              </ColumnListItem>
+            </items>
+            <noData>
+              <IllustratedMessage
+                illustrationType="sapIllus-EmptyList"
+                title="{i18n>adminSolutionsSolutions}"
+                description="{i18n>adminSolutionsSelectTopicFirst}" />
+            </noData>
+          </Table>
+        </VBox>
+
+      </HBox>
+    </f:content>
+
+  </f:DynamicPage>
 </mvc:View>
