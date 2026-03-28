@@ -244,6 +244,36 @@ module.exports = cds.service.impl(async function () {
     return { isAdmin: bAdmin, userName: sName };
   });
 
+  // ─── Admin: Compute virtual fullName for AdminExperts ─────────────────────
+  // Helper to compute fullName from lastName + firstName
+  const computeFullName = (e) => {
+    if (!e) return;
+    const parts = [e.lastName, e.firstName].filter(Boolean);
+    e.fullName = parts.length ? parts.join(' ') : 'New Expert';
+  };
+
+  // After READ: always populate fullName (active + draft reads)
+  this.after('READ', 'AdminExperts', (results) => {
+    for (const e of Array.isArray(results) ? results : [results]) {
+      computeFullName(e);
+    }
+  });
+
+  // After NEW: populate fullName when a new draft is created
+  this.after('NEW', 'AdminExperts', (data) => {
+    computeFullName(data);
+  });
+
+  // After EDIT: populate fullName when entering edit mode on existing entity
+  this.after('EDIT', 'AdminExperts', (data) => {
+    computeFullName(data);
+  });
+
+  // After PATCH: recompute fullName so SideEffects can refresh the title
+  this.after('PATCH', 'AdminExperts', (data) => {
+    computeFullName(data);
+  });
+
   // ─── Admin: Auto-generate IDs ─────────────────────────────────────────────
   this.before('CREATE', [
     'AdminTopics', 'AdminSolutions', 'AdminExperts', 'AdminExpertRoles', 'AdminRoles'

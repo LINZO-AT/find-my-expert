@@ -50,7 +50,8 @@ service CatalogService @(path: '/api/catalog') {
     @(requires: 'Admin') @cds.redirection.target: false
     @odata.draft.enabled
     entity AdminExperts as projection on findmyexpert.Experts {
-        *, roles : redirected to AdminExpertRoles
+        *, roles : redirected to AdminExpertRoles,
+        virtual fullName : String(200)
     };
 
     @(requires: 'Admin') @cds.redirection.target: false

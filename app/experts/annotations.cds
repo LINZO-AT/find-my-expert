@@ -100,21 +100,18 @@ annotate service.ExpertSearch with @(
         Data  : [
             { $Type : 'UI.DataField', Value : firstName },
             { $Type : 'UI.DataField', Value : lastName },
-            {
-                $Type : 'UI.DataField',
-                Value : email,
-                Label : '{i18n>Email}'
-            },
+            { $Type : 'UI.DataField', Value : email },
             { $Type : 'UI.DataField', Value : location },
         ],
     },
-    UI.Facets : [
+    UI.HeaderFacets : [
         {
             $Type  : 'UI.ReferenceFacet',
-            ID     : 'ExpertInfoFacet',
-            Label  : '{i18n>ExpertInformation}',
+            ID     : 'HeaderExpertInfo',
             Target : '@UI.FieldGroup#ExpertInfo',
         },
+    ],
+    UI.Facets : [
         {
             $Type  : 'UI.ReferenceFacet',
             ID     : 'ExpertRolesFacet',
@@ -353,12 +350,12 @@ annotate service.AdminExperts with @(
         TypeNamePlural : '{i18n>Experts}',
         Title          : {
             $Type : 'UI.DataField',
-            Value : lastName
+            Value : fullName
         },
-        Description    : {
-            $Type : 'UI.DataField',
-            Value : firstName
-        }
+    },
+    Common.SideEffects #NameChanged : {
+        SourceProperties : [ firstName, lastName ],
+        TargetProperties : [ fullName ]
     },
     UI.SelectionFields : [ firstName, lastName, location ],
     UI.LineItem        : [
@@ -393,17 +390,18 @@ annotate service.AdminExperts with @(
             { $Type : 'UI.DataField', Value : location },
         ],
     },
+    UI.HeaderFacets    : [
+        {
+            $Type  : 'UI.ReferenceFacet',
+            ID     : 'HeaderExpertInfo',
+            Target : '@UI.FieldGroup#ExpertInfo',
+        },
+    ],
     UI.Facets          : [
         {
             $Type  : 'UI.ReferenceFacet',
-            ID     : 'ExpertInfoFacet',
-            Label  : '{i18n>ExpertInformation}',
-            Target : '@UI.FieldGroup#ExpertInfo',
-        },
-        {
-            $Type  : 'UI.ReferenceFacet',
             ID     : 'ExpertRolesFacet',
-            Label  : '{i18n>Roles}',
+            Label  : '{i18n>ExpertRoles}',
             Target : 'roles/@UI.LineItem',
         },
     ],

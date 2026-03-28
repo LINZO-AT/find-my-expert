@@ -143,6 +143,7 @@
           "type": "Component",
           "id": "ExpertSearchList",
           "name": "sap.fe.templates.ListReport",
+          "viewLevel": 0,
           "options": {
             "settings": {
               "contextPath": "/ExpertSearch",
@@ -193,6 +194,7 @@
           "type": "Component",
           "id": "ExpertSearchObjectPage",
           "name": "sap.fe.templates.ObjectPage",
+          "viewLevel": 1,
           "options": {
             "settings": {
               "editableHeaderContent": false,
@@ -204,6 +206,7 @@
           "type": "Component",
           "id": "AdminExpertsList",
           "name": "sap.fe.templates.ListReport",
+          "viewLevel": 1,
           "options": {
             "settings": {
               "contextPath": "/AdminExperts",
@@ -223,6 +226,7 @@
           "type": "Component",
           "id": "AdminExpertsObjectPage",
           "name": "sap.fe.templates.ObjectPage",
+          "viewLevel": 2,
           "options": {
             "settings": {
               "editableHeaderContent": true,
@@ -234,6 +238,7 @@
           "type": "Component",
           "id": "AdminRolesList",
           "name": "sap.fe.templates.ListReport",
+          "viewLevel": 1,
           "options": {
             "settings": {
               "contextPath": "/AdminRoles",
@@ -253,6 +258,7 @@
           "type": "Component",
           "id": "AdminRolesObjectPage",
           "name": "sap.fe.templates.ObjectPage",
+          "viewLevel": 2,
           "options": {
             "settings": {
               "editableHeaderContent": true,
@@ -264,6 +270,7 @@
           "type": "Component",
           "id": "AdminTopicsList",
           "name": "sap.fe.templates.ListReport",
+          "viewLevel": 1,
           "options": {
             "settings": {
               "contextPath": "/AdminTopics",
@@ -283,6 +290,7 @@
           "type": "Component",
           "id": "AdminTopicsObjectPage",
           "name": "sap.fe.templates.ObjectPage",
+          "viewLevel": 2,
           "options": {
             "settings": {
               "editableHeaderContent": true,
@@ -301,6 +309,7 @@
           "type": "Component",
           "id": "AdminTopicsSolutionObjectPage",
           "name": "sap.fe.templates.ObjectPage",
+          "viewLevel": 3,
           "options": {
             "settings": {
               "editableHeaderContent": true,

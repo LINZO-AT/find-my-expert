@@ -13,16 +13,28 @@ sap.ui.define([
             }
         },
 
+        /**
+         * Navigate to admin route using the app router directly.
+         * Uses navTo with replace=false to ensure proper browser history push,
+         * so Back navigation from the admin ObjectPage returns to the admin ListReport.
+         * @param {string} sRouteName - The route name to navigate to
+         */
+        _navigateToAdmin: function (sRouteName) {
+            var oAppComponent = this.base.getAppComponent();
+            var oRouter = oAppComponent.getRouter();
+            oRouter.navTo(sRouteName, {}, /* bReplace */ false);
+        },
+
         onAdminExperts: function () {
-            this.base.routing.navigateToRoute("AdminExpertsList");
+            this._navigateToAdmin("AdminExpertsList");
         },
 
         onAdminRoles: function () {
-            this.base.routing.navigateToRoute("AdminRolesList");
+            this._navigateToAdmin("AdminRolesList");
         },
 
         onAdminTopics: function () {
-            this.base.routing.navigateToRoute("AdminTopicsList");
+            this._navigateToAdmin("AdminTopicsList");
         }
     });
 });
