@@ -12,51 +12,49 @@
         bootstrapPlugins: {
           RuntimeAuthoringPlugin: {
             component: "sap.ushell.plugins.rta",
-            config: {
-              validateAppVersion: false,
-            },
-          },
+            config: { validateAppVersion: false }
+          }
         },
         renderers: {
           fiori2: {
             componentData: {
               config: {
                 search: "hidden",
-                enableSearch: false,
-              },
-            },
-          },
+                enableSearch: false
+              }
+            }
+          }
         },
         applications: {
           "Expert-search": {
             title: "Find My Expert",
-            description: "Expert directory",
+            description: "Expert directory search",
             additionalInformation: "SAPUI5.Component=findmyexpertSearch",
             applicationType: "URL",
-            url: "../",
+            url: "../"
           },
           "Expert-manage": {
             title: "Manage Experts",
             description: "CRUD for experts",
             additionalInformation: "SAPUI5.Component=findmyexpertManageExperts",
             applicationType: "URL",
-            url: "/findmyexpert-manage-experts/webapp",
+            url: "/findmyexpert-manage-experts/webapp"
           },
           "Role-manage": {
             title: "Manage Roles",
             description: "CRUD for expert roles",
             additionalInformation: "SAPUI5.Component=findmyexpertManageRoles",
             applicationType: "URL",
-            url: "/findmyexpert-manage-roles/webapp",
+            url: "/findmyexpert-manage-roles/webapp"
           },
           "Topic-manage": {
             title: "Manage Topics & Solutions",
             description: "CRUD for topics and solutions",
             additionalInformation: "SAPUI5.Component=findmyexpertManageTopics",
             applicationType: "URL",
-            url: "/findmyexpert-manage-topics/webapp",
-          },
-        },
+            url: "/findmyexpert-manage-topics/webapp"
+          }
+        }
       };
     </script>
 

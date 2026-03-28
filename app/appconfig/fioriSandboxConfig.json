@@ -1,10 +1,70 @@
 {
-  "applications": {},
   "services": {
     "ClientSideTargetResolution": {
       "adapter": {
         "config": {
-          "inbounds": {}
+          "inbounds": {
+            "findmyexpert-search": {
+              "semanticObject": "Expert",
+              "action": "search",
+              "title": "Find My Expert",
+              "icon": "sap-icon://search",
+              "signature": {
+                "parameters": {},
+                "additionalParameters": "allowed"
+              },
+              "resolutionResult": {
+                "applicationType": "SAPUI5",
+                "additionalInformation": "SAPUI5.Component=findmyexpertSearch",
+                "url": "/findmyexpert-search/webapp"
+              }
+            },
+            "findmyexpert-manage-experts": {
+              "semanticObject": "Expert",
+              "action": "manage",
+              "title": "Manage Experts",
+              "icon": "sap-icon://employee",
+              "signature": {
+                "parameters": {},
+                "additionalParameters": "allowed"
+              },
+              "resolutionResult": {
+                "applicationType": "SAPUI5",
+                "additionalInformation": "SAPUI5.Component=findmyexpertManageExperts",
+                "url": "/findmyexpert-manage-experts/webapp"
+              }
+            },
+            "findmyexpert-manage-roles": {
+              "semanticObject": "Role",
+              "action": "manage",
+              "title": "Manage Roles",
+              "icon": "sap-icon://role",
+              "signature": {
+                "parameters": {},
+                "additionalParameters": "allowed"
+              },
+              "resolutionResult": {
+                "applicationType": "SAPUI5",
+                "additionalInformation": "SAPUI5.Component=findmyexpertManageRoles",
+                "url": "/findmyexpert-manage-roles/webapp"
+              }
+            },
+            "findmyexpert-manage-topics": {
+              "semanticObject": "Topic",
+              "action": "manage",
+              "title": "Manage Topics & Solutions",
+              "icon": "sap-icon://course-book",
+              "signature": {
+                "parameters": {},
+                "additionalParameters": "allowed"
+              },
+              "resolutionResult": {
+                "applicationType": "SAPUI5",
+                "additionalInformation": "SAPUI5.Component=findmyexpertManageTopics",
+                "url": "/findmyexpert-manage-topics/webapp"
+              }
+            }
+          }
         }
       }
     }

@@ -1,30 +1,58 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Manage Roles</title>
-    <script
-        id="sap-ui-bootstrap"
-        src="https://sapui5.hana.ondemand.com/1.136.7/resources/sap-ui-core.js"
-        data-sap-ui-theme="sap_horizon"
-        data-sap-ui-resourceroots='{
-            "findmyexpertManageRoles": "./"
-        }'
-        data-sap-ui-compatVersion="edge"
-        data-sap-ui-oninit="module:sap/ui/core/ComponentSupport"
-        data-sap-ui-async="true"
-        data-sap-ui-frameOptions="trusted">
+
+    <script type="text/javascript">
+      window["sap-ushell-config"] = {
+        defaultRenderer: "fiori2",
+        renderers: {
+          fiori2: {
+            componentData: {
+              config: {
+                search: "hidden",
+                enableSearch: false
+              }
+            }
+          }
+        },
+        applications: {
+          "Role-manage": {
+            title: "Manage Roles",
+            description: "CRUD for expert roles",
+            additionalInformation: "SAPUI5.Component=findmyexpertManageRoles",
+            applicationType: "URL",
+            url: "./"
+          }
+        }
+      };
     </script>
-</head>
-<body class="sapUiBody" role="application">
-    <div
-        data-sap-ui-component
-        data-name="findmyexpertManageRoles"
-        data-id="container"
-        data-settings='{"id" : "manageroles"}'
-        data-handle-validation="true">
-    </div>
-</body>
+
+    <script
+      src="https://sapui5.hana.ondemand.com/1.136.7/test-resources/sap/ushell/bootstrap/sandbox.js"
+      id="sap-ushell-bootstrap"
+    ></script>
+    <script
+      id="sap-ui-bootstrap"
+      src="https://sapui5.hana.ondemand.com/1.136.7/resources/sap-ui-core.js"
+      data-sap-ui-libs=""
+      data-sap-ui-async="true"
+      data-sap-ui-preload="async"
+      data-sap-ui-theme="sap_horizon"
+      data-sap-ui-compatVersion="edge"
+      data-sap-ui-resourceroots='{"findmyexpertManageRoles": "./"}'
+      data-sap-ui-frameOptions="allow"
+      data-sap-ui-flexibilityServices='[{"connector": "LocalStorageConnector"}]'
+    ></script>
+    <script>
+      sap.ui.getCore().attachInit(function () {
+        sap.ushell.Container.createRenderer().placeAt("content");
+      });
+    </script>
+  </head>
+
+  <body class="sapUiBody sapUiSizeCompact" id="content"></body>
 </html>
