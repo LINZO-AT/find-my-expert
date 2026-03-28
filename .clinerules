@@ -75,6 +75,7 @@ Use the `get_guidelines` tool of the UI5 MCP server to retrieve the latest codin
 | `fiori-mcp` | Fiori Design Patterns, App analysis, UX Guidelines, generating/modifying Fiori Elements apps |
 | `cds-mcp` | CDS Schema patterns, Service best practices, OData Annotations, CDS model search |
 | `ui5-webc-mcp` | If Web Components controls are considered |
+| `puppeteer-mcp` | Browser automation, UI testing, screenshots, end-to-end testing of the running app |
 
 **Always consult MCP docs first, then implement.**
 No assumptions from memory — verify all API details via MCP tools.

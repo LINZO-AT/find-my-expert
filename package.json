@@ -2,7 +2,9 @@
   "name": "findmyexpert",
   "version": "1.0.0",
   "description": "Find My Expert — SAP Austria Internal Expert Directory",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
     "@sap/cds": "^9.1.0",
     "@sap/xsenv": "^5.0.0",
@@ -13,7 +15,8 @@
   },
   "devDependencies": {
     "@sap/cds-dk": "^9.1.0",
-    "@cap-js/sqlite": "^1.0.0"
+    "@cap-js/sqlite": "^1.0.0",
+    "cds-plugin-ui5": "^0.13.0"
   },
   "scripts": {
     "start": "cds-serve",
@@ -21,14 +24,27 @@
     "prewatch": "npm run kill-port",
     "watch": "cds watch",
     "build": "cds build --production",
-    "test": "jest --testPathPattern=test/"
+    "test": "jest --testPathPattern=test/",
+    "watch-experts": "cds watch --open experts/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-admin": "cds watch --open admin/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "cds": {
     "requires": {
       "[production]": {
-        "auth": { "kind": "xsuaa" },
-        "db":   { "kind": "postgres" }
+        "auth": {
+          "kind": "xsuaa"
+        },
+        "db": {
+          "kind": "postgres"
+        }
       }
     }
-  }
+  },
+  "workspaces": [
+    "app/*"
+  ],
+  "sapux": [
+    "app/experts",
+    "app/admin"
+  ]
 }

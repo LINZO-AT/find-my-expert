@@ -1,12 +1,9 @@
-ID,createdAt,createdBy,modifiedAt,modifiedBy,name,description
-t-ai,2026-03-27T14:12:18.993Z,anonymous,2026-03-27T14:12:18.993Z,anonymous,AI,Artificial Intelligence & Joule — SAP Business AI Portfolio und Custom AI
-t-bdc,2026-03-27T14:12:18.993Z,anonymous,2026-03-27T14:12:18.993Z,anonymous,BDC,Business Data Cloud — SAP Datasphere Analytics und Reporting
-t-btp,2026-03-27T14:12:18.993Z,anonymous,2026-03-27T14:12:18.993Z,anonymous,BTP,SAP Business Technology Platform — Integration Suite Build und Extensions
-t-erp,2026-03-27T14:12:18.993Z,anonymous,2026-03-27T14:12:18.993Z,anonymous,CloudERP,Cloud ERP & S/4HANA — Finance Logistics Manufacturing und Sales
-t-hcm,2026-03-27T14:12:18.993Z,anonymous,2026-03-27T14:12:18.993Z,anonymous,HCM,Human Capital Management — SuccessFactors und S/4HANA HCM
-t-itc,2026-03-27T14:12:18.993Z,anonymous,2026-03-27T14:12:18.993Z,anonymous,Integrated Toolchain,Integrated Toolchain — Signavio LeanIX WalkMe CALM Tricentis
-t-rise,2026-03-27T14:12:18.993Z,anonymous,2026-03-27T14:12:18.993Z,anonymous,RISE,RISE with SAP — Cloud Migrations Lift & Shift und System Conversions
-t-tni,2026-03-27T14:12:18.993Z,anonymous,2026-03-27T14:12:18.993Z,anonymous,T&I,Transformation & Innovation — Clean Core Strategy und Extensibility
-d7c78e8b-4d33-4881-984b-058ae3ec29c4,2026-03-27T16:58:46.244Z,privileged,2026-03-27T16:58:46.244Z,privileged,Neues Thema,
-4b513c91-3618-45b6-b393-bb34a170563b,2026-03-27T16:58:46.955Z,privileged,2026-03-27T16:58:46.955Z,privileged,Neues Thema,
-a46a13f4-844d-4b5a-95e5-f4c8813cd03c,2026-03-27T16:58:47.101Z,privileged,2026-03-27T16:58:47.101Z,privileged,Neues Thema,
+ID,name,description
+550e8400-e29b-41d4-a716-446655440001,AI,Artificial Intelligence & Joule — SAP Business AI Portfolio und Custom AI
+550e8400-e29b-41d4-a716-446655440002,BDC,Business Data Cloud — SAP Datasphere Analytics und Reporting
+550e8400-e29b-41d4-a716-446655440003,BTP,SAP Business Technology Platform — Integration Suite Build und Extensions
+550e8400-e29b-41d4-a716-446655440004,CloudERP,Cloud ERP & S/4HANA — Finance Logistics Manufacturing und Sales
+550e8400-e29b-41d4-a716-446655440005,HCM,Human Capital Management — SuccessFactors und S/4HANA HCM
+550e8400-e29b-41d4-a716-446655440006,Integrated Toolchain,Integrated Toolchain — Signavio LeanIX WalkMe CALM Tricentis
+550e8400-e29b-41d4-a716-446655440007,RISE,RISE with SAP — Cloud Migrations Lift & Shift und System Conversion
+550e8400-e29b-41d4-a716-446655440008,T&I,Transformation & Innovation — Business Process Transformation und Innovation Advisory

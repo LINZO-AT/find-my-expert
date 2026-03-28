@@ -5,15 +5,7 @@
       "database": "db.sqlite"
     },
     "auth": {
-      "kind": "mocked",
-      "users": {
-        "anonymous": {
-          "roles": ["Admin", "Viewer", "authenticated-user"]
-        },
-        "*": {
-          "roles": ["Admin", "Viewer", "authenticated-user"]
-        }
-      }
+      "kind": "dummy"
     }
   },
   "server": {

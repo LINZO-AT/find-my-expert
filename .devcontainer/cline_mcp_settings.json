@@ -37,7 +37,12 @@
     },
     "sap.tools.hyperspace.portal.s4c.mcp/mcp": {
       "type": "streamableHttp",
-      "url": "https://mcp.s4c.portal.hyperspace.tools.sap/mcp"
+      "url": "https://mcp.s4c.portal.hyperspace.tools.sap/mcp",
+      "autoApprove": [
+        "list_product_standards",
+        "search_requirement",
+        "get_requirement"
+      ]
     },
     "ui5-webc-mcp": {
       "command": "npx",
@@ -48,6 +53,44 @@
         "get_doc",
         "get_guidelines",
         "list_docs"
+      ]
+    },
+    "github.com/modelcontextprotocol/servers/tree/main/src/memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "env": {
+        "MEMORY_FILE_PATH": "/home/node/Documents/Cline/MCP/memory/memory.jsonl"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "create_entities",
+        "create_relations",
+        "add_observations",
+        "delete_entities",
+        "delete_observations",
+        "delete_relations",
+        "read_graph",
+        "search_nodes",
+        "open_nodes"
+      ]
+    },
+    "github.com/upstash/context7-mcp": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"],
+      "disabled": false,
+      "autoApprove": ["resolve-library-id", "query-docs"]
+    },
+    "github.com/modelcontextprotocol/servers/tree/main/src/puppeteer": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-puppeteer"],
+      "autoApprove": [
+        "puppeteer_navigate",
+        "puppeteer_screenshot",
+        "puppeteer_click",
+        "puppeteer_fill",
+        "puppeteer_select",
+        "puppeteer_hover",
+        "puppeteer_evaluate"
       ]
     }
   }

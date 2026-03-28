@@ -1,185 +1,146 @@
 'use strict';
 const cds = require("@sap/cds");
-const LOG = cds.log('catalog-service');
 
-// Role display labels (DE/EN)
-const ROLE_LABELS = {
-  TOPIC_OWNER:              "Topic Owner",
-  SOLUTIONING_ARCH:         "Solutioning Architect",
-  THEMEN_LEAD:              "Themen Lead",
-  SERVICE_SELLER:           "Service Seller",
-  REALIZATION_LEAD:         "Realization Lead",
-  REALIZATION_CONSULTANT:   "Realization Consultant",
-  PROJECT_MANAGEMENT:       "Project Management",
-  OTHER_CONTACT_AT:         "Other Contact (AT)",
-  OTHER_CONTACT_NON_AT:     "Other Contact"
+// Tiny UUID generator
+const genId = () => {
+  try { return cds.utils.uuid(); } catch (_) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = Math.random() * 16 | 0;
+      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+  }
 };
 
-// Role relevance weights (higher = more relevant)
-const ROLE_WEIGHTS = {
-  TOPIC_OWNER:              100,
-  SOLUTIONING_ARCH:          85,
-  THEMEN_LEAD:               75,
-  SERVICE_SELLER:            65,
-  REALIZATION_LEAD:          55,
-  REALIZATION_CONSULTANT:    45,
-  PROJECT_MANAGEMENT:        35,
-  OTHER_CONTACT_AT:          20,
-  OTHER_CONTACT_NON_AT:      10
+/**
+ * Relevance score for a single ExpertSearch row.
+ *
+ * Base score = role.priority  (stored in the Roles entity, admin-configurable).
+ * Presentation capability bonuses are added on top:
+ *   canPresent2H  +3   (deeper commitment)
+ *   canPresentDemo +2
+ *   canPresent30M  +1
+ *   canPresent5M   +1
+ *
+ * The role priority values shipped as seed data:
+ *   Topic Owner / SPOC               50
+ *   Themen Lead                      45
+ *   Solutioning / Architecture / Advisory  40
+ *   Realization Lead                 35
+ *   Project Management               30
+ *   Realization Consultant           25
+ *   Service Seller                   20
+ *   Other Contact (AT)               10
+ *   Other Contact (non-AT)            5
+ */
+const roleScore = (r) => {
+  let s = r.rolePriority ?? 5;
+  if (r.canPresent2H)    s += 3;
+  if (r.canPresentDemo)  s += 2;
+  if (r.canPresent30M)   s += 1;
+  if (r.canPresent5M)    s += 1;
+  return s;
 };
 
 module.exports = cds.service.impl(async function () {
 
-  // ─── userInfo ───────────────────────────────────────────────────────────────
-  this.on("userInfo", async (req) => {
-    const user = req.user;
+  // ─── ExpertSearch: deduplicate + relevance sort ───────────────────────────
+  this.on('READ', 'ExpertSearch', async (req) => {
+    // Extract pagination before running the full query
+    const top    = req.query.SELECT?.limit?.rows?.val   ?? 100;
+    const skip   = req.query.SELECT?.limit?.offset?.val ?? 0;
+    const wantCount = req.query.SELECT?.count ?? false;
 
-    // DEV mode (mocked auth, no NODE_ENV=production):
-    //   anonymous requests = automatically Admin, no login required.
-    // PROD mode (XSUAA):
-    //   Admin role comes from BTP role collection FindMyExpert_Admin.
-    const bDev   = !cds.env.production;
-    const bAnon  = user._is_anonymous || user.id === "anonymous";
-    const bAdmin = bDev && bAnon ? true : user.is("Admin");
-    const sName  = (user.id && !bAnon) ? user.id : (bDev ? "Dev/Admin" : "");
+    // CAP sets req.params for single-entity (key) reads (path-style: /ExpertSearch(ID=...)).
+    const isKeyRead = Array.isArray(req.params) && req.params.length > 0;
 
-    return {
-      isAdmin:  bAdmin,
-      userName: sName
-    };
-  });
-
-  // ─── searchExperts ──────────────────────────────────────────────────────────
-  this.on("searchExperts", async (req) => {
-    const sQuery = (req.data.query || "").trim().toLowerCase();
-    if (!sQuery) {
-      return [];
+    // Secondary detection: WHERE clause is a simple equality filter on the primary key.
+    const where = req.query.SELECT?.where;
+    let keyWhereClause = null;
+    if (!isKeyRead && Array.isArray(where) && where.length === 3) {
+      const [left, op, right] = where;
+      if (op === '=' &&
+          ((left?.ref?.[0] === 'ID' && right?.val) ||
+           (right?.ref?.[0] === 'ID' && left?.val))) {
+        keyWhereClause = where;
+      }
     }
 
-    try {
-      // Load all ExpertRoles with expanded Expert + Solution + Topic
-      const aRoles = await SELECT
-        .from("findmyexpert.ExpertRoles")
-        .columns([
-          "ID",
-          "role",
-          "canPresent5M",
-          "canPresent30M",
-          "canPresent2H",
-          "canPresentDemo",
-          "notes",
-          "expert.ID as expertId",
-          "expert.firstName as firstName",
-          "expert.lastName as lastName",
-          "expert.email as email",
-          "expert.location as location",
-          "solution.ID as solutionId",
-          "solution.name as solutionName",
-          "solution.description as solutionDescription",
-          "solution.topic.ID as topicId",
-          "solution.topic.name as topicName",
-          "solution.topic.description as topicDescription"
-        ])
-        .where("expert_ID IS NOT NULL AND solution_ID IS NOT NULL");
+    if (isKeyRead || keyWhereClause) {
+      // Object Page: fetch by key and return a single entity object (no dedup needed)
+      const { ExpertSearch } = this.entities;
+      const resolvedWhere = keyWhereClause ?? req.query.SELECT?.where ?? req.params[0];
+      const kq = SELECT.from(ExpertSearch).where(resolvedWhere);
+      const rows = await cds.db.run(kq);
+      return Array.isArray(rows) ? (rows[0] ?? null) : rows;
+    }
 
-      if (!aRoles || aRoles.length === 0) {
-        return [];
+    // Build query for ALL matching rows (no LIMIT) to allow correct dedup + pagination
+    const { ExpertSearch } = this.entities;
+    const q = SELECT.from(ExpertSearch);
+    if (req.query.SELECT?.where)  q.SELECT.where  = req.query.SELECT.where;
+    if (req.query.SELECT?.search) q.SELECT.search = req.query.SELECT.search;
+
+    // Run against DB (the CDS view handles joins + @cds.search LIKE translation)
+    const allRows = await cds.db.run(q);
+
+    // Deduplicate: one row per expert, keeping the highest-relevance role
+    const expertMap = new Map();
+    for (const row of allRows) {
+      const s = roleScore(row);
+      const prev = expertMap.get(row.expertID);
+      if (!prev || s > prev._score) {
+        expertMap.set(row.expertID, { ...row, _score: s });
       }
+    }
 
-      // ── Score each ExpertRole entry ────────────────────────────────────────
-      const aScored = [];
-      for (const oRole of aRoles) {
-        const sFirstName   = (oRole.firstName || "").toLowerCase();
-        const sLastName    = (oRole.lastName || "").toLowerCase();
-        const sSolution    = (oRole.solutionName || "").toLowerCase();
-        const sTopic       = (oRole.topicName || "").toLowerCase();
-        const sSolDesc     = (oRole.solutionDescription || "").toLowerCase();
-        const sTopicDesc   = (oRole.topicDescription || "").toLowerCase();
-        const sNotes       = (oRole.notes || "").toLowerCase();
-        const sRoleLabel   = (ROLE_LABELS[oRole.role] || oRole.role || "").toLowerCase();
+    // Sort by relevance descending, then lastName ascending as tiebreaker
+    let results = [...expertMap.values()].sort((a, b) =>
+      b._score - a._score || (a.lastName || '').localeCompare(b.lastName || '')
+    );
 
-        // Split query into tokens for multi-word matching
-        const aTokens = sQuery.split(/\s+/).filter(Boolean);
-        let iScore = 0;
+    // Remove internal _score field
+    results = results.map(({ _score, ...rest }) => rest);
 
-        for (const sToken of aTokens) {
-          // Exact match on name — highest weight
-          if (sFirstName === sToken || sLastName === sToken) iScore += 50;
-          else if (sFirstName.includes(sToken) || sLastName.includes(sToken)) iScore += 30;
+    // Paginate — CAP reads $count off the returned array for @odata.count
+    const total = results.length;
+    const page  = results.slice(skip, skip + top);
+    page.$count  = total;
 
-          // Solution match — high weight
-          if (sSolution === sToken) iScore += 45;
-          else if (sSolution.includes(sToken)) iScore += 25;
+    return page;
+  });
 
-          // Topic match
-          if (sTopic === sToken) iScore += 40;
-          else if (sTopic.includes(sToken)) iScore += 20;
+  // ─── userInfo ───────────────────────────────────────────────────────────────
+  this.on("userInfo", async (req) => {
+    const user  = req.user;
+    const bDev  = !cds.env.production;
+    const bAnon = user._is_anonymous || user.id === "anonymous";
+    const bAdmin = bDev && bAnon ? true : user.is("Admin");
+    const sName  = (user.id && !bAnon) ? user.id : (bDev ? "Dev/Admin" : "");
+    return { isAdmin: bAdmin, userName: sName };
+  });
 
-          // Role label match
-          if (sRoleLabel.includes(sToken)) iScore += 20;
+  // ─── Admin: Auto-generate IDs ─────────────────────────────────────────────
+  this.before('CREATE', [
+    'AdminTopics', 'AdminSolutions', 'AdminExperts', 'AdminExpertRoles', 'AdminRoles'
+  ], req => {
+    if (!req.data.ID) req.data.ID = genId();
+  });
 
-          // Description / notes — lower weight
-          if (sSolDesc.includes(sToken)) iScore += 10;
-          if (sTopicDesc.includes(sToken)) iScore += 8;
-          if (sNotes.includes(sToken)) iScore += 5;
-        }
+  // ─── Admin: Validate expert email format ──────────────────────────────────
+  this.before(['CREATE', 'UPDATE'], 'AdminExperts', req => {
+    if (req.data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(req.data.email)) {
+      req.error(400, 'Invalid email format', 'email');
+    }
+  });
 
-        // Apply role weight bonus (0–10 pts)
-        const iRoleWeight = ROLE_WEIGHTS[oRole.role] || 0;
-        iScore += Math.round(iRoleWeight / 20);
-
-        if (iScore > 0) {
-          aScored.push({
-            _key: oRole.expertId + oRole.role + oRole.solutionId,
-            expertId:      oRole.expertId,
-            firstName:     oRole.firstName || "",
-            lastName:      oRole.lastName || "",
-            email:         oRole.email || "",
-            location:      oRole.location || "",
-            topicName:     oRole.topicName || "",
-            solutionName:  oRole.solutionName || "",
-            role:          oRole.role || "",
-            roleLabel:     ROLE_LABELS[oRole.role] || oRole.role || "",
-            canPresent5M:  !!oRole.canPresent5M,
-            canPresent30M: !!oRole.canPresent30M,
-            canPresent2H:  !!oRole.canPresent2H,
-            canPresentDemo:!!oRole.canPresentDemo,
-            score:         iScore,
-            isMockMode:    false
-          });
-        }
-      }
-
-      if (aScored.length === 0) {
-        return [];
-      }
-
-      // ── Deduplicate: keep highest score per expertId+role ──────────────────
-      const oSeen = new Map();
-      for (const oResult of aScored) {
-        const sKey = oResult.expertId + "|" + oResult.role;
-        if (!oSeen.has(sKey) || oSeen.get(sKey).score < oResult.score) {
-          oSeen.set(sKey, oResult);
-        }
-      }
-
-      // ── Sort by score desc, cap at 50 results ─────────────────────────────
-      const aFinal = Array.from(oSeen.values())
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 50);
-
-      // Normalize scores to 0–100 range
-      const iMaxScore = aFinal[0]?.score || 1;
-      for (const oResult of aFinal) {
-        oResult.score = Math.min(100, Math.round((oResult.score / iMaxScore) * 100));
-        delete oResult._key;
-      }
-
-      return aFinal;
-
-    } catch (err) {
-      LOG.error("searchExperts failed:", err.message);
-      req.error(500, "Expert search failed: " + err.message);
+  // ─── Admin: Prevent duplicate expert+solution+role combinations ───────────
+  this.before('CREATE', 'AdminExpertRoles', async req => {
+    const { expert_ID, solution_ID, role_ID } = req.data;
+    if (!expert_ID || !solution_ID || !role_ID) return;
+    const existing = await SELECT.one.from('findmyexpert.ExpertRoles')
+      .where({ expert_ID, solution_ID, role_ID });
+    if (existing) {
+      req.error(409, 'This Expert/Solution/Role combination already exists.');
     }
   });
 });

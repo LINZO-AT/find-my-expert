@@ -1,0 +1,10 @@
+ID,name,priority,description
+990e8400-e29b-41d4-a716-000000000001,Topic Owner / SPOC,50,Topic Owner or Single Point of Contact for a solution area
+990e8400-e29b-41d4-a716-000000000006,Themen Lead,45,Lead expert for a specific topic or theme within SAP
+990e8400-e29b-41d4-a716-000000000002,Solutioning / Architecture / Advisory,40,Pre-sales advisory and solution architecture
+990e8400-e29b-41d4-a716-000000000004,Realization Lead,35,Leads the end-to-end implementation of a solution
+990e8400-e29b-41d4-a716-000000000003,Project Management,30,Project manager for solution implementations
+990e8400-e29b-41d4-a716-000000000005,Realization Consultant,25,Implementation consultant for a solution
+990e8400-e29b-41d4-a716-000000000007,Service Seller,20,Service selling specialist for a solution
+990e8400-e29b-41d4-a716-000000000008,Other Contact (AT),10,Additional contact based in Austria
+990e8400-e29b-41d4-a716-000000000009,Other Contact (non-AT),5,Contact based outside Austria

@@ -1,41 +1,69 @@
 using findmyexpert from '../db/schema';
 
 service CatalogService @(path: '/api/catalog') {
-    @readonly
-    entity Topics      as projection on findmyexpert.Topics;
-    @readonly
-    entity Solutions   as projection on findmyexpert.Solutions;
-    @readonly
-    entity Experts     as projection on findmyexpert.Experts;
-    @readonly
-    entity ExpertRoles as projection on findmyexpert.ExpertRoles;
 
-    /**
-     * Returns current user info including role information
-     */
+    // ─── Public read-only entities ───────────────────────────────────────────
+    @readonly @cds.redirection.target entity Topics      as projection on findmyexpert.Topics;
+    @readonly @cds.redirection.target entity Solutions   as projection on findmyexpert.Solutions;
+    @readonly @cds.redirection.target entity Experts     as projection on findmyexpert.Experts;
+    @readonly @cds.redirection.target entity ExpertRoles as projection on findmyexpert.ExpertRoles;
+    @readonly @cds.redirection.target entity Roles       as projection on findmyexpert.Roles;
+
+    // ─── Flat search view (denormalized for full-text search across topic/solution/role) ──
+    // relevanceScore = role.priority + capability bonuses (computed in service handler)
+    @readonly
+    @cds.search: { firstName, lastName, email, location, solutionName, topicName, roleName }
+    entity ExpertSearch as SELECT from findmyexpert.ExpertRoles {
+        ID,
+        expert.ID             as expertID,
+        expert.firstName      as firstName,
+        expert.lastName       as lastName,
+        expert.email          as email,
+        expert.location       as location,
+        solution.name         as solutionName,
+        solution.topic.name   as topicName,
+        role.name             as roleName,
+        role.priority         as rolePriority,
+        canPresent5M,
+        canPresent30M,
+        canPresent2H,
+        canPresentDemo,
+        notes
+    };
+
+    // ─── Admin entities (require Admin role, draft-enabled for CRUD) ─────────
+    // Draft-enabled root entities (compositions cascade draft automatically)
+    @(requires: 'Admin') @cds.redirection.target: false
+    @odata.draft.enabled
+    entity AdminTopics as projection on findmyexpert.Topics {
+        *, solutions : redirected to AdminSolutions
+    };
+
+    @(requires: 'Admin') @cds.redirection.target: false
+    entity AdminSolutions as projection on findmyexpert.Solutions {
+        *, topic : redirected to AdminTopics
+    } excluding { experts };
+
+    @(requires: 'Admin') @cds.redirection.target: false
+    @odata.draft.enabled
+    entity AdminExperts as projection on findmyexpert.Experts {
+        *, roles : redirected to AdminExpertRoles
+    };
+
+    @(requires: 'Admin') @cds.redirection.target: false
+    entity AdminExpertRoles as projection on findmyexpert.ExpertRoles {
+        *, expert   : redirected to AdminExperts,
+           solution : redirected to AdminSolutions,
+           role     : redirected to AdminRoles
+    };
+
+    @(requires: 'Admin') @cds.redirection.target: false
+    @odata.draft.enabled
+    entity AdminRoles as projection on findmyexpert.Roles;
+
+    // ─── User info ───────────────────────────────────────────────────────────
     function userInfo() returns {
         isAdmin  : Boolean;
         userName : String;
-    };
-
-    /**
-     * AI Expert Search — returns ranked list of experts matching the query
-     */
-    action searchExperts(query: String) returns array of {
-        expertId      : UUID;
-        firstName     : String;
-        lastName      : String;
-        email         : String;
-        location      : String;
-        topicName     : String;
-        solutionName  : String;
-        role          : String;
-        roleLabel     : String;
-        canPresent5M  : Boolean;
-        canPresent30M : Boolean;
-        canPresent2H  : Boolean;
-        canPresentDemo: Boolean;
-        score         : Integer;
-        isMockMode    : Boolean;
     };
 }

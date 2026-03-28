@@ -1,42 +1,45 @@
 namespace findmyexpert;
 
-using { managed } from '@sap/cds/common';
+using { managed, cuid } from '@sap/cds/common';
 
 /**
  * Topic areas: AI, BDC, BTP, CloudERP, HCM,
  * Integrated Toolchain, RISE, T&I
  */
 @title: 'Topics'
-entity Topics : managed {
-  key ID         : String(50);
+@cds.odata.valuelist
+entity Topics : cuid, managed {
   @title: 'Name'
   name        : String(100) not null;
   @title: 'Description'
   description : String(500);
-  solutions   : Association to many Solutions on solutions.topic = $self;
+  solutions   : Composition of many Solutions on solutions.topic = $self;
 }
 
 /**
  * SAP Products / Services
  */
 @title: 'Solutions'
-entity Solutions : managed {
-  key ID         : String(50);
+@cds.odata.valuelist
+@cds.search: { name, description }
+entity Solutions : cuid, managed {
   @title: 'Name'
   name        : String(200) not null;
   @title: 'Topic'
+  @Common.Text: (topic.name) @Common.TextArrangement: #TextOnly
   topic       : Association to Topics;
   @title: 'Description'
   description : String(1000);
-  experts     : Association to many ExpertRoles on experts.solution = $self;
+  experts     : Composition of many ExpertRoles on experts.solution = $self;
 }
 
 /**
  * People / Internal Experts
  */
 @title: 'Experts'
-entity Experts : managed {
-  key ID         : String(50);
+@cds.odata.valuelist
+@cds.search: { firstName, lastName, email, location }
+entity Experts : cuid, managed {
   @title: 'First Name'
   firstName   : String(100) not null;
   @title: 'Last Name'
@@ -45,37 +48,41 @@ entity Experts : managed {
   email       : String(200);
   @title: 'Location'
   location    : String(10);
-  roles       : Association to many ExpertRoles on roles.expert = $self;
+  roles       : Composition of many ExpertRoles on roles.expert = $self;
 }
 
 /**
- * Role types — ordered by relevance weight (highest first)
+ * Expert role types — admin-manageable.
+ * The `priority` field controls relevance ranking in search results:
+ * higher value = shown first within the same capability tier.
  */
-@assert.range type ExpertRoleType : String enum {
-  TopicOwner              = 'TOPIC_OWNER';
-  SolutioningArchAdvisory = 'SOLUTIONING_ARCH';
-  ThemenLead              = 'THEMEN_LEAD';
-  ServiceSeller           = 'SERVICE_SELLER';
-  RealizationLead         = 'REALIZATION_LEAD';
-  RealizationConsultant   = 'REALIZATION_CONSULTANT';
-  ProjectManagement       = 'PROJECT_MANAGEMENT';
-  OtherContactAT          = 'OTHER_CONTACT_AT';
-  OtherContactNonAT       = 'OTHER_CONTACT_NON_AT';
+@title: 'Roles'
+@cds.odata.valuelist
+entity Roles : cuid, managed {
+  @title: 'Name'
+  name        : String(100) not null;
+  @title: 'Priority'
+  priority    : Integer    default 10;
+  @title: 'Description'
+  description : String(500);
 }
 
 /**
- * Junction: Expert <-> Solution with role metadata
+ * Junction: Expert <-> Solution with role metadata and presentation capabilities.
+ * The `role.priority` field feeds into the relevance score computed in ExpertSearch.
  */
 @title: 'Expert Roles'
-entity ExpertRoles : managed {
-  key ID            : String(50);
+@cds.search: { notes }
+entity ExpertRoles : cuid, managed {
   @title: 'Expert'
+  @Common.Text: (expert.lastName) @Common.TextArrangement: #TextOnly
   expert            : Association to Experts   not null;
   @title: 'Solution'
+  @Common.Text: (solution.name) @Common.TextArrangement: #TextOnly
   solution          : Association to Solutions not null;
   @title: 'Role'
-  @assert.range
-  role              : ExpertRoleType           not null;
+  @Common.Text: (role.name) @Common.TextArrangement: #TextOnly
+  role              : Association to Roles     not null;
   @title: 'Can present 5 min'
   canPresent5M      : Boolean default false;
   @title: 'Can present 30 min'
