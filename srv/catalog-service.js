@@ -83,14 +83,45 @@ module.exports = cds.service.impl(async function () {
     // Run against DB (the CDS view handles joins + @cds.search LIKE translation)
     const allRows = await cds.db.run(q);
 
-    // Deduplicate: one row per expert, keeping the highest-relevance role
+    // Deduplicate: one row per expert, aggregating solutions/topics/roles
     const expertMap = new Map();
     for (const row of allRows) {
       const s = roleScore(row);
-      const prev = expertMap.get(row.expertID);
-      if (!prev || s > prev._score) {
-        expertMap.set(row.expertID, { ...row, _score: s });
+      let entry = expertMap.get(row.expertID);
+      if (!entry) {
+        entry = {
+          ...row,
+          _score: s,
+          _solutions: new Set(),
+          _topics: new Set(),
+          _roles: new Set(),
+        };
+        expertMap.set(row.expertID, entry);
+      } else {
+        // Keep the highest score
+        if (s > entry._score) {
+          entry._score = s;
+          entry.ID = row.ID; // use the ID of the best role for Object Page nav
+        }
+        // OR-merge presentation capabilities
+        entry.canPresent5M   = entry.canPresent5M   || row.canPresent5M;
+        entry.canPresent30M  = entry.canPresent30M  || row.canPresent30M;
+        entry.canPresent2H   = entry.canPresent2H   || row.canPresent2H;
+        entry.canPresentDemo = entry.canPresentDemo || row.canPresentDemo;
       }
+      if (row.solutionName) entry._solutions.add(row.solutionName);
+      if (row.topicName)    entry._topics.add(row.topicName);
+      if (row.roleName)     entry._roles.add(row.roleName);
+    }
+
+    // Flatten aggregated sets into comma-separated strings
+    for (const entry of expertMap.values()) {
+      entry.solutionName = [...entry._solutions].sort().join(', ');
+      entry.topicName    = [...entry._topics].sort().join(', ');
+      entry.roleName     = [...entry._roles].sort().join(', ');
+      delete entry._solutions;
+      delete entry._topics;
+      delete entry._roles;
     }
 
     // Sort by relevance descending, then lastName ascending as tiebreaker

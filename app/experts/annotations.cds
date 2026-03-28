@@ -88,18 +88,18 @@ annotate service.ExpertSearch with @(
         },
         {
             $Type : 'UI.DataField',
-            Value : solutionName,
-            Label : '{i18n>Solution}'
+            Value : topicName,
+            Label : '{i18n>Topics}'
         },
         {
             $Type : 'UI.DataField',
-            Value : topicName,
-            Label : '{i18n>Topic}'
+            Value : solutionName,
+            Label : '{i18n>Solutions}'
         },
         {
             $Type : 'UI.DataField',
             Value : roleName,
-            Label : '{i18n>Role}'
+            Label : '{i18n>Roles}'
         },
         {
             $Type             : 'UI.DataField',
@@ -128,7 +128,7 @@ annotate service.ExpertSearch with @(
     ],
     UI.FieldGroup #Detail : {
         $Type : 'UI.FieldGroupType',
-        Label : '{i18n>Detail}',
+        Label : '{i18n>ExpertInformation}',
         Data  : [
             { $Type : 'UI.DataField', Value : firstName },
             { $Type : 'UI.DataField', Value : lastName },
@@ -138,22 +138,33 @@ annotate service.ExpertSearch with @(
                 Label : '{i18n>Email}'
             },
             { $Type : 'UI.DataField', Value : location },
-            { $Type : 'UI.DataField', Value : topicName },
-            { $Type : 'UI.DataField', Value : solutionName },
-            { $Type : 'UI.DataField', Value : roleName },
+        ],
+    },
+    UI.FieldGroup #Expertise : {
+        $Type : 'UI.FieldGroupType',
+        Label : '{i18n>Detail}',
+        Data  : [
+            { $Type : 'UI.DataField', Value : topicName, Label : '{i18n>Topics}' },
+            { $Type : 'UI.DataField', Value : solutionName, Label : '{i18n>Solutions}' },
+            { $Type : 'UI.DataField', Value : roleName, Label : '{i18n>Roles}' },
             { $Type : 'UI.DataField', Value : canPresent5M },
             { $Type : 'UI.DataField', Value : canPresent30M },
             { $Type : 'UI.DataField', Value : canPresent2H },
             { $Type : 'UI.DataField', Value : canPresentDemo },
-            { $Type : 'UI.DataField', Value : notes },
         ],
     },
     UI.Facets            : [
         {
             $Type  : 'UI.ReferenceFacet',
             ID     : 'DetailFacet',
-            Label  : '{i18n>Detail}',
+            Label  : '{i18n>ExpertInformation}',
             Target : '@UI.FieldGroup#Detail',
+        },
+        {
+            $Type  : 'UI.ReferenceFacet',
+            ID     : 'ExpertiseFacet',
+            Label  : '{i18n>Detail}',
+            Target : '@UI.FieldGroup#Expertise',
         },
     ],
 );
@@ -408,11 +419,6 @@ annotate service.AdminExpertRoles with @(
     UI.LineItem : [
         {
             $Type : 'UI.DataField',
-            Value : expert_ID,
-            Label : '{i18n>Expert}'
-        },
-        {
-            $Type : 'UI.DataField',
             Value : solution_ID,
             Label : '{i18n>Solution}'
         },
@@ -451,7 +457,6 @@ annotate service.AdminExpertRoles with @(
         $Type : 'UI.FieldGroupType',
         Label : '{i18n>RoleInformation}',
         Data  : [
-            { $Type : 'UI.DataField', Value : expert_ID },
             { $Type : 'UI.DataField', Value : solution_ID },
             { $Type : 'UI.DataField', Value : role_ID },
             { $Type : 'UI.DataField', Value : canPresent5M },
