@@ -146,6 +146,7 @@
           "options": {
             "settings": {
               "contextPath": "/ExpertSearch",
+              "initialLoad": "Enabled",
               "variantManagement": "Page",
               "navigation": {
                 "ExpertSearch": {
@@ -206,6 +207,7 @@
           "options": {
             "settings": {
               "contextPath": "/AdminExperts",
+              "initialLoad": "Enabled",
               "variantManagement": "Page",
               "navigation": {
                 "AdminExperts": {
@@ -235,6 +237,7 @@
           "options": {
             "settings": {
               "contextPath": "/AdminRoles",
+              "initialLoad": "Enabled",
               "variantManagement": "Page",
               "navigation": {
                 "AdminRoles": {
@@ -264,6 +267,7 @@
           "options": {
             "settings": {
               "contextPath": "/AdminTopics",
+              "initialLoad": "Enabled",
               "variantManagement": "Page",
               "navigation": {
                 "AdminTopics": {

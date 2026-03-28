@@ -1,36 +1,10 @@
 {
-  "applications": {
-    "findmyexpert-display": {
-      "title": "Find My Expert",
-      "description": "Experten-Suche & Verwaltung",
-      "additionalInformation": "SAPUI5.Component=com.sap.austria.findmyexpert",
-      "applicationType": "URL",
-      "url": "/findmyexpert/webapp",
-      "navigationMode": "embedded"
-    }
-  },
+  "applications": {},
   "services": {
     "ClientSideTargetResolution": {
       "adapter": {
         "config": {
-          "inbounds": {
-            "findmyexpert-display": {
-              "semanticObject": "findmyexpert",
-              "action": "display",
-              "title": "Find My Expert",
-              "info": "Experten-Suche & Verwaltung",
-              "icon": "sap-icon://employee",
-              "signature": {
-                "parameters": {},
-                "additionalParameters": "allowed"
-              },
-              "resolutionResult": {
-                "applicationType": "SAPUI5",
-                "additionalInformation": "SAPUI5.Component=com.sap.austria.findmyexpert",
-                "url": "/findmyexpert/webapp"
-              }
-            }
-          }
+          "inbounds": {}
         }
       }
     }

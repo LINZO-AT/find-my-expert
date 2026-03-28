@@ -219,7 +219,7 @@ annotate service.AdminRoles with {
 annotate service.AdminTopics with @(
     UI.HeaderInfo      : {
         TypeName       : '{i18n>Topic}',
-        TypeNamePlural : 'Topics',
+        TypeNamePlural : '{i18n>Topics}',
         Title          : {
             $Type : 'UI.DataField',
             Value : name
@@ -234,7 +234,7 @@ annotate service.AdminTopics with @(
         {
             $Type : 'UI.DataField',
             Value : name,
-            Label : 'Name'
+            Label : '{i18n>Name}'
         },
         {
             $Type : 'UI.DataField',
@@ -244,7 +244,7 @@ annotate service.AdminTopics with @(
     ],
     UI.FieldGroup #TopicInfo : {
         $Type : 'UI.FieldGroupType',
-        Label : 'Topic',
+        Label : '{i18n>TopicInformation}',
         Data  : [
             { $Type : 'UI.DataField', Value : name },
             { $Type : 'UI.DataField', Value : description },
@@ -254,7 +254,7 @@ annotate service.AdminTopics with @(
         {
             $Type  : 'UI.ReferenceFacet',
             ID     : 'TopicInfoFacet',
-            Label  : 'Topic',
+            Label  : '{i18n>TopicInformation}',
             Target : '@UI.FieldGroup#TopicInfo',
         },
         {
@@ -267,7 +267,7 @@ annotate service.AdminTopics with @(
 );
 
 annotate service.AdminTopics with {
-    name        @title: 'Name';
+    name        @title: '{i18n>Name}';
     description @title: '{i18n>Description}';
 };
 
@@ -321,6 +321,13 @@ annotate service.AdminSolutions with {
 };
 
 // ─── Admin: Experts ───────────────────────────────────────────────────────────
+annotate service.AdminExperts with {
+    firstName @title: '{i18n>FirstName}';
+    lastName  @title: '{i18n>LastName}';
+    email     @title: '{i18n>Email}';
+    location  @title: '{i18n>Location}';
+};
+
 annotate service.AdminExperts with @(
     UI.HeaderInfo      : {
         TypeName       : '{i18n>Expert}',
@@ -387,9 +394,14 @@ annotate service.AdminExperts with @(
 // @Common.Text + @Common.TextArrangement inherited from db/schema.cds (expression annotations on associations)
 // @Common.ValueList auto-generated via @cds.odata.valuelist on target entities
 annotate service.AdminExpertRoles with {
-    expert   @title: '{i18n>Expert}';
-    solution @title: '{i18n>Solution}';
-    role     @title: '{i18n>Role}';
+    expert        @title: '{i18n>Expert}';
+    solution      @title: '{i18n>Solution}';
+    role          @title: '{i18n>Role}';
+    canPresent5M  @title: '{i18n>CanPresent5M}';
+    canPresent30M @title: '{i18n>CanPresent30M}';
+    canPresent2H  @title: '{i18n>CanPresent2H}';
+    canPresentDemo @title: '{i18n>CanPresentDemo}';
+    notes         @title: '{i18n>Notes}';
 };
 
 annotate service.AdminExpertRoles with @(
