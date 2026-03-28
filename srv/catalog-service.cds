@@ -14,10 +14,11 @@ service CatalogService @(path: '/api/catalog') {
     @readonly
     @cds.search: { firstName, lastName, email, location, solutionName, topicName, roleName }
     entity ExpertSearch as SELECT from findmyexpert.ExpertRoles {
-        ID,
+        key expert.ID         as ID : UUID,
         expert.ID             as expertID,
         expert.firstName      as firstName,
         expert.lastName       as lastName,
+        (expert.lastName || ' ' || expert.firstName) as fullName : String(200),
         expert.email          as email,
         expert.location       as location,
         solution.name         as solutionName,
@@ -28,7 +29,9 @@ service CatalogService @(path: '/api/catalog') {
         canPresent30M,
         canPresent2H,
         canPresentDemo,
-        notes
+        notes,
+        // Navigation to per-solution ExpertRoles for Object Page detail
+        expertRoles : Association to many ExpertRoles on expertRoles.expert.ID = expertID
     };
 
     // ─── Admin entities (require Admin role, draft-enabled for CRUD) ─────────

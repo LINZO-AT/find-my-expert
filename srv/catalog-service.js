@@ -43,6 +43,43 @@ const roleScore = (r) => {
 
 module.exports = cds.service.impl(async function () {
 
+  // ─── ExpertSearch → ExpertRoles navigation (per-solution detail for Object Page) ──
+  this.on('READ', 'ExpertRoles', async (req, next) => {
+    // Only intercept reads that come via ExpertSearch navigation
+    // Detect: req.params will have 2 entries: [{ID: expertSearchKey}, {ID: ...}] for /ExpertSearch(key)/expertRoles
+    // Or the query will have a WHERE filter from the association ON condition
+    const where = req.query.SELECT?.where;
+
+    // Check if this is a navigation from ExpertSearch (filter on expert.ID or expert_ID)
+    let expertIdFromNav = null;
+    if (Array.isArray(where)) {
+      // Look for expert_ID = <uuid> or expert.ID = <uuid> pattern in WHERE
+      for (let i = 0; i < where.length; i++) {
+        const item = where[i];
+        if (item?.ref && (
+          (item.ref.length === 1 && item.ref[0] === 'expert_ID') ||
+          (item.ref.length === 2 && item.ref[0] === 'expert' && item.ref[1] === 'ID')
+        )) {
+          // Next non-operator item should be the value
+          if (where[i + 1] === '=' && where[i + 2]?.val) {
+            expertIdFromNav = where[i + 2].val;
+            break;
+          }
+        }
+      }
+    }
+
+    if (!expertIdFromNav) {
+      // Not a navigation from ExpertSearch — delegate to default handler
+      return next();
+    }
+
+    // Query ExpertRoles for this expert directly from DB
+    const { ExpertRoles } = this.entities;
+    const q = SELECT.from(ExpertRoles).where({ expert_ID: expertIdFromNav });
+    return cds.db.run(q);
+  });
+
   // ─── ExpertSearch: deduplicate + relevance sort ───────────────────────────
   this.on('READ', 'ExpertSearch', async (req) => {
     // Extract pagination before running the full query
@@ -66,12 +103,70 @@ module.exports = cds.service.impl(async function () {
     }
 
     if (isKeyRead || keyWhereClause) {
-      // Object Page: fetch by key and return a single entity object (no dedup needed)
+      // Object Page: fetch by expertID (since aggregation maps ID → expertID)
       const { ExpertSearch } = this.entities;
-      const resolvedWhere = keyWhereClause ?? req.query.SELECT?.where ?? req.params[0];
-      const kq = SELECT.from(ExpertSearch).where(resolvedWhere);
+
+      // Extract the requested key value
+      let keyVal = null;
+      if (keyWhereClause) {
+        const [left, , right] = keyWhereClause;
+        keyVal = left?.val ?? right?.val;
+      } else if (req.params?.[0]) {
+        const p = req.params[0];
+        keyVal = typeof p === 'object' ? (p.ID ?? Object.values(p)[0]) : p;
+      }
+
+      if (!keyVal) {
+        // Fallback: try original WHERE
+        const resolvedWhere = req.query.SELECT?.where ?? req.params[0];
+        const kq = SELECT.from(ExpertSearch).where(resolvedWhere);
+        const rows = await cds.db.run(kq);
+        return Array.isArray(rows) ? (rows[0] ?? null) : rows;
+      }
+
+      // Query all ExpertRole rows for this expert and aggregate into one result
+      const kq = SELECT.from(ExpertSearch).where({ expertID: keyVal });
       const rows = await cds.db.run(kq);
-      return Array.isArray(rows) ? (rows[0] ?? null) : rows;
+      if (!rows || rows.length === 0) return null;
+
+      // Aggregate just like the list handler
+      const entry = { ...rows[0], ID: keyVal };
+      const solutions = new Set();
+      const topics    = new Set();
+      const roles     = new Set();
+
+      for (const row of rows) {
+        entry.canPresent5M   = entry.canPresent5M   || row.canPresent5M;
+        entry.canPresent30M  = entry.canPresent30M  || row.canPresent30M;
+        entry.canPresent2H   = entry.canPresent2H   || row.canPresent2H;
+        entry.canPresentDemo = entry.canPresentDemo || row.canPresentDemo;
+        if (row.solutionName) solutions.add(row.solutionName);
+        if (row.topicName)    topics.add(row.topicName);
+        if (row.roleName)     roles.add(row.roleName);
+      }
+      entry.solutionName = [...solutions].sort().join(', ');
+      entry.topicName    = [...topics].sort().join(', ');
+      entry.roleName     = [...roles].sort().join(', ');
+
+      // Support $expand=expertRoles for Object Page sub-table
+      const columns = req.query.SELECT?.columns;
+      if (Array.isArray(columns)) {
+        const expandExpertRoles = columns.find(c => c.ref?.[0] === 'expertRoles' && c.expand);
+        if (expandExpertRoles) {
+          const { ExpertRoles } = this.entities;
+          // Include solution + role names so @Common.Text annotations resolve
+          const roleRows = await cds.db.run(
+            SELECT.from(ExpertRoles, er => {
+              er('*'),
+              er.solution(s => { s.ID, s.name }),
+              er.role(r => { r.ID, r.name })
+            }).where({ expert_ID: keyVal })
+          );
+          entry.expertRoles = roleRows;
+        }
+      }
+
+      return entry;
     }
 
     // Build query for ALL matching rows (no LIMIT) to allow correct dedup + pagination
@@ -101,7 +196,6 @@ module.exports = cds.service.impl(async function () {
         // Keep the highest score
         if (s > entry._score) {
           entry._score = s;
-          entry.ID = row.ID; // use the ID of the best role for Object Page nav
         }
         // OR-merge presentation capabilities
         entry.canPresent5M   = entry.canPresent5M   || row.canPresent5M;

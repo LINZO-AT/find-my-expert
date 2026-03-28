@@ -48,19 +48,16 @@ annotate service.ExpertSearch with {
     canPresentDemo @title: '{i18n>CanPresentDemo}';
 };
 
-// ─── ExpertSearch — main List Report (flat, searchable view) ─────────────────
+// ─── ExpertSearch — List Report (aggregated, one row per expert) ─────────────
+// roleName and canPresent* removed from LineItem — shown per-solution in Object Page
 annotate service.ExpertSearch with @(
     UI.HeaderInfo        : {
         TypeName       : '{i18n>Expert}',
         TypeNamePlural : '{i18n>Experts}',
         Title          : {
             $Type : 'UI.DataField',
-            Value : lastName
+            Value : fullName
         },
-        Description    : {
-            $Type : 'UI.DataField',
-            Value : firstName
-        }
     },
     UI.SelectionFields   : [
         firstName,
@@ -96,37 +93,8 @@ annotate service.ExpertSearch with @(
             Value : solutionName,
             Label : '{i18n>Solutions}'
         },
-        {
-            $Type : 'UI.DataField',
-            Value : roleName,
-            Label : '{i18n>Roles}'
-        },
-        {
-            $Type             : 'UI.DataField',
-            Value             : canPresent5M,
-            Label             : '{i18n>CanPresent5M}',
-            ![@UI.Importance] : #Low
-        },
-        {
-            $Type             : 'UI.DataField',
-            Value             : canPresent30M,
-            Label             : '{i18n>CanPresent30M}',
-            ![@UI.Importance] : #Low
-        },
-        {
-            $Type             : 'UI.DataField',
-            Value             : canPresent2H,
-            Label             : '{i18n>CanPresent2H}',
-            ![@UI.Importance] : #Low
-        },
-        {
-            $Type             : 'UI.DataField',
-            Value             : canPresentDemo,
-            Label             : '{i18n>CanPresentDemo}',
-            ![@UI.Importance] : #Low
-        },
     ],
-    UI.FieldGroup #Detail : {
+    UI.FieldGroup #ExpertInfo : {
         $Type : 'UI.FieldGroupType',
         Label : '{i18n>ExpertInformation}',
         Data  : [
@@ -140,31 +108,71 @@ annotate service.ExpertSearch with @(
             { $Type : 'UI.DataField', Value : location },
         ],
     },
-    UI.FieldGroup #Expertise : {
-        $Type : 'UI.FieldGroupType',
-        Label : '{i18n>Detail}',
-        Data  : [
-            { $Type : 'UI.DataField', Value : topicName, Label : '{i18n>Topics}' },
-            { $Type : 'UI.DataField', Value : solutionName, Label : '{i18n>Solutions}' },
-            { $Type : 'UI.DataField', Value : roleName, Label : '{i18n>Roles}' },
-            { $Type : 'UI.DataField', Value : canPresent5M },
-            { $Type : 'UI.DataField', Value : canPresent30M },
-            { $Type : 'UI.DataField', Value : canPresent2H },
-            { $Type : 'UI.DataField', Value : canPresentDemo },
-        ],
-    },
-    UI.Facets            : [
+    UI.Facets : [
         {
             $Type  : 'UI.ReferenceFacet',
-            ID     : 'DetailFacet',
+            ID     : 'ExpertInfoFacet',
             Label  : '{i18n>ExpertInformation}',
-            Target : '@UI.FieldGroup#Detail',
+            Target : '@UI.FieldGroup#ExpertInfo',
         },
         {
             $Type  : 'UI.ReferenceFacet',
-            ID     : 'ExpertiseFacet',
-            Label  : '{i18n>Detail}',
-            Target : '@UI.FieldGroup#Expertise',
+            ID     : 'ExpertRolesFacet',
+            Label  : '{i18n>ExpertRoles}',
+            Target : 'expertRoles/@UI.LineItem',
+        },
+    ],
+);
+
+// ─── ExpertRoles — sub-table in Experts Object Page (read-only catalog view) ─
+// Shows per-solution role assignments with presentation capabilities
+annotate service.ExpertRoles with {
+    expert        @title: '{i18n>Expert}';
+    solution      @title: '{i18n>Solution}';
+    role          @title: '{i18n>Role}';
+    canPresent5M  @title: '{i18n>CanPresent5M}';
+    canPresent30M @title: '{i18n>CanPresent30M}';
+    canPresent2H  @title: '{i18n>CanPresent2H}';
+    canPresentDemo @title: '{i18n>CanPresentDemo}';
+    notes         @title: '{i18n>Notes}';
+};
+
+annotate service.ExpertRoles with @(
+    UI.LineItem : [
+        {
+            $Type : 'UI.DataField',
+            Value : solution_ID,
+            Label : '{i18n>Solution}'
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : role_ID,
+            Label : '{i18n>Role}'
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : canPresent5M,
+            Label : '{i18n>CanPresent5M}'
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : canPresent30M,
+            Label : '{i18n>CanPresent30M}'
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : canPresent2H,
+            Label : '{i18n>CanPresent2H}'
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : canPresentDemo,
+            Label : '{i18n>CanPresentDemo}'
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : notes,
+            Label : '{i18n>Notes}'
         },
     ],
 );
