@@ -23,10 +23,13 @@
     "kill-port": "lsof -ti :4004 | xargs kill -9 2>/dev/null; true",
     "prewatch": "npm run kill-port",
     "watch": "cds watch",
+    "watch-flp": "cds watch --open findmyexpert-search/webapp/test/flpSandbox.html#Shell-home --livereload false",
     "build": "cds build --production",
     "test": "jest --testPathPattern=test/",
-    "watch-experts": "cds watch --open experts/index.html?sap-ui-xx-viewCache=false --livereload false",
-    "watch-admin": "cds watch --open admin/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch-search": "cds watch --open findmyexpert-search/webapp/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-manage-experts": "cds watch --open findmyexpert-manage-experts/webapp/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-manage-roles": "cds watch --open findmyexpert-manage-roles/webapp/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-manage-topics": "cds watch --open findmyexpert-manage-topics/webapp/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "cds": {
     "requires": {
@@ -44,7 +47,9 @@
     "app/*"
   ],
   "sapux": [
-    "app/experts",
-    "app/admin"
+    "app/findmyexpert-search",
+    "app/findmyexpert-manage-experts",
+    "app/findmyexpert-manage-roles",
+    "app/findmyexpert-manage-topics"
   ]
 }

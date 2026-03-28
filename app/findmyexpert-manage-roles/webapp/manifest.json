@@ -1,0 +1,101 @@
+{
+  "_version": "1.73.1",
+  "sap.app": {
+    "id": "findmyexpertManageRoles",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": { "version": "0.0.1" },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "dataSources": {
+      "mainService": {
+        "uri": "/api/catalog/",
+        "type": "OData",
+        "settings": { "annotations": [], "odataVersion": "4.0" }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "findmyexpert-manage-roles": {
+          "semanticObject": "Role",
+          "action": "manage",
+          "title": "{{appTitle}}",
+          "icon": "sap-icon://role",
+          "signature": { "parameters": {}, "additionalParameters": "allowed" }
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "deviceTypes": { "desktop": true, "tablet": true, "phone": true }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.136.7",
+      "libs": { "sap.m": {}, "sap.ui.core": {}, "sap.fe.templates": {} }
+    },
+    "contentDensities": { "compact": true, "cozy": true },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": { "bundleName": "findmyexpertManageRoles.i18n.i18n" }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": { "operationMode": "Server", "autoExpandSelect": true, "earlyRequests": true }
+      }
+    },
+    "routing": {
+      "config": {},
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "AdminRolesList",
+          "target": "AdminRolesList"
+        },
+        {
+          "pattern": "AdminRoles({key}):?query:",
+          "name": "AdminRolesObjectPage",
+          "target": "AdminRolesObjectPage"
+        }
+      ],
+      "targets": {
+        "AdminRolesList": {
+          "type": "Component",
+          "id": "AdminRolesList",
+          "name": "sap.fe.templates.ListReport",
+          "viewLevel": 0,
+          "options": {
+            "settings": {
+              "contextPath": "/AdminRoles",
+              "initialLoad": "Enabled",
+              "variantManagement": "Page",
+              "navigation": {
+                "AdminRoles": {
+                  "detail": { "route": "AdminRolesObjectPage" }
+                }
+              }
+            }
+          }
+        },
+        "AdminRolesObjectPage": {
+          "type": "Component",
+          "id": "AdminRolesObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "viewLevel": 1,
+          "options": {
+            "settings": {
+              "editableHeaderContent": true,
+              "contextPath": "/AdminRoles"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": { "registrationIds": [], "archeType": "transactional" },
+  "sap.fe": { "app": { "enableLazyLoading": true } }
+}

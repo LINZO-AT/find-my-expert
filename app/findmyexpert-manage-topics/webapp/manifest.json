@@ -1,0 +1,123 @@
+{
+  "_version": "1.73.1",
+  "sap.app": {
+    "id": "findmyexpertManageTopics",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": { "version": "0.0.1" },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "dataSources": {
+      "mainService": {
+        "uri": "/api/catalog/",
+        "type": "OData",
+        "settings": { "annotations": [], "odataVersion": "4.0" }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "findmyexpert-manage-topics": {
+          "semanticObject": "Topic",
+          "action": "manage",
+          "title": "{{appTitle}}",
+          "icon": "sap-icon://course-book",
+          "signature": { "parameters": {}, "additionalParameters": "allowed" }
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "deviceTypes": { "desktop": true, "tablet": true, "phone": true }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.136.7",
+      "libs": { "sap.m": {}, "sap.ui.core": {}, "sap.fe.templates": {} }
+    },
+    "contentDensities": { "compact": true, "cozy": true },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": { "bundleName": "findmyexpertManageTopics.i18n.i18n" }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": { "operationMode": "Server", "autoExpandSelect": true, "earlyRequests": true }
+      }
+    },
+    "routing": {
+      "config": {},
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "AdminTopicsList",
+          "target": "AdminTopicsList"
+        },
+        {
+          "pattern": "AdminTopics({key}):?query:",
+          "name": "AdminTopicsObjectPage",
+          "target": "AdminTopicsObjectPage"
+        },
+        {
+          "pattern": "AdminTopics({key})/solutions({key2}):?query:",
+          "name": "AdminSolutionsObjectPage",
+          "target": "AdminSolutionsObjectPage"
+        }
+      ],
+      "targets": {
+        "AdminTopicsList": {
+          "type": "Component",
+          "id": "AdminTopicsList",
+          "name": "sap.fe.templates.ListReport",
+          "viewLevel": 0,
+          "options": {
+            "settings": {
+              "contextPath": "/AdminTopics",
+              "initialLoad": "Enabled",
+              "variantManagement": "Page",
+              "navigation": {
+                "AdminTopics": {
+                  "detail": { "route": "AdminTopicsObjectPage" }
+                }
+              }
+            }
+          }
+        },
+        "AdminTopicsObjectPage": {
+          "type": "Component",
+          "id": "AdminTopicsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "viewLevel": 1,
+          "options": {
+            "settings": {
+              "editableHeaderContent": true,
+              "contextPath": "/AdminTopics",
+              "navigation": {
+                "solutions": {
+                  "detail": { "route": "AdminSolutionsObjectPage" }
+                }
+              }
+            }
+          }
+        },
+        "AdminSolutionsObjectPage": {
+          "type": "Component",
+          "id": "AdminSolutionsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "viewLevel": 2,
+          "options": {
+            "settings": {
+              "editableHeaderContent": true,
+              "contextPath": "/AdminTopics/solutions"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": { "registrationIds": [], "archeType": "transactional" },
+  "sap.fe": { "app": { "enableLazyLoading": true } }
+}

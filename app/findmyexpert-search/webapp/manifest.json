@@ -1,0 +1,159 @@
+{
+  "_version": "1.73.1",
+  "sap.app": {
+    "id": "findmyexpertSearch",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:lrop",
+      "version": "1.22.0",
+      "toolsId": "7a487772-a393-4915-932f-d9f984293e9c"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/api/catalog/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "findmyexpert-search": {
+          "semanticObject": "Expert",
+          "action": "search",
+          "title": "{{appTitle}}",
+          "icon": "sap-icon://search",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.136.7",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.fe.templates": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "findmyexpertSearch.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      }
+    },
+    "resources": {
+      "css": []
+    },
+    "routing": {
+      "config": {},
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "ExpertSearchList",
+          "target": "ExpertSearchList"
+        },
+        {
+          "pattern": "ExpertSearch({key}):?query:",
+          "name": "ExpertSearchObjectPage",
+          "target": "ExpertSearchObjectPage"
+        }
+      ],
+      "targets": {
+        "ExpertSearchList": {
+          "type": "Component",
+          "id": "ExpertSearchList",
+          "name": "sap.fe.templates.ListReport",
+          "viewLevel": 0,
+          "options": {
+            "settings": {
+              "contextPath": "/ExpertSearch",
+              "initialLoad": "Enabled",
+              "variantManagement": "Page",
+              "navigation": {
+                "ExpertSearch": {
+                  "detail": {
+                    "route": "ExpertSearchObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "ExpertSearchObjectPage": {
+          "type": "Component",
+          "id": "ExpertSearchObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "viewLevel": 1,
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/ExpertSearch"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  },
+  "sap.fe": {
+    "app": {
+      "enableLazyLoading": true
+    }
+  }
+}
