@@ -3,7 +3,7 @@
     "io.github.SAP/open-ux-tools": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@sap-ux/fiori-mcp-server@0.6.44", "fiori-mcp"],
+      "args": ["-y", "@sap-ux/fiori-mcp-server@0.6.45", "fiori-mcp"],
       "autoApprove": [
         "search_docs",
         "list_fiori_apps",
@@ -34,6 +34,10 @@
         "run_ui5_linter",
         "run_manifest_validation"
       ]
+    },
+    "sap.tools.hyperspace.portal.s4c.mcp/mcp": {
+      "type": "streamableHttp",
+      "url": "https://mcp.s4c.portal.hyperspace.tools.sap/mcp"
     },
     "ui5-webc-mcp": {
       "command": "npx",

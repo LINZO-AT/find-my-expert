@@ -1,0 +1,110 @@
+# Cline Rules — Find My Expert
+
+## Project Context
+
+**Find My Expert** is an internal SAP expert directory for SAP Austria.
+
+- **CAP Backend**: `@sap/cds ^9.x`, Node.js 22, SQLite (local) / PostgreSQL (prod)
+- **SAPUI5 Frontend**: Fiori Elements, OData V4, `sap_horizon` Theme
+- **Two Services**: `CatalogService` (all users, read-only) + `AdminService` (ExpertAdmin, CRUD)
+- **Deployment Target**: SAP BTP Work Zone
+
+### Start Commands
+
+```bash
+# Terminal 1 — CAP Backend
+npm run watch          # → http://localhost:4004
+
+# Terminal 2 — UI5 Frontend
+cd app/findmyexpert
+npm run start:sandbox  # → http://localhost:8080/sandbox.html
+```
+
+---
+
+## Rules for Creation or Modification of SAP Fiori Elements Apps
+
+- When asked to create an SAP Fiori elements app check whether the user input can be interpreted as an application organized into one or more pages containing table data or forms, these can be translated into a SAP Fiori elements application, else ask the user for suitable input.
+- The application typically starts with a List Report page showing the data of the base entity of the application in a table. Details of a specific table row are shown in the ObjectPage. This first Object Page is therefore based on the base entity of the application.
+- An Object Page can contain one or more table sections based on to-many associations of its entity type. The details of a table section row can be shown in another Object Page based on the associations target entity.
+- The data model must be suitable for usage in a SAP Fiori elements frontend application. So there must be one main entity and one or more navigation properties to related entities.
+- Each property of an entity must have a proper datatype.
+- For all entities in the data model provide primary keys of type UUID.
+- When creating sample data in CSV files, all primary keys and foreign keys MUST be in UUID format (e.g., `550e8400-e29b-41d4-a716-446655440001`).
+- When generating or modifying the SAP Fiori elements application on top of the CAP service use the Fiori MCP server if available.
+- When attempting to modify the SAP Fiori elements application like adding columns you must not use the screen personalization but instead modify the code of the project, before this first check whether an MCP server provides a suitable function.
+- When previewing the SAP Fiori elements application use the most specific `npm run watch-*` script for the app in the `package.json`.
+
+---
+
+## Guidelines for UI5
+
+Use the `get_guidelines` tool of the UI5 MCP server to retrieve the latest coding standards and best practices for UI5 development.
+
+---
+
+## Guidelines for CAP
+
+- You MUST search for CDS definitions, like entities, fields and services (which include HTTP endpoints) with cds-mcp, only if it fails you MAY read `*.cds` files in the project.
+- You MUST search for CAP docs with cds-mcp EVERY TIME you create, modify CDS models or when using APIs or the `cds` CLI from CAP. Do NOT propose, suggest or make any changes without first checking it.
+
+---
+
+## Project Constraints
+
+- **Fully Fiori Elements** — no custom freestyle MVC views; use Fiori Elements floorplans (List Report, Object Page) for all views
+- **OData V4** — no downgrade to V2
+- **`sap_horizon` Theme** — do not change
+- **No breaking changes** to CDS Schema/Service paths (other clients may depend on them)
+- **Language**: Code comments and commit messages in English; UI text via i18n (DE default, EN available)
+- **Commit format**:
+  ```
+  fix(component): short description
+
+  - Detail 1
+  - Detail 2
+  ```
+
+---
+
+## MCP Server Usage
+
+| Server | When to Use |
+|--------|-------------|
+| `ui5-mcp` | UI5 API reference, Linter, Manifest validation, Guidelines |
+| `fiori-mcp` | Fiori Design Patterns, App analysis, UX Guidelines, generating/modifying Fiori Elements apps |
+| `cds-mcp` | CDS Schema patterns, Service best practices, OData Annotations, CDS model search |
+| `ui5-webc-mcp` | If Web Components controls are considered |
+
+**Always consult MCP docs first, then implement.**
+No assumptions from memory — verify all API details via MCP tools.
+
+---
+
+## Architecture Overview
+
+### Data Model (db/schema.cds)
+
+| Entity | Purpose |
+|--------|---------|
+| `Topics` | Topic areas (AI, BTP, CloudERP, etc.) |
+| `Solutions` | SAP Products/Services, linked to a Topic |
+| `Experts` | People / internal experts |
+| `ExpertRoles` | Junction: Expert ↔ Solution with role metadata + presentation capabilities |
+
+### App Floorplans (Target Architecture)
+
+| View | Fiori Elements Floorplan | Base Entity |
+|------|--------------------------|-------------|
+| Expert Search / Browse | List Report + Object Page | `ExpertRoles` (flat projection) or `Experts` with `@cds.search` |
+| Expert Detail | Object Page | `Experts` with `$expand=roles` |
+| Admin: Solutions | List Report + Object Page | `Solutions` with `Topics` |
+| Admin: Expert Roles | List Report + Object Page | `ExpertRoles` |
+
+### Search Strategy
+
+Instead of custom card-based search with client-side scoring, use:
+- `@cds.search` annotation on relevant entities for OData `$search` support
+- Standard Fiori Elements FilterBar with facets (Topic, Role, Location, Solution)
+- `@UI.Criticality` annotations for color-coded role badges
+- Boolean checkmarks for presentation capabilities (canPresent5M, canPresent30M, etc.)
