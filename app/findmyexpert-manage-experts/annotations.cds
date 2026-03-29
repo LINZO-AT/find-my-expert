@@ -42,16 +42,8 @@ annotate service.AdminExperts with @(
             { $Type : 'UI.DataField', Value : country_code },
         ],
     },
-    UI.FieldGroup #ExpertMeta : {
-        $Type : 'UI.FieldGroupType',
-        Label : '{i18n>Languages}',
-        Data  : [
-            { $Type: 'UI.DataField', Value: languagesText, Label: '{i18n>Languages}' },
-        ],
-    },
     UI.HeaderFacets : [
         { $Type: 'UI.ReferenceFacet', ID: 'HeaderExpertInfo', Target: '@UI.FieldGroup#ExpertInfo' },
-        { $Type: 'UI.ReferenceFacet', ID: 'HeaderExpertMeta', Target: '@UI.FieldGroup#ExpertMeta' },
     ],
     UI.Facets : [
         {

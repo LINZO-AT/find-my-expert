@@ -49,7 +49,6 @@ annotate service.ExpertSearch with @(
         TypeName       : '{i18n>Expert}',
         TypeNamePlural : '{i18n>Experts}',
         Title          : { $Type: 'UI.DataField', Value: fullName },
-        Description    : { $Type: 'UI.DataField', Value: countryName },
     },
     UI.SelectionFields : [ firstName, lastName, country_code, topicName, solutionName, roleName ],
     UI.LineItem : [
@@ -72,16 +71,8 @@ annotate service.ExpertSearch with @(
             { $Type: 'UI.DataField', Value: country_code },
         ],
     },
-    UI.FieldGroup #ExpertMeta : {
-        $Type : 'UI.FieldGroupType',
-        Label : '{i18n>Languages}',
-        Data  : [
-            { $Type: 'UI.DataField', Value: languagesText, Label: '{i18n>Languages}' },
-        ],
-    },
     UI.HeaderFacets : [
         { $Type: 'UI.ReferenceFacet', ID: 'HeaderExpertInfo', Target: '@UI.FieldGroup#ExpertInfo' },
-        { $Type: 'UI.ReferenceFacet', ID: 'HeaderExpertMeta', Target: '@UI.FieldGroup#ExpertMeta' },
     ],
     UI.Facets : [
         { $Type: 'UI.ReferenceFacet', ID: 'ExpertRolesFacet', Label: '{i18n>ExpertRoles}', Target: 'expertRoles/@UI.LineItem' },
