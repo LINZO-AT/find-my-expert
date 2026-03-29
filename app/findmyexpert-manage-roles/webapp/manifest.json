@@ -96,6 +96,6 @@
       }
     }
   },
-  "sap.fiori": { "registrationIds": [], "archeType": "transactional" },
+  "sap.fiori": { "registrationIds": [], "archetype": "transactional" },
   "sap.fe": { "app": { "enableLazyLoading": true } }
 }

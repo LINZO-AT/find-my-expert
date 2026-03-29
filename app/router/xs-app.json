@@ -1,0 +1,37 @@
+{
+  "welcomeFile": "/findmyexpert-search/index.html",
+  "authenticationMethod": "route",
+  "sessionTimeout": 30,
+  "routes": [
+    {
+      "source": "^/api/(.*)$",
+      "destination": "srv-api",
+      "authenticationType": "xsuaa",
+      "csrfProtection": true
+    },
+    {
+      "source": "^/findmyexpert-search/(.*)$",
+      "target": "/findmyexpert-search/$1",
+      "service": "html5-apps-repo-rt",
+      "authenticationType": "xsuaa"
+    },
+    {
+      "source": "^/findmyexpert-manage-experts/(.*)$",
+      "target": "/findmyexpert-manage-experts/$1",
+      "service": "html5-apps-repo-rt",
+      "authenticationType": "xsuaa"
+    },
+    {
+      "source": "^/findmyexpert-manage-roles/(.*)$",
+      "target": "/findmyexpert-manage-roles/$1",
+      "service": "html5-apps-repo-rt",
+      "authenticationType": "xsuaa"
+    },
+    {
+      "source": "^/findmyexpert-manage-topics/(.*)$",
+      "target": "/findmyexpert-manage-topics/$1",
+      "service": "html5-apps-repo-rt",
+      "authenticationType": "xsuaa"
+    }
+  ]
+}

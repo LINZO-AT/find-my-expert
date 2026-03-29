@@ -1,281 +1,116 @@
 # BTP Deployment Guide
 
-Deploy **Find My Expert** to SAP Business Technology Platform (Cloud Foundry).
-
----
-
-## Overview
-
-```
-SAP BTP (Cloud Foundry)
-├── find-my-expert-srv      ← CAP Node.js backend
-├── find-my-expert-app      ← SAPUI5 static files (via AppRouter)
-├── find-my-expert-approuter← SAP AppRouter
-├── XSUAA service instance  ← Authentication
-├── PostgreSQL service      ← Database (or SAP HANA)
-└── HTML5 Repository        ← (optional, for Build Work Zone)
-```
-
----
+> CAP 9 · PostgreSQL · XSUAA · HTML5 Repo · MTA
 
 ## Prerequisites
 
-- SAP BTP subaccount with Cloud Foundry space
-- SAP BTP CLI (`cf`) installed and logged in
-- `mbt` (MTA Build Tool): `npm i -g mbt`
-- SAP Build Work Zone subscription (for Launchpad integration)
+| Tool | Version | Install |
+|---|---|---|
+| Node.js | 22.x | [nodejs.org](https://nodejs.org) |
+| `@sap/cds-dk` | latest | `npm i -g @sap/cds-dk` |
+| Cloud Foundry CLI | v8+ | [CF CLI](https://docs.cloudfoundry.org/cf-cli/) |
+| MTA Build Tool | latest | `npm i -g mbt` |
+| `cf multiapps` plugin | latest | `cf install-plugin multiapps` |
 
----
+## BTP Services Required
 
-## 1. Create XSUAA Service Instance
+| Service | Plan | Binding |
+|---|---|---|
+| `postgresql-db` | `trial` | `findmyexpert-postgres` |
+| `xsuaa` | `application` | `findmyexpert-auth` |
+| `html5-apps-repo` | `app-host` | `findmyexpert-html5-repo` |
+| `html5-apps-repo` | `app-runtime` | `findmyexpert-html5-runtime` |
 
-```bash
-cf create-service xsuaa application find-my-expert-xsuaa \
-  -c xs-security.json
-```
+## Step-by-Step Deployment
 
-The `xs-security.json` defines:
-- Scope `$XSAPPNAME.Admin`
-- Scope `$XSAPPNAME.Viewer`
-- Role Templates `Admin`, `Viewer`
-- Role Collections `FindMyExpert_Admin`, `FindMyExpert_Viewer`
-
----
-
-## 2. Assign Role Collections to Users
-
-In BTP Cockpit:
-
-1. Navigate to **Security → Role Collections**
-2. Find `FindMyExpert_Admin` or `FindMyExpert_Viewer`
-3. Click **Edit → Add Users**
-4. Enter the user's email and confirm
-
-| Role Collection | Who should get it |
-|---|---|
-| `FindMyExpert_Admin` | Data owners, content managers |
-| `FindMyExpert_Viewer` | All SAP Austria employees |
-
----
-
-## 3. Create PostgreSQL (or HANA) Service
-
-### Option A: PostgreSQL (recommended for BTP Trial/Standard)
+### 1. Login to Cloud Foundry
 
 ```bash
-cf create-service postgresql-db trial find-my-expert-db
-# or for productive:
-cf create-service postgresql-db standard find-my-expert-db
+cf login -a https://api.cf.<region>.hana.ondemand.com
+cf target -o <org> -s <space>
 ```
 
-### Option B: SAP HANA Cloud
+### 2. Create BTP Service Instances
 
 ```bash
-cf create-service hana hdi-shared find-my-expert-db
+cf create-service postgresql-db trial findmyexpert-postgres
+cf create-service xsuaa application findmyexpert-auth -c xs-security.json
+cf create-service html5-apps-repo app-host findmyexpert-html5-repo
+cf create-service html5-apps-repo app-runtime findmyexpert-html5-runtime
 ```
 
-> If using HANA, replace `@cap-js/postgres` with `@cap-js/hana` in `package.json`.
+Wait for services to be created:
+```bash
+cf services
+```
 
----
-
-## 4. Build the MTA Archive
+### 3. Build the MTA Archive
 
 ```bash
-# From the project root
-mbt build
-# Creates: mta_archives/findmyexpert_1.0.0.mtar
+npm install
+mbt build -t dist/
 ```
 
-> An `mta.yaml` must be present. See [mta.yaml reference](#mtayaml-template) below.
+This produces `dist/findmyexpert_1.0.0.mtar`.
 
----
-
-## 5. Deploy
+### 4. Deploy
 
 ```bash
-cf deploy mta_archives/findmyexpert_1.0.0.mtar
+cf deploy dist/findmyexpert_1.0.0.mtar
 ```
 
----
-
-## 6. Deploy to SAP Build Work Zone
-
-### Step 1: Add HTML5 Repository service
-
+Monitor progress:
 ```bash
-cf create-service html5-apps-repo app-runtime find-my-expert-html5
+cf mta findmyexpert
 ```
 
-### Step 2: Configure `xs-app.json` for Work Zone
+### 5. Post-Deployment
 
-The `app/findmyexpert/xs-app.json` routes are already configured:
-
-```json
-{
-  "routes": [
-    { "source": "^/api/admin/(.*)", "destination": "srv-api", "authenticationType": "xsuaa" },
-    { "source": "^/api/catalog/(.*)", "destination": "srv-api", "authenticationType": "xsuaa" },
-    { "source": "^/(.*)", "localDir": "webapp", "authenticationType": "xsuaa" }
-  ]
-}
-```
-
-### Step 3: Add app to Content Provider
-
-In SAP Build Work Zone → **Content Manager**:
-1. Add Content Provider pointing to your HTML5 app repository
-2. The `manifest.json` crossNavigation inbound `findmyexpert-display` registers the tile
-3. Add tile to your Launchpad site
-
----
-
-## 7. Joule Skill Integration (AI Expert Search)
-
-The `searchExperts` CAP action (`POST /api/catalog/searchExperts`) is the backend for Joule skill integration.
-
-### Setup
-
-1. Create a Joule Skill in SAP AI Core referencing the endpoint
-2. The action accepts `{ "query": "string" }` and returns ranked expert results
-3. Ensure the Joule service binding is configured to pass XSUAA tokens
-
-### Action contract
-
-```http
-POST /api/catalog/searchExperts
-Authorization: Bearer <xsuaa-token>
-Content-Type: application/json
-
-{ "query": "S/4HANA Finance expert Austria" }
-```
-
-Response:
-```json
-{
-  "value": [
-    {
-      "expertId": "e-001",
-      "firstName": "Thomas",
-      "lastName": "Hartmann",
-      "topicName": "CloudERP",
-      "solutionName": "S/4HANA Finance",
-      "role": "TOPIC_OWNER",
-      "roleLabel": "Topic Owner",
-      "score": 100,
-      ...
-    }
-  ]
-}
-```
-
----
-
-## 8. `mta.yaml` Template
-
-Create `mta.yaml` in the project root:
-
-```yaml
-_schema-version: "3.1"
-ID: find-my-expert
-version: 1.0.0
-description: Find My Expert — SAP Austria Internal Expert Directory
-
-modules:
-  - name: find-my-expert-srv
-    type: nodejs
-    path: .
-    parameters:
-      buildpack: nodejs_buildpack
-      memory: 256M
-    build-parameters:
-      builder: npm
-      build-result: .
-      commands:
-        - npm ci --production
-        - npx cds build --production
-    provides:
-      - name: srv-api
-        properties:
-          srv-url: ${default-url}
-    requires:
-      - name: find-my-expert-xsuaa
-      - name: find-my-expert-db
-
-  - name: find-my-expert-app
-    type: html5
-    path: app/findmyexpert
-    build-parameters:
-      builder: custom
-      commands:
-        - npm ci
-        - npx ui5 build --clean-dest
-      supported-platforms: []
-    requires:
-      - name: find-my-expert-html5
-
-  - name: find-my-expert-approuter
-    type: approuter.nodejs
-    path: app
-    parameters:
-      memory: 128M
-    requires:
-      - name: find-my-expert-xsuaa
-      - name: find-my-expert-html5
-        parameters:
-          service-key:
-            config:
-              xsappname: find-my-expert
-      - name: srv-api
-        group: destinations
-        properties:
-          name: srv-api
-          url: ~{srv-url}
-          forwardAuthToken: true
-
-resources:
-  - name: find-my-expert-xsuaa
-    type: org.cloudfoundry.managed-service
-    parameters:
-      service: xsuaa
-      service-plan: application
-      path: ./xs-security.json
-
-  - name: find-my-expert-db
-    type: org.cloudfoundry.managed-service
-    parameters:
-      service: postgresql-db
-      service-plan: trial
-
-  - name: find-my-expert-html5
-    type: org.cloudfoundry.managed-service
-    parameters:
-      service: html5-apps-repo
-      service-plan: app-runtime
-```
-
----
-
-## 9. Environment Variables (CAP Production)
-
-When `NODE_ENV=production`, CAP automatically reads:
-
-| Variable | Value |
-|---|---|
-| `VCAP_SERVICES` | Injected by CF — contains XSUAA + DB credentials |
-| `NODE_ENV` | `production` |
-
-No manual config needed — XSUAA and PostgreSQL are auto-discovered from `VCAP_SERVICES`.
-
----
-
-## 10. Post-Deployment Verification
-
+Seed initial data (if not using `data/*.csv`):
 ```bash
-# Check app status
+cf ssh findmyexpert-srv -c "cd app && node -e \"require('@sap/cds').connect().then(() => process.exit())\""
+```
+
+Check app status:
+```bash
 cf apps
-cf logs find-my-expert-srv --recent
-
-# Test endpoints
-curl https://<your-app>.cfapps.eu10.hana.ondemand.com/api/catalog/
-curl -H "Authorization: Bearer <token>" https://<your-app>.cfapps.eu10.hana.ondemand.com/api/catalog/userInfo\(\)
+cf logs findmyexpert-srv --recent
 ```
+
+## Environment Variables
+
+The CAP service automatically reads the `VCAP_SERVICES` binding. No manual `.env` setup needed in production.
+
+For debugging, set:
+```bash
+cf set-env findmyexpert-srv DEBUG "cds:*"
+cf restage findmyexpert-srv
+```
+
+## XSUAA Role Assignment
+
+1. BTP Cockpit → Security → Role Collections
+2. Assign `FindMyExpert_Viewer` to all users who need search access
+3. Assign `FindMyExpert_Admin` to data stewards managing the directory
+
+## Updating After Code Changes
+
+```bash
+mbt build -t dist/
+cf deploy dist/findmyexpert_1.0.0.mtar --strategy rolling
+```
+
+## PostgreSQL Schema Migration
+
+CAP auto-migrates the schema on startup via `@cap-js/postgres`. For breaking changes:
+1. Update schema in `db/schema.cds`
+2. Redeploy — CAP will run `cds deploy` against the bound PostgreSQL instance automatically via the `findmyexpert-db-deployer` module.
+
+## Troubleshooting
+
+| Symptom | Check |
+|---|---|
+| 403 on API calls | XSUAA scopes not assigned — check role collections |
+| App crash on startup | `cf logs findmyexpert-srv --recent` — usually a missing service binding |
+| DB migration error | Check `findmyexpert-db-deployer` logs: `cf logs findmyexpert-db-deployer --recent` |
+| HTML5 apps not found | Ensure `findmyexpert-html5-repo` service is bound and deployer ran |

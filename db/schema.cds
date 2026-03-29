@@ -3,6 +3,20 @@ namespace findmyexpert;
 using { managed, cuid } from '@sap/cds/common';
 
 /**
+ * Location codes for SAP Austria offices / countries
+ */
+type LocationCode : String(10) enum {
+  AT = 'AT';
+  DE = 'DE';
+  CH = 'CH';
+  PL = 'PL';
+  RO = 'RO';
+  HU = 'HU';
+  SK = 'SK';
+  CZ = 'CZ';
+}
+
+/**
  * Topic areas: AI, BDC, BTP, CloudERP, HCM,
  * Integrated Toolchain, RISE, T&I
  */
@@ -47,7 +61,9 @@ entity Experts : cuid, managed {
   @title: 'E-Mail'
   email       : String(200);
   @title: 'Location'
-  location    : String(10);
+  location    : LocationCode;
+  @title: 'Languages'
+  languages   : String(100);
   roles       : Composition of many ExpertRoles on roles.expert = $self;
 }
 

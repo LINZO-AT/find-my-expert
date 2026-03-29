@@ -1,5 +1,6 @@
 'use strict';
 const cds = require("@sap/cds");
+const LOG = cds.log('findmyexpert');
 
 // Tiny UUID generator
 const genId = () => {
@@ -297,5 +298,77 @@ module.exports = cds.service.impl(async function () {
     if (existing) {
       req.error(409, 'This Expert/Solution/Role combination already exists.');
     }
+  });
+
+  // ─── searchExperts: Keyword-based relevance search (Phase 1 — no AI Core) ──
+  this.on('searchExperts', async (req) => {
+    const query = (req.data.query || '').toLowerCase().trim();
+    LOG.info(`searchExperts called — query: "${query}"`);
+    if (!query) return [];
+
+    const { ExpertSearch } = this.entities;
+    const allRows = await cds.db.run(SELECT.from(ExpertSearch));
+
+    // Tokenize query
+    const tokens = query.split(/\s+/).filter(t => t.length > 1);
+
+    const expertMap = new Map();
+    for (const row of allRows) {
+      const text = [
+        row.firstName, row.lastName, row.solutionName,
+        row.topicName, row.roleName, row.notes, row.location
+      ].filter(Boolean).join(' ').toLowerCase();
+
+      let matchCount = 0;
+      const matchedTokens = [];
+      for (const token of tokens) {
+        if (text.includes(token)) { matchCount++; matchedTokens.push(token); }
+      }
+      if (matchCount === 0) continue;
+
+      const s = (row.rolePriority ?? 5) + matchCount * 5;
+      let entry = expertMap.get(row.expertID);
+      if (!entry) {
+        entry = {
+          expertID: row.expertID,
+          firstName: row.firstName,
+          lastName: row.lastName,
+          email: row.email,
+          location: row.location,
+          _score: s,
+          _solutions: new Set(),
+          _topics: new Set(),
+          _roles: new Set(),
+          _matched: new Set(matchedTokens),
+          canPresent5M:   row.canPresent5M,
+          canPresent30M:  row.canPresent30M,
+          canPresent2H:   row.canPresent2H,
+          canPresentDemo: row.canPresentDemo,
+        };
+        expertMap.set(row.expertID, entry);
+      } else {
+        if (s > entry._score) entry._score = s;
+        entry.canPresent5M   = entry.canPresent5M   || row.canPresent5M;
+        entry.canPresent30M  = entry.canPresent30M  || row.canPresent30M;
+        entry.canPresent2H   = entry.canPresent2H   || row.canPresent2H;
+        entry.canPresentDemo = entry.canPresentDemo || row.canPresentDemo;
+        for (const t of matchedTokens) entry._matched.add(t);
+      }
+      if (row.solutionName) entry._solutions.add(row.solutionName);
+      if (row.topicName)    entry._topics.add(row.topicName);
+      if (row.roleName)     entry._roles.add(row.roleName);
+    }
+
+    return [...expertMap.values()]
+      .sort((a, b) => b._score - a._score)
+      .map(({ _score, _solutions, _topics, _roles, _matched, ...rest }) => ({
+        ...rest,
+        solutionName: [..._solutions].sort().join(', '),
+        topicName:    [..._topics].sort().join(', '),
+        roleName:     [..._roles].sort().join(', '),
+        score:        _score,
+        reasoning:    `Keyword match: ${[..._matched].join(', ')}. Role score: ${_score}.`,
+        isMockMode:   true,
+      }));
   });
 });

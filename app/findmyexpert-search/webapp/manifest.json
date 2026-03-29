@@ -149,7 +149,7 @@
   },
   "sap.fiori": {
     "registrationIds": [],
-    "archeType": "transactional"
+    "archetype": "transactional"
   },
   "sap.fe": {
     "app": {

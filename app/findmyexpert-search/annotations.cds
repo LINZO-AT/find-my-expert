@@ -6,6 +6,7 @@ annotate service.ExpertSearch with {
     lastName     @title: '{i18n>LastName}';
     email        @title: '{i18n>Email}';
     location     @title: '{i18n>Location}';
+    email        @Communication.IsEmailAddress: true;
 
     solutionName @title: '{i18n>Solution}'
         @Common.ValueList: {
@@ -91,6 +92,11 @@ annotate service.ExpertSearch with @(
             $Type : 'UI.DataField',
             Value : solutionName,
             Label : '{i18n>Solutions}'
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : rolePriority,
+            Label : '{i18n>RelevanceScore}'
         },
     ],
     UI.FieldGroup #ExpertInfo : {

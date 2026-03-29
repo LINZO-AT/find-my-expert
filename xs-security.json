@@ -1,51 +1,42 @@
 {
-  "xsappname": "find-my-expert",
+  "xsappname": "findmyexpert",
   "tenant-mode": "dedicated",
-  "description": "Find My Expert — SAP Austria Internal Expert Directory",
+  "description": "Security configuration for Find My Expert",
   "scopes": [
     {
-      "name": "$XSAPPNAME.Viewer",
-      "description": "Read-only access to expert directory and search"
+      "name": "$XSAPPNAME.ExpertViewer",
+      "description": "View and search SAP experts"
     },
     {
       "name": "$XSAPPNAME.Admin",
-      "description": "Full admin access: manage experts, topics, solutions"
+      "description": "Create, edit, and delete experts, roles, and solutions"
     }
   ],
   "attributes": [],
   "role-templates": [
     {
-      "name": "Viewer",
-      "description": "Can search and view experts",
-      "scope-references": [
-        "$XSAPPNAME.Viewer"
-      ],
+      "name": "ExpertViewer",
+      "description": "Read access to the expert directory",
+      "scope-references": [ "$XSAPPNAME.ExpertViewer" ],
       "attribute-references": []
     },
     {
       "name": "Admin",
-      "description": "Can manage all master data",
-      "scope-references": [
-        "$XSAPPNAME.Admin",
-        "$XSAPPNAME.Viewer"
-      ],
+      "description": "Full admin access to the expert directory",
+      "scope-references": [ "$XSAPPNAME.ExpertViewer", "$XSAPPNAME.Admin" ],
       "attribute-references": []
     }
   ],
   "role-collections": [
     {
       "name": "FindMyExpert_Viewer",
-      "description": "Viewer-Zugang für Find My Expert (Suche & Verzeichnis)",
-      "role-template-references": [
-        "$XSAPPNAME.Viewer"
-      ]
+      "description": "Find My Expert - Viewer",
+      "role-template-references": [ "$XSAPPNAME.ExpertViewer" ]
     },
     {
       "name": "FindMyExpert_Admin",
-      "description": "Admin-Zugang für Find My Expert (Verwaltung aller Daten)",
-      "role-template-references": [
-        "$XSAPPNAME.Admin"
-      ]
+      "description": "Find My Expert - Administrator",
+      "role-template-references": [ "$XSAPPNAME.Admin" ]
     }
   ]
 }

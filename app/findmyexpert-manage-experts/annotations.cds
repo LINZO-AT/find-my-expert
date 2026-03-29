@@ -6,6 +6,8 @@ annotate service.AdminExperts with {
     lastName  @title: '{i18n>LastName}';
     email     @title: '{i18n>Email}';
     location  @title: '{i18n>Location}';
+    email     @Communication.IsEmailAddress: true;
+    languages @title: '{i18n>Languages}';
 };
 
 annotate service.AdminExperts with @(
@@ -43,6 +45,11 @@ annotate service.AdminExperts with @(
             Value : location,
             Label : '{i18n>Location}'
         },
+        {
+            $Type : 'UI.DataField',
+            Value : languages,
+            Label : '{i18n>Languages}'
+        },
     ],
     UI.FieldGroup #ExpertInfo : {
         $Type : 'UI.FieldGroupType',
@@ -52,6 +59,7 @@ annotate service.AdminExperts with @(
             { $Type : 'UI.DataField', Value : lastName },
             { $Type : 'UI.DataField', Value : email },
             { $Type : 'UI.DataField', Value : location },
+            { $Type : 'UI.DataField', Value : languages },
         ],
     },
     UI.HeaderFacets    : [

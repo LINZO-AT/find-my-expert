@@ -1,6 +1,6 @@
 using findmyexpert from '../db/schema';
 
-service CatalogService @(path: '/api/catalog') {
+service CatalogService @(path: '/api/catalog') @(requires: ['ExpertViewer', 'Admin']) {
 
     // ─── Public read-only entities ───────────────────────────────────────────
     @readonly @cds.redirection.target entity Topics      as projection on findmyexpert.Topics;
@@ -21,6 +21,7 @@ service CatalogService @(path: '/api/catalog') {
         (expert.lastName || ' ' || expert.firstName) as fullName : String(200),
         expert.email          as email,
         expert.location       as location,
+        expert.languages      as languages,
         solution.name         as solutionName,
         solution.topic.name   as topicName,
         role.name             as roleName,
@@ -70,4 +71,27 @@ service CatalogService @(path: '/api/catalog') {
         isAdmin  : Boolean;
         userName : String;
     };
+
+    // ─── AI-powered / keyword expert search ──────────────────────────────────
+    action searchExperts(query : String not null) returns array of {
+        expertID       : UUID;
+        firstName      : String;
+        lastName       : String;
+        email          : String;
+        location       : String;
+        solutionName   : String;
+        topicName      : String;
+        roleName       : String;
+        score          : Integer;
+        reasoning      : String;
+        canPresent5M   : Boolean;
+        canPresent30M  : Boolean;
+        canPresent2H   : Boolean;
+        canPresentDemo : Boolean;
+        isMockMode     : Boolean;
+    };
+
+    annotate AdminExperts with {
+        location @Common.ValueListWithFixedValues: true;
+    }
 }

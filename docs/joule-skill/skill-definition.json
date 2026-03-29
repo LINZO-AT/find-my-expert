@@ -1,0 +1,26 @@
+{
+  "name": "FindMyExpert",
+  "version": "1.0.0",
+  "description": "Find SAP Austria experts by product, solution or topic",
+  "intents": [
+    "Who is my expert for {product}?",
+    "Find an expert for {topic}",
+    "Wer ist mein Experte für {product}?",
+    "Welcher Experte kann {product} präsentieren?",
+    "Show me experts for {solution}"
+  ],
+  "action": {
+    "type": "http",
+    "method": "POST",
+    "destinationName": "FINDMYEXPERT_BACKEND",
+    "path": "/api/catalog/searchExperts",
+    "body": {
+      "query": "{product}"
+    },
+    "authentication": "xsuaa"
+  },
+  "responseTemplate": {
+    "format": "markdown",
+    "template": "## Expert Recommendations\n\n{{#each results}}### {{firstName}} {{lastName}}\n- **Role:** {{roleName}}\n- **Solutions:** {{solutionName}}\n- **Topic:** {{topicName}}\n- **Location:** {{location}}\n- **Contact:** {{email}}\n\n{{/each}}"
+  }
+}

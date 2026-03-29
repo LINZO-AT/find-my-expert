@@ -1,231 +1,140 @@
 # Developer Guide
 
-Architecture, patterns, and extension points for **Find My Expert**.
+## Local Setup
 
----
+### Prerequisites
 
-## Project Structure
+- Node.js 22.x
+- `npm i -g @sap/cds-dk` (CAP CLI)
+- Git
 
-```
-find-my-expert/
-├── app/findmyexpert/
-│   └── webapp/
-│       ├── Component.js          # App bootstrap, auth detection, userModel
-│       ├── manifest.json         # App descriptor, routing, models, CSS
-│       ├── index.html            # Standalone entry (no FLP)
-│       ├── sandbox.html          # FLP Launchpad sandbox (dev)
-│       ├── css/style.css         # Custom Fiori-compliant styles
-│       ├── controller/
-│       │   ├── BaseController.js # Shared nav, i18n, FLP helpers
-│       │   ├── Search.controller.js
-│       │   ├── ExpertList.controller.js
-│       │   ├── ExpertDetail.controller.js
-│       │   ├── AdminSolutions.controller.js
-│       │   └── AdminExpert.controller.js
-│       ├── view/
-│       │   ├── App.view.xml      # Root shell (sap.m.App)
-│       │   ├── Search.view.xml
-│       │   ├── ExpertList.view.xml
-│       │   ├── ExpertDetail.view.xml
-│       │   ├── AdminSolutions.view.xml
-│       │   └── AdminExpert.view.xml
-│       └── i18n/
-│           ├── i18n.properties     # Fallback (DE)
-│           ├── i18n_de.properties  # German
-│           └── i18n_en.properties  # English
-├── db/
-│   ├── schema.cds               # CDS data model
-│   └── data/
-│       ├── findmyexpert-Topics.csv
-│       ├── findmyexpert-Solutions.csv
-│       ├── findmyexpert-Experts.csv
-│       └── findmyexpert-ExpertRoles.csv
-├── srv/
-│   ├── catalog-service.cds      # Public service definition
-│   ├── catalog-service.js       # userInfo() + searchExperts() implementation
-│   ├── admin-service.cds        # Admin service (requires: 'Admin')
-│   └── admin-service.js         # Validation: email, duplicate role prevention
-└── docs/
-```
-
----
-
-## Auth Architecture
-
-### How it works (DEV vs PROD)
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│ Component.js init()                                              │
-│                                                                  │
-│  1. _injectDevAuth()  ← synchronous, BEFORE router.initialize() │
-│     Sets Authorization: Basic anonymous: on BOTH OData models   │
-│     → Prevents browser popups on Admin views                     │
-│                                                                  │
-│  2. router.initialize()                                          │
-│     → routing starts, views may load immediately                │
-│                                                                  │
-│  3. _loadUserInfo()   ← async                                    │
-│     Calls GET /api/catalog/userInfo() with DEV_AUTH header       │
-│                                                                  │
-│     DEV: userName === "Dev/Admin"                                │
-│          → Keep DEV_AUTH header in models                        │
-│          → userModel: { isAdmin: true, userName: "Dev/Admin" }   │
-│                                                                  │
-│     PROD: userName !== "Dev/Admin" (real XSUAA name)             │
-│          → _clearDevAuth() removes Basic header from models      │
-│          → XSUAA JWT takes over via credentials: same-origin     │
-│          → userModel: { isAdmin: true/false, userName: "..." }   │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### CAP Auth Backend
-
-```
-catalog-service.js userInfo():
-
-  bDev  = !cds.env.production         // false in prod
-  bAnon = user._is_anonymous          // true without credentials
-  
-  isAdmin = bDev && bAnon ? true      // DEV: always Admin
-           : user.is("Admin")         // PROD: check XSUAA scope
-```
-
----
-
-## Data Model
-
-See [DATA_MODEL.md](DATA_MODEL.md) for full entity reference.
-
-**Key relationships:**
-```
-Topics (1) ──< (n) Solutions (1) ──< (n) ExpertRoles (n) >── (1) Experts
-```
-
-ExpertRoles is the junction table with additional attributes:
-- `role` (enum) — e.g. `TOPIC_OWNER`, `REALIZATION_CONSULTANT`
-- `canPresent5M / 30M / 2H / Demo` (Boolean) — presentation capabilities
-- `notes` (String) — free-text remarks
-
----
-
-## Adding a New View
-
-1. Create `app/findmyexpert/webapp/view/MyView.view.xml`
-2. Create `app/findmyexpert/webapp/controller/MyView.controller.js`
-3. Register in `manifest.json`:
-   ```json
-   "routes": [
-     { "name": "myView", "pattern": "my-path", "target": "MyView" }
-   ],
-   "targets": {
-     "MyView": { "viewName": "MyView", "viewLevel": 1 }
-   }
-   ```
-4. Add i18n keys to `i18n_de.properties` and `i18n_en.properties`
-
----
-
-## Adding a New CAP Entity
-
-1. Add entity to `db/schema.cds`:
-   ```cds
-   entity MyEntity : managed {
-     key ID   : String(50);
-     name     : String(200) not null;
-   }
-   ```
-2. Expose in service (`srv/catalog-service.cds` or `admin-service.cds`):
-   ```cds
-   @readonly
-   entity MyEntity as projection on findmyexpert.MyEntity;
-   ```
-3. Add seed data: `db/data/findmyexpert-MyEntity.csv`
-4. Redeploy DB: `cds deploy --to sqlite:db.sqlite`
-
----
-
-## searchExperts Action
-
-**Location:** `srv/catalog-service.js`
-
-**Logic:**
-1. Loads all `ExpertRoles` with expanded `Expert`, `Solution`, `Topic`
-2. For each role, scores relevance across multiple fields (name, solution, topic, role label, notes)
-3. Applies role-weight bonus (Topic Owner = 100pts, Realization Consultant = 45pts)
-4. Deduplicates by `expertId + role`
-5. Sorts by score descending, caps at 50 results
-6. Normalizes scores to 0–100 range
-
-**Extending the scoring:**
-
-In `catalog-service.js`, edit the scoring loop:
-```javascript
-// Add new scoring rule:
-if (someOtherField.includes(sToken)) iScore += 15;
-```
-
-**Role weights** (`ROLE_WEIGHTS` object):
-```javascript
-const ROLE_WEIGHTS = {
-  TOPIC_OWNER: 100,
-  SOLUTIONING_ARCH: 85,
-  // ...
-};
-```
-
----
-
-## i18n Conventions
-
-- Keys use camelCase: `expertListTitle`, `searchEmptyTitle`
-- Role labels: `role_TOPIC_OWNER`, `role_THEMEN_LEAD`, etc.
-- Tooltip keys: `tooltip_5M`, `tooltip_30M`, `tooltip_2H`, `tooltip_Demo`
-- Score display: `scoreLabel={0}%` → uses `getText("scoreLabel", [score])`
-
----
-
-## CSS Conventions
-
-Custom styles in `webapp/css/style.css` follow these rules:
-
-- All custom classes prefixed with `fme` (e.g. `.fmeExpertCard`, `.fmeCardContent`)
-- Use Fiori CSS variables (`var(--sapUiHighlight)`) — not hardcoded colors
-- Never override core Fiori controls directly — only extend via BEM-like modifiers
-- Card heights: fixed `220px` via `.fmeExpertCard` to ensure uniform grid
-
----
-
-## Coding Standards
-
-- **ES6+** syntax throughout (arrow functions, template literals, const/let)
-- **No jQuery** — use native DOM or SAPUI5 APIs only
-- **Formatters** always in the controller of the view that uses them
-- **Role labels** mapped via `ROLE_LABELS` constant (catalog-service.js + ExpertDetail.controller.js)
-- **i18n** for all user-visible strings — no hardcoded UI text
-- **Error handling**: all async operations wrapped in try/catch with `MessageBox.error()`
-
----
-
-## Testing
-
-Currently no automated tests. To add:
+### Clone & Install
 
 ```bash
-npm install --save-dev jest @sap/cds-test
+git clone https://github.com/LINZO-AT/find-my-expert.git
+cd find-my-expert
+npm install
 ```
 
-Test files go in `test/` directory. CAP provides `cds.test()` for service-level testing.
-
----
-
-## Linting (UI5 Linter)
+### Initial Database Setup (SQLite)
 
 ```bash
-cd app/findmyexpert
-npx @ui5/linter
+cds deploy --to sqlite
 ```
 
-Known accepted findings (not fixable without version upgrade):
-- `minUI5Version` recommendation (project constraint: 1.132.1)
-- CSP inline scripts in `sandbox.html` (structural FLP requirement)
+This creates `db.sqlite` in the project root and runs all schema migrations. Re-run after any changes to `db/schema.cds`.
+
+### Start Development Server
+
+```bash
+cds watch
+```
+
+CAP watches for file changes and hot-reloads automatically.
+
+Available endpoints:
+- OData service: `http://localhost:4004/api/catalog`
+- Fiori Search App: `http://localhost:4004/findmyexpert-search/webapp/index.html`
+- Fiori Launchpad Sandbox: `http://localhost:4004/findmyexpert-search/webapp/test/flpSandbox.html`
+- Manage Experts: `http://localhost:4004/findmyexpert-manage-experts/webapp/index.html`
+
+## Authentication Modes
+
+### Local Dev (No Auth)
+By default, `cds watch` runs without authentication. Admin endpoints are accessible for easy local testing.
+
+### Simulating XSUAA Locally
+Add to `package.json` under `cds.requires`:
+```json
+"auth": {
+  "kind": "mocked",
+  "users": {
+    "admin": { "password": "admin", "roles": ["Admin", "ExpertViewer"] },
+    "viewer": { "password": "viewer", "roles": ["ExpertViewer"] }
+  }
+}
+```
+Then run `cds watch` — login at `/login` with those credentials.
+
+### Production (XSUAA)
+Automatically active when `VCAP_SERVICES` contains an `xsuaa` binding (BTP Cloud Foundry).
+
+## SQLite vs PostgreSQL
+
+| Feature | SQLite (dev) | PostgreSQL (prod) |
+|---|---|---|
+| Setup | Zero-config | Requires `@cap-js/postgres` + service binding |
+| Migrations | `cds deploy --to sqlite` | Auto on startup via deployer module |
+| Full-text search | Limited | Full PostgreSQL capabilities |
+| Transactions | Single-process | Full ACID |
+
+Switch to PostgreSQL locally (optional):
+```bash
+npm install @cap-js/postgres
+export PG_USER=... PG_PASSWORD=... PG_HOST=localhost PG_DATABASE=findmyexpert
+cds deploy --to postgres
+cds watch
+```
+
+## Data Management
+
+### Seed Data (CSV)
+
+Place CSV files in `db/data/` following the naming convention `findmyexpert.<EntityName>.csv`.
+
+Example: `db/data/findmyexpert.Topics.csv`
+```csv
+ID,name,description
+<uuid>,AI,Artificial Intelligence & Machine Learning
+<uuid>,BTP,SAP Business Technology Platform
+```
+
+Run `cds deploy --to sqlite` to import seed data.
+
+### Adding a New Expert (via Fiori UI)
+1. Open Manage Experts app
+2. Click **Create** → fill in First Name, Last Name, Email, Location, Languages
+3. Save (activates draft)
+4. Open the expert → **Expert Roles** section → add solution + role combinations
+
+### Adding a New Expert (via HTTP / REST)
+
+```bash
+# POST to AdminExperts (requires Admin role)
+curl -X POST http://localhost:4004/api/catalog/AdminExperts \
+  -H "Content-Type: application/json" \
+  -d '{"firstName": "Max", "lastName": "Mustermann", "email": "max@sap.com", "location": "AT"}'
+```
+
+## Testing the searchExperts Action
+
+```bash
+curl -X POST http://localhost:4004/api/catalog/searchExperts \
+  -H "Content-Type: application/json" \
+  -d '{"query": "Signavio"}'
+```
+
+Expected: JSON array of matched experts with relevance scores.
+
+## CDS Schema Changes
+
+After any change to `db/schema.cds`:
+1. `cds deploy --to sqlite` — rebuilds the SQLite schema
+2. `cds watch` — restarts (or it auto-reloads)
+3. Check the terminal for any CDS compilation errors before testing
+
+## Adding a New Fiori App
+
+1. `cds add fiori-app` or create manually under `app/<appname>/`
+2. Add to `app/appconfig/fioriSandboxConfig.json` for local Launchpad
+3. Add build modules to `mta.yaml`
+4. Add route to `app/router/xs-app.json`
+
+## Common Issues
+
+| Issue | Fix |
+|---|---|
+| `cds watch` fails with syntax error | Check `db/schema.cds` and `srv/catalog-service.cds` for missing `;` or `}` |
+| SQLite `no such column` after schema change | Re-run `cds deploy --to sqlite` |
+| `searchExperts` returns empty | Ensure seed data is loaded and query tokens match field values |
+| Fiori app shows no data | Check OData URL in `manifest.json` — should point to `/api/catalog` |
