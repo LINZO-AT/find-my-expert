@@ -136,6 +136,54 @@ This deploys:
 
 > **No standalone AppRouter CF app** — Work Zone Standard Edition uses a managed AppRouter automatically.
 
+### Alternative: Using an Existing PostgreSQL Instance
+
+If a `postgresql-db` service instance already exists in your CF Space (e.g., shared with other apps), you can reuse it instead of creating a new one.
+
+**Step 4a: Adjust `mta.yaml`**
+
+Change the DB resource type from `managed-service` to `existing-service`:
+
+```yaml
+resources:
+  - name: find-my-expert-db
+    type: org.cloudfoundry.existing-service
+    parameters:
+      service-name: my-existing-postgres   # ← exact name of the existing instance
+```
+
+> Replace `my-existing-postgres` with the actual service instance name. Verify with `cf services`.
+
+**Schema & Table Naming:**
+
+- CAP deploys all tables into the `public` schema of the PostgreSQL database
+- Table names follow CDS slugification (dots → underscores):
+
+| CDS Entity | PostgreSQL Table |
+|---|---|
+| `findmyexpert.Experts` | `findmyexpert_Experts` |
+| `findmyexpert.Topics` | `findmyexpert_Topics` |
+| `findmyexpert.Solutions` | `findmyexpert_Solutions` |
+| `findmyexpert.ExpertRoles` | `findmyexpert_ExpertRoles` |
+| `findmyexpert.ExpertLanguages` | `findmyexpert_ExpertLanguages` |
+| `findmyexpert.Roles` | `findmyexpert_Roles` |
+
+**Important notes for existing databases with data:**
+
+- If tables **don't exist** yet → `cds-deploy` creates them + loads CSV seed data
+- If tables **already exist** → schema migration via `ALTER TABLE` (additive changes only)
+- CSV seed data is **not** re-imported into existing non-empty tables
+- **Always back up** your database before the first deployment: `cf create-service-key <instance> backup-key && pg_dump ...`
+
+**Shared instances from another CF Space:**
+
+```bash
+# In the source space (where the DB lives):
+cf share-service my-existing-postgres -s target-space
+
+# Then use the same existing-service config in mta.yaml as above
+```
+
 ---
 
 ## Step 5: Assign Role Collections
