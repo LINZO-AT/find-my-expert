@@ -42,26 +42,42 @@ modules:
     requires:
       - name: find-my-expert-db
 
-  # --------------- APPROUTER ---------------
-  - name: find-my-expert-router
-    type: approuter.nodejs
-    path: app/router
-    parameters:
-      keep-existing-routes: true
-      disk-quota: 256M
-      memory: 256M
+  # --------------- MANAGED APPROUTER (Work Zone Standard Edition) ---------------
+  # Work Zone Standard Edition uses a managed approuter — no standalone CF app needed.
+  # The HTML5 App Repository runtime is consumed directly by Work Zone.
+  # This module only wires destinations and auth for the managed approuter.
+  - name: find-my-expert-destinations
+    type: com.sap.application.content
     requires:
-      - name: srv-api
-        group: destinations
-        properties:
-          name: srv-api
-          url: ~{srv-url}
-          forwardAuthToken: true
       - name: find-my-expert-auth
+        parameters:
+          service-key:
+            name: find-my-expert-auth-key
       - name: find-my-expert-repo-runtime
+        parameters:
+          service-key:
+            name: find-my-expert-repo-runtime-key
+      - name: srv-api
+      - name: find-my-expert-portal-service
+        parameters:
+          content-target: true
+    parameters:
+      content:
+        instance:
+          destinations:
+            - Authentication: OAuth2UserTokenExchange
+              Name: find-my-expert-srv-api
+              TokenServiceInstanceName: find-my-expert-auth
+              TokenServiceKeyName: find-my-expert-auth-key
+              URL: ~{srv-api/srv-url}
+              sap.cloud.service: findmyexpert
+            - Name: find-my-expert-html5-repo-runtime
+              ServiceInstanceName: find-my-expert-repo-runtime
+              ServiceKeyName: find-my-expert-repo-runtime-key
+              sap.cloud.service: findmyexpert
+          existing_destinations_policy: update
     build-parameters:
-      requires:
-        - name: find-my-expert-app-content
+      no-source: true
 
   # --------------- UI APPS (HTML5 Content Deployer) ---------------
   - name: find-my-expert-app-content
@@ -139,18 +155,16 @@ modules:
   # --------------- FLP CONTENT (Work Zone Integration) ---------------
   - name: find-my-expert-flp-content
     type: com.sap.application.content
-    configuration:
-      provider:
-        - source: flp/
-          target: /
-      parameters:
-        import-mode: overwrite
+    path: flp
     requires:
       - name: find-my-expert-portal-service
         parameters:
           content-target: true
       - name: find-my-expert-repo-host
       - name: find-my-expert-auth
+    build-parameters:
+      requires:
+        - name: find-my-expert-app-content
 
 resources:
   # --------------- XSUAA ---------------
@@ -185,9 +199,9 @@ resources:
       service: html5-apps-repo
       service-plan: app-runtime
 
-  # --------------- Portal Service (Work Zone) ---------------
+  # --------------- SAP Build Work Zone Standard Edition ---------------
   - name: find-my-expert-portal-service
     type: org.cloudfoundry.managed-service
     parameters:
-      service: portal
+      service: SAPLaunchpad
       service-plan: standard

@@ -97,5 +97,9 @@
     }
   },
   "sap.fiori": { "registrationIds": [], "archetype": "transactional" },
-  "sap.fe": { "app": { "enableLazyLoading": true } }
+  "sap.fe": { "app": { "enableLazyLoading": true } },
+  "sap.cloud": {
+    "public": true,
+    "service": "findmyexpert"
+  }
 }
