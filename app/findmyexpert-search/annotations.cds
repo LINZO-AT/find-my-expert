@@ -35,7 +35,8 @@ annotate service.ExpertSearch with {
         }
         @Common.ValueListWithFixedValues: false;
 
-    rolePriority   @title: '{i18n>RelevanceScore}';
+    rolePriority   @title: '{i18n>RolePriority}';
+    relevanceScore @title: '{i18n>RelevanceScore}';
     notes          @title: '{i18n>Notes}';
     canPresent5M   @title: '{i18n>CanPresent5M}';
     canPresent30M  @title: '{i18n>CanPresent30M}';
@@ -57,7 +58,7 @@ annotate service.ExpertSearch with @(
         { $Type: 'UI.DataField', Value: country_code, Label: '{i18n>Location}' },
         { $Type: 'UI.DataField', Value: topicName,    Label: '{i18n>Topics}' },
         { $Type: 'UI.DataField', Value: solutionName, Label: '{i18n>Solutions}' },
-        { $Type: 'UI.DataField', Value: rolePriority, Label: '{i18n>RelevanceScore}' },
+        { $Type: 'UI.DataField', Value: relevanceScore, Label: '{i18n>RelevanceScore}' },
     ],
 
     // ─── Object Page Header ──────────────────────────────────────────────────
@@ -93,12 +94,16 @@ annotate service.ExpertRoles with {
 
 annotate service.ExpertRoles with @(
     UI.LineItem : [
-        { $Type: 'UI.DataField', Value: solution_ID,    Label: '{i18n>Solution}' },
-        { $Type: 'UI.DataField', Value: role_ID,        Label: '{i18n>Role}' },
-        { $Type: 'UI.DataField', Value: canPresent5M,   Label: '{i18n>CanPresent5M}' },
-        { $Type: 'UI.DataField', Value: canPresent30M,  Label: '{i18n>CanPresent30M}' },
-        { $Type: 'UI.DataField', Value: canPresent2H,   Label: '{i18n>CanPresent2H}' },
-        { $Type: 'UI.DataField', Value: canPresentDemo, Label: '{i18n>CanPresentDemo}' },
-        { $Type: 'UI.DataField', Value: notes,          Label: '{i18n>Notes}' },
+        { $Type: 'UI.DataField', Value: solution_ID,      Label: '{i18n>Solution}' },
+        { $Type: 'UI.DataField', Value: role_ID,           Label: '{i18n>Role}' },
+        { $Type: 'UI.DataField', Value: relevanceScore,    Label: '{i18n>RelevanceScore}' },
+        { $Type: 'UI.DataField', Value: canPresent5M,      Label: '{i18n>CanPresent5M}' },
+        { $Type: 'UI.DataField', Value: canPresent30M,     Label: '{i18n>CanPresent30M}' },
+        { $Type: 'UI.DataField', Value: canPresent2H,      Label: '{i18n>CanPresent2H}' },
+        { $Type: 'UI.DataField', Value: canPresentDemo,    Label: '{i18n>CanPresentDemo}' },
+        { $Type: 'UI.DataField', Value: notes,             Label: '{i18n>Notes}' },
     ],
+    UI.PresentationVariant : {
+        SortOrder : [{ Property: relevanceScore, Descending: true }],
+    },
 );

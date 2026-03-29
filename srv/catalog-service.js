@@ -135,8 +135,11 @@ module.exports = cds.service.impl(async function () {
       const solutions = new Set();
       const topics    = new Set();
       const roles     = new Set();
+      let maxScore = 0;
 
       for (const row of rows) {
+        const s = roleScore(row);
+        if (s > maxScore) maxScore = s;
         entry.canPresent5M   = entry.canPresent5M   || row.canPresent5M;
         entry.canPresent30M  = entry.canPresent30M  || row.canPresent30M;
         entry.canPresent2H   = entry.canPresent2H   || row.canPresent2H;
@@ -148,6 +151,7 @@ module.exports = cds.service.impl(async function () {
       entry.solutionName = [...solutions].sort().join(', ');
       entry.topicName    = [...topics].sort().join(', ');
       entry.roleName     = [...roles].sort().join(', ');
+      entry.relevanceScore = maxScore;
 
       // Support $expand=expertRoles for Object Page sub-table
       const columns = req.query.SELECT?.columns;
@@ -253,8 +257,8 @@ module.exports = cds.service.impl(async function () {
       b._score - a._score || (a.lastName || '').localeCompare(b.lastName || '')
     );
 
-    // Remove internal _score field
-    results = results.map(({ _score, ...rest }) => rest);
+    // Map internal _score to the virtual relevanceScore field and remove _score
+    results = results.map(({ _score, ...rest }) => ({ ...rest, relevanceScore: _score }));
 
     // Paginate — CAP reads $count off the returned array for @odata.count
     const total = results.length;
@@ -273,6 +277,46 @@ module.exports = cds.service.impl(async function () {
     const sName  = (user.id && !bAnon) ? user.id : (bDev ? "Dev/Admin" : "");
     return { isAdmin: bAdmin, userName: sName };
   });
+
+  // ─── ExpertRoles / AdminExpertRoles: Compute virtual relevanceScore ───────
+  const computeRelevanceScore = async (results) => {
+    const list = Array.isArray(results) ? results : [results];
+    // Collect role_IDs that need priority lookup
+    const needLookup = new Map(); // role_ID → [rows]
+    for (const row of list) {
+      if (!row || row.relevanceScore !== undefined && row.relevanceScore !== null) continue;
+      if (row.role_ID) {
+        if (!needLookup.has(row.role_ID)) needLookup.set(row.role_ID, []);
+        needLookup.get(row.role_ID).push(row);
+      } else {
+        // No role_ID — set score to 0
+        row.relevanceScore = 0;
+      }
+    }
+    // Batch-load priorities for all distinct role_IDs
+    const priorityMap = new Map();
+    if (needLookup.size > 0) {
+      const roleIds = [...needLookup.keys()];
+      const roles = await cds.db.run(
+        SELECT.from('findmyexpert.Roles').columns('ID', 'priority').where({ ID: { in: roleIds } })
+      );
+      for (const r of roles) priorityMap.set(r.ID, r.priority ?? 0);
+    }
+    // Compute score for each row
+    for (const [roleId, rows] of needLookup) {
+      const priority = priorityMap.get(roleId) ?? 0;
+      for (const row of rows) {
+        row.relevanceScore = priority
+          + (row.canPresent2H   ? 3 : 0)
+          + (row.canPresentDemo ? 2 : 0)
+          + (row.canPresent30M  ? 1 : 0)
+          + (row.canPresent5M   ? 1 : 0);
+      }
+    }
+  };
+
+  this.after('READ', 'ExpertRoles',      computeRelevanceScore);
+  this.after('READ', 'AdminExpertRoles',  computeRelevanceScore);
 
   // ─── Admin: Compute virtual fields for AdminExperts ───────────────────────
   const computeFullName = (e) => {

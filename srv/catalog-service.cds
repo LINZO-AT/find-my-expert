@@ -32,6 +32,7 @@ service CatalogService @(path: '/api/catalog') @(requires: ['ExpertViewer', 'Adm
         canPresent2H,
         canPresentDemo,
         notes,
+        virtual relevanceScore : Integer,
         virtual languagesText  : String(200),
         // Navigation to per-solution ExpertRoles for Object Page detail
         expertRoles : Association to many ExpertRoles on expertRoles.expert.ID = expertID

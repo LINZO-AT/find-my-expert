@@ -108,4 +108,6 @@ entity ExpertRoles : cuid, managed {
   canPresentDemo    : Boolean default false;
   @title: 'Notes'
   notes             : String(500);
+  @title: 'Relevance Score'
+  virtual relevanceScore : Integer;
 }
