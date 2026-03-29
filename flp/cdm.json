@@ -1,0 +1,67 @@
+{
+  "_version": "3.1.0",
+  "identification": {
+    "id": "find-my-expert-flp-content",
+    "entityType": "bundle"
+  },
+  "payload": {
+    "catalogs": [
+      {
+        "_version": "3.1.0",
+        "identification": {
+          "id": "defaultCatalogId",
+          "title": "Find My Expert"
+        },
+        "payload": {
+          "viz": [
+            {
+              "appId": "findmyexpert.search",
+              "vizId": "findmyexpert-search-inbound"
+            },
+            {
+              "appId": "findmyexpertManageExperts",
+              "vizId": "findmyexpert-manage-experts"
+            },
+            {
+              "appId": "findmyexpertManageRoles",
+              "vizId": "findmyexpert-manage-roles"
+            },
+            {
+              "appId": "findmyexpertManageTopics",
+              "vizId": "findmyexpert-manage-topics"
+            }
+          ]
+        }
+      }
+    ],
+    "groups": [
+      {
+        "_version": "3.1.0",
+        "identification": {
+          "id": "findMyExpertGroup",
+          "title": "Find My Expert"
+        },
+        "payload": {
+          "viz": [
+            {
+              "appId": "findmyexpert.search",
+              "vizId": "findmyexpert-search-inbound"
+            },
+            {
+              "appId": "findmyexpertManageExperts",
+              "vizId": "findmyexpert-manage-experts"
+            },
+            {
+              "appId": "findmyexpertManageRoles",
+              "vizId": "findmyexpert-manage-roles"
+            },
+            {
+              "appId": "findmyexpertManageTopics",
+              "vizId": "findmyexpert-manage-topics"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

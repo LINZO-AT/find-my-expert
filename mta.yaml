@@ -1,10 +1,22 @@
 _schema-version: "3.1"
-ID: findmyexpert
-description: SAP Expert Directory for SAP Austria
+ID: find-my-expert
 version: 1.0.0
+description: "Find My Expert — SAP Austria Internal Expert Directory"
+
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci
+        - npx cds build --production
 
 modules:
-  - name: findmyexpert-srv
+  # --------------- SERVER MODULE ---------------
+  - name: find-my-expert-srv
     type: nodejs
     path: gen/srv
     parameters:
@@ -18,23 +30,20 @@ modules:
         properties:
           srv-url: ${default-url}
     requires:
-      - name: findmyexpert-db
-      - name: findmyexpert-auth
+      - name: find-my-expert-auth
+      - name: find-my-expert-db
 
-  - name: findmyexpert-db-deployer
+  # --------------- DATABASE MODULE ---------------
+  - name: find-my-expert-db-deployer
     type: hdb
     path: gen/db
     parameters:
       buildpack: nodejs_buildpack
-    build-parameters:
-      builder: npm
-      ignore:
-        - node_modules
-        - package-lock.json
     requires:
-      - name: findmyexpert-db
+      - name: find-my-expert-db
 
-  - name: findmyexpert-approuter
+  # --------------- APPROUTER ---------------
+  - name: find-my-expert-router
     type: approuter.nodejs
     path: app/router
     parameters:
@@ -48,31 +57,42 @@ modules:
           name: srv-api
           url: ~{srv-url}
           forwardAuthToken: true
-      - name: findmyexpert-auth
-      - name: findmyexpert-html5-runtime
+      - name: find-my-expert-auth
+      - name: find-my-expert-repo-runtime
     build-parameters:
       requires:
-        - name: findmyexpert-search-deployer
-        - name: findmyexpert-manage-experts-deployer
-        - name: findmyexpert-manage-roles-deployer
-        - name: findmyexpert-manage-topics-deployer
+        - name: find-my-expert-app-content
 
-  - name: findmyexpert-search-deployer
+  # --------------- UI APPS (HTML5 Content Deployer) ---------------
+  - name: find-my-expert-app-content
     type: com.sap.application.content
-    path: app/findmyexpert-search
+    path: .
     requires:
-      - name: findmyexpert-html5-repo
+      - name: find-my-expert-repo-host
         parameters:
           content-target: true
     build-parameters:
-      build-result: dist
+      build-result: resources
       requires:
-        - name: findmyexpert-search-build
+        - name: findmyexpert-search
           artifacts:
-            - dist/findmyexpert-search.zip
-          target-path: dist
+            - findmyexpert-search.zip
+          target-path: resources/
+        - name: findmyexpert-manage-experts
+          artifacts:
+            - findmyexpert-manage-experts.zip
+          target-path: resources/
+        - name: findmyexpert-manage-roles
+          artifacts:
+            - findmyexpert-manage-roles.zip
+          target-path: resources/
+        - name: findmyexpert-manage-topics
+          artifacts:
+            - findmyexpert-manage-topics.zip
+          target-path: resources/
 
-  - name: findmyexpert-search-build
+  # --- Individual UI5 App Builds ---
+  - name: findmyexpert-search
     type: html5
     path: app/findmyexpert-search
     build-parameters:
@@ -80,25 +100,10 @@ modules:
       builder: custom
       commands:
         - npm install
-        - npm run build
+        - npx ui5 build --clean-dest --dest dist
       supported-platforms: []
 
-  - name: findmyexpert-manage-experts-deployer
-    type: com.sap.application.content
-    path: app/findmyexpert-manage-experts
-    requires:
-      - name: findmyexpert-html5-repo
-        parameters:
-          content-target: true
-    build-parameters:
-      build-result: dist
-      requires:
-        - name: findmyexpert-manage-experts-build
-          artifacts:
-            - dist/findmyexpert-manage-experts.zip
-          target-path: dist
-
-  - name: findmyexpert-manage-experts-build
+  - name: findmyexpert-manage-experts
     type: html5
     path: app/findmyexpert-manage-experts
     build-parameters:
@@ -106,25 +111,10 @@ modules:
       builder: custom
       commands:
         - npm install
-        - npm run build
+        - npx ui5 build --clean-dest --dest dist
       supported-platforms: []
 
-  - name: findmyexpert-manage-roles-deployer
-    type: com.sap.application.content
-    path: app/findmyexpert-manage-roles
-    requires:
-      - name: findmyexpert-html5-repo
-        parameters:
-          content-target: true
-    build-parameters:
-      build-result: dist
-      requires:
-        - name: findmyexpert-manage-roles-build
-          artifacts:
-            - dist/findmyexpert-manage-roles.zip
-          target-path: dist
-
-  - name: findmyexpert-manage-roles-build
+  - name: findmyexpert-manage-roles
     type: html5
     path: app/findmyexpert-manage-roles
     build-parameters:
@@ -132,25 +122,10 @@ modules:
       builder: custom
       commands:
         - npm install
-        - npm run build
+        - npx ui5 build --clean-dest --dest dist
       supported-platforms: []
 
-  - name: findmyexpert-manage-topics-deployer
-    type: com.sap.application.content
-    path: app/findmyexpert-manage-topics
-    requires:
-      - name: findmyexpert-html5-repo
-        parameters:
-          content-target: true
-    build-parameters:
-      build-result: dist
-      requires:
-        - name: findmyexpert-manage-topics-build
-          artifacts:
-            - dist/findmyexpert-manage-topics.zip
-          target-path: dist
-
-  - name: findmyexpert-manage-topics-build
+  - name: findmyexpert-manage-topics
     type: html5
     path: app/findmyexpert-manage-topics
     build-parameters:
@@ -158,35 +133,61 @@ modules:
       builder: custom
       commands:
         - npm install
-        - npm run build
+        - npx ui5 build --clean-dest --dest dist
       supported-platforms: []
+
+  # --------------- FLP CONTENT (Work Zone Integration) ---------------
+  - name: find-my-expert-flp-content
+    type: com.sap.application.content
+    configuration:
+      provider:
+        - source: flp/
+          target: /
+      parameters:
+        import-mode: overwrite
+    requires:
+      - name: find-my-expert-portal-service
+        parameters:
+          content-target: true
+      - name: find-my-expert-repo-host
+      - name: find-my-expert-auth
 
 resources:
-  - name: findmyexpert-db
-    type: org.cloudfoundry.managed-service
-    parameters:
-      service: postgresql-db
-      service-plan: trial
-      service-name: findmyexpert-postgres
-
-  - name: findmyexpert-auth
+  # --------------- XSUAA ---------------
+  - name: find-my-expert-auth
     type: org.cloudfoundry.managed-service
     parameters:
       service: xsuaa
       service-plan: application
-      path: ./xs-security.json
+      path: xs-security.json
       config:
         xsappname: findmyexpert-${org}-${space}
         tenant-mode: dedicated
 
-  - name: findmyexpert-html5-repo
+  # --------------- HANA Cloud ---------------
+  - name: find-my-expert-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+
+  # --------------- HTML5 Repo Host ---------------
+  - name: find-my-expert-repo-host
     type: org.cloudfoundry.managed-service
     parameters:
       service: html5-apps-repo
       service-plan: app-host
 
-  - name: findmyexpert-html5-runtime
+  # --------------- HTML5 Repo Runtime ---------------
+  - name: find-my-expert-repo-runtime
     type: org.cloudfoundry.managed-service
     parameters:
       service: html5-apps-repo
       service-plan: app-runtime
+
+  # --------------- Portal Service (Work Zone) ---------------
+  - name: find-my-expert-portal-service
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: portal
+      service-plan: standard

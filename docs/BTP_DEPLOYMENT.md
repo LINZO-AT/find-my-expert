@@ -1,116 +1,289 @@
-# BTP Deployment Guide
-
-> CAP 9 · PostgreSQL · XSUAA · HTML5 Repo · MTA
+# BTP Deployment Guide — Find My Expert
 
 ## Prerequisites
 
-| Tool | Version | Install |
-|---|---|---|
-| Node.js | 22.x | [nodejs.org](https://nodejs.org) |
-| `@sap/cds-dk` | latest | `npm i -g @sap/cds-dk` |
-| Cloud Foundry CLI | v8+ | [CF CLI](https://docs.cloudfoundry.org/cf-cli/) |
-| MTA Build Tool | latest | `npm i -g mbt` |
-| `cf multiapps` plugin | latest | `cf install-plugin multiapps` |
+### SAP BTP Account
+- Active SAP BTP Cloud Foundry environment
+- Sufficient quota for the required services
 
-## BTP Services Required
+### Required BTP Services
 
-| Service | Plan | Binding |
-|---|---|---|
-| `postgresql-db` | `trial` | `findmyexpert-postgres` |
-| `xsuaa` | `application` | `findmyexpert-auth` |
-| `html5-apps-repo` | `app-host` | `findmyexpert-html5-repo` |
-| `html5-apps-repo` | `app-runtime` | `findmyexpert-html5-runtime` |
+| Service | Plan | Purpose |
+|---------|------|---------|
+| SAP HANA Cloud | `hdi-shared` | Database |
+| SAP Authorization & Trust Management (XSUAA) | `application` | Authentication & authorization |
+| HTML5 Application Repository | `app-host` + `app-runtime` | UI hosting |
+| SAP Build Work Zone, standard edition | `standard` | Fiori Launchpad / Portal |
 
-## Step-by-Step Deployment
+### Required Tools
 
-### 1. Login to Cloud Foundry
+```bash
+# Cloud Foundry CLI
+cf --version
+
+# MultiApps CF CLI Plugin
+cf install-plugin multiapps
+
+# MTA Build Tool
+npm install -g mbt
+mbt --version
+```
+
+---
+
+## Project Structure for Deployment
+
+```
+find-my-expert/
+├── app/
+│   ├── findmyexpert-search/          # Expert Search app
+│   ├── findmyexpert-manage-experts/  # Manage Experts app
+│   ├── findmyexpert-manage-roles/    # Manage Roles app
+│   ├── findmyexpert-manage-topics/   # Manage Topics app
+│   ├── router/                       # Approuter
+│   └── appconfig/                    # FLP sandbox config (dev only)
+├── flp/                              # Work Zone CDM content
+│   └── cdm.json                      # Apps, catalogs, groups for Launchpad
+├── srv/                              # CAP backend service
+├── db/                               # Database artifacts
+├── mta.yaml                          # MTA deployment descriptor
+├── xs-security.json                  # XSUAA security config
+└── package.json
+```
+
+---
+
+## Step 1: Build the MTA Archive
+
+```bash
+mbt build -t gen --mtar find-my-expert.mtar
+```
+
+This will:
+- Run `npm ci` and `npx cds build --production`
+- Build each UI5 app into a zip archive
+- Package everything into `gen/find-my-expert.mtar`
+
+---
+
+## Step 2: Login to Cloud Foundry
 
 ```bash
 cf login -a https://api.cf.<region>.hana.ondemand.com
-cf target -o <org> -s <space>
+# Select org and space when prompted
 ```
 
-### 2. Create BTP Service Instances
+---
+
+## Step 3: Deploy to Cloud Foundry
 
 ```bash
-cf create-service postgresql-db trial findmyexpert-postgres
-cf create-service xsuaa application findmyexpert-auth -c xs-security.json
-cf create-service html5-apps-repo app-host findmyexpert-html5-repo
-cf create-service html5-apps-repo app-runtime findmyexpert-html5-runtime
+cf deploy gen/find-my-expert.mtar
 ```
 
-Wait for services to be created:
-```bash
-cf services
+This deploys all modules:
+- `find-my-expert-srv` — CAP backend (Node.js)
+- `find-my-expert-db-deployer` — HDI container deployer
+- `find-my-expert-router` — Approuter
+- `findmyexpert-search`, `findmyexpert-manage-experts`, etc. — HTML5 apps → HTML5 repo
+- `find-my-expert-app-content` — Deploys UI5 zips to HTML5 App Repository
+- `find-my-expert-flp-content` — Deploys CDM content to Work Zone portal service
+
+---
+
+## Step 4: Assign Role Collections
+
+After deployment, assign role collections to users in the **BTP Cockpit**:
+
+**BTP Cockpit → Security → Role Collections**
+
+| Role Collection | Contains Role | Purpose |
+|----------------|---------------|---------|
+| `FindMyExpert_Viewer` | `ExpertViewer` | Read access to expert directory |
+| `FindMyExpert_Admin` | `Admin` + `ExpertViewer` | Full CRUD access |
+
+Assign these to individual users or user groups/IdP groups.
+
+---
+
+## Step 5: SAP Build Work Zone Setup
+
+### 5.1 Subscribe to Work Zone
+
+1. **BTP Cockpit → Services → Instances and Subscriptions**
+2. Subscribe to **SAP Build Work Zone, standard edition**
+3. Assign the `Launchpad_Admin` role collection to yourself
+
+### 5.2 Open Work Zone Admin
+
+1. Click on **SAP Build Work Zone** subscription link
+2. This opens the admin UI (Site Manager)
+
+### 5.3 Update Content (Channel Manager)
+
+1. Go to **Channel Manager** (left sidebar)
+2. Find the **HTML5 Apps** content provider
+3. Click **"Fetch updated content"** (refresh icon)
+4. This pulls in the apps deployed via `find-my-expert-flp-content` and `find-my-expert-app-content`
+
+### 5.4 Verify Content (Content Manager)
+
+1. Go to **Content Manager** → **Content Explorer**
+2. Click on the **HTML5 Apps** content provider
+3. You should see all 4 apps:
+   - **Expert Search** (`findmyexpert.search`)
+   - **Manage Experts** (`findmyexpertManageExperts`)
+   - **Manage Roles** (`findmyexpertManageRoles`)
+   - **Manage Topics** (`findmyexpertManageTopics`)
+4. Select all apps and click **"Add to My Content"**
+
+### 5.5 Configure Roles in Content Manager
+
+1. Go to **Content Manager → My Content**
+2. Open the **Everyone** role (or create a custom role)
+3. Click **Edit → Assign Items**
+4. Assign the apps that should be visible to the respective role:
+   - `Everyone` role → **Expert Search** (read-only app)
+   - Custom `FindMyExpert_Admin` role → All 4 apps
+
+### 5.6 Verify Group
+
+The CDM deployment creates a group **"Find My Expert"** automatically.
+If needed, manually adjust in **Content Manager → My Content → Groups**.
+
+### 5.7 Create or Configure a Site
+
+1. Go to **Site Directory**
+2. Click **"Create Site"** (or edit an existing one)
+3. Enter a name, e.g. **"SAP Austria Portal"**
+4. Open the site → The apps appear as tiles on the Launchpad
+
+---
+
+## Step 6: Joule Skill Setup (Optional)
+
+### Prerequisites
+- SAP BTP subaccount with **Joule** entitlement (Joule Studio)
+- Find My Expert backend deployed and accessible (Steps 1–4 completed)
+
+### 6.1 Create BTP Destination
+
+In **BTP Cockpit → Connectivity → Destinations**, create:
+
+| Property | Value |
+|----------|-------|
+| **Name** | `FINDMYEXPERT_BACKEND` |
+| **Type** | `HTTP` |
+| **URL** | `https://<find-my-expert-srv-url>/api/catalog` |
+| **Proxy Type** | `Internet` |
+| **Authentication** | `OAuth2UserTokenExchange` |
+| **Token Service URL** | `https://<xsuaa-url>/oauth/token` |
+| **Client ID** | from XSUAA service key |
+| **Client Secret** | from XSUAA service key |
+
+> To get the srv URL: `cf app find-my-expert-srv | grep routes`
+> To create a service key: `cf create-service-key find-my-expert-auth dest-key` then `cf service-key find-my-expert-auth dest-key`
+
+### 6.2 Import Skill in Joule Studio
+
+1. Open **Joule Studio** in your BTP subaccount
+2. Go to **Skill Builder → Create New Skill**
+3. Import `docs/joule-skill/skill-definition.json`
+4. Configure the destination binding to `FINDMYEXPERT_BACKEND`
+
+### 6.3 Test the Skill
+
+Use the **Test/Playground** panel in Joule Studio:
+
+```
+"Find me an expert for BTP"
+"Who can present about AI?"
+"Show all topics"
+"Who is the expert for S/4HANA Finance?"
+"Find a German-speaking expert for SAP Integration Suite"
 ```
 
-### 3. Build the MTA Archive
+### 6.4 Publish the Skill
 
-```bash
-npm install
-mbt build -t dist/
-```
+1. Click **Publish** in Joule Studio
+2. The skill becomes available to all authorized users
+3. Users access it via the **Joule side-panel** in Work Zone
 
-This produces `dist/findmyexpert_1.0.0.mtar`.
+### Skill Intents
 
-### 4. Deploy
+| Intent | Description | Example |
+|--------|-------------|---------|
+| `findExpert` | Search experts by topic, solution, role, location | "Find an expert for BTP in Vienna" |
+| `expertDetails` | Get details about a specific expert | "Tell me more about Max Mustermann" |
+| `listTopics` | List all available expertise topics | "What topics are available?" |
 
-```bash
-cf deploy dist/findmyexpert_1.0.0.mtar
-```
-
-Monitor progress:
-```bash
-cf mta findmyexpert
-```
-
-### 5. Post-Deployment
-
-Seed initial data (if not using `data/*.csv`):
-```bash
-cf ssh findmyexpert-srv -c "cd app && node -e \"require('@sap/cds').connect().then(() => process.exit())\""
-```
-
-Check app status:
-```bash
-cf apps
-cf logs findmyexpert-srv --recent
-```
-
-## Environment Variables
-
-The CAP service automatically reads the `VCAP_SERVICES` binding. No manual `.env` setup needed in production.
-
-For debugging, set:
-```bash
-cf set-env findmyexpert-srv DEBUG "cds:*"
-cf restage findmyexpert-srv
-```
-
-## XSUAA Role Assignment
-
-1. BTP Cockpit → Security → Role Collections
-2. Assign `FindMyExpert_Viewer` to all users who need search access
-3. Assign `FindMyExpert_Admin` to data stewards managing the directory
-
-## Updating After Code Changes
-
-```bash
-mbt build -t dist/
-cf deploy dist/findmyexpert_1.0.0.mtar --strategy rolling
-```
-
-## PostgreSQL Schema Migration
-
-CAP auto-migrates the schema on startup via `@cap-js/postgres`. For breaking changes:
-1. Update schema in `db/schema.cds`
-2. Redeploy — CAP will run `cds deploy` against the bound PostgreSQL instance automatically via the `findmyexpert-db-deployer` module.
+---
 
 ## Troubleshooting
 
-| Symptom | Check |
-|---|---|
-| 403 on API calls | XSUAA scopes not assigned — check role collections |
-| App crash on startup | `cf logs findmyexpert-srv --recent` — usually a missing service binding |
-| DB migration error | Check `findmyexpert-db-deployer` logs: `cf logs findmyexpert-db-deployer --recent` |
-| HTML5 apps not found | Ensure `findmyexpert-html5-repo` service is bound and deployer ran |
+### Common Issues
+
+| Problem | Solution |
+|---------|----------|
+| **403 Forbidden** | Check role collection assignments in BTP Cockpit |
+| **404 Not Found** | Verify HTML5 repo deployment: `cf html5-list -di find-my-expert-repo-host -u` |
+| **Apps not visible in Work Zone** | Channel Manager → Fetch updated content; Content Manager → Add to My Content |
+| **502 Bad Gateway** | Check srv module logs: `cf logs find-my-expert-srv --recent` |
+| **HANA connection error** | Ensure HDI container is bound: `cf services` |
+| **Joule skill not responding** | Verify destination is reachable, check Joule Studio logs |
+
+### Useful Commands
+
+```bash
+# Check deployed apps and their status
+cf apps
+
+# Check services
+cf services
+
+# View server logs
+cf logs find-my-expert-srv --recent
+
+# List HTML5 apps in the repository
+cf html5-list -di find-my-expert-repo-host -u
+
+# Check approuter logs
+cf logs find-my-expert-router --recent
+
+# Restage after config change
+cf restage find-my-expert-srv
+
+# Get srv URL for destination config
+cf app find-my-expert-srv | grep routes
+```
+
+---
+
+## Architecture (Deployed)
+
+```
+┌─────────────────────────────────────────────────────┐
+│                SAP Build Work Zone                   │
+│  ┌──────────┐ ┌──────────┐ ┌──────┐ ┌──────────┐   │
+│  │  Expert   │ │  Manage  │ │Manage│ │  Manage  │   │
+│  │  Search   │ │ Experts  │ │Roles │ │  Topics  │   │
+│  └────┬─────┘ └────┬─────┘ └──┬───┘ └────┬─────┘   │
+│       └─────────────┼─────────┼──────────┘          │
+│                     │   Approuter                    │
+│                     ▼                                │
+│  ┌──────────────────────────────┐                    │
+│  │      HTML5 App Repository    │                    │
+│  └──────────────────────────────┘                    │
+└─────────────────────┬───────────────────────────────┘
+                      │ OData V4
+                      ▼
+          ┌───────────────────────┐
+          │   CAP Backend (srv)   │
+          │   /api/catalog        │◄──── Joule Skill
+          └───────────┬───────────┘      (via Destination)
+                      │
+                      ▼
+          ┌───────────────────────┐
+          │   SAP HANA Cloud      │
+          │   (HDI Container)     │
+          └───────────────────────┘
