@@ -22,7 +22,7 @@
   "scripts": {
     "start": "cds-serve",
     "kill-port": "lsof -ti :4004 | xargs kill -9 2>/dev/null; true",
-    "prewatch": "npm run kill-port",
+    "prewatch": "npm run kill-port && cds deploy --to sqlite",
     "watch": "cds watch",
     "watch-flp": "cds watch --open findmyexpert-search/webapp/test/flpSandbox.html#Shell-home --livereload false",
     "build": "cds build --production",
