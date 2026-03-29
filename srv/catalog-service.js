@@ -155,7 +155,6 @@ module.exports = cds.service.impl(async function () {
         const expandExpertRoles = columns.find(c => c.ref?.[0] === 'expertRoles' && c.expand);
         if (expandExpertRoles) {
           const { ExpertRoles } = this.entities;
-          // Include solution + role names so @Common.Text annotations resolve
           const roleRows = await cds.db.run(
             SELECT.from(ExpertRoles, er => {
               er('*'),
@@ -166,6 +165,16 @@ module.exports = cds.service.impl(async function () {
           entry.expertRoles = roleRows;
         }
       }
+
+      // Enrich languagesText for Object Page header
+      try {
+        const { ExpertLanguages } = this.entities;
+        const langRows = await cds.db.run(
+          SELECT.from(ExpertLanguages).where({ expert_ID: keyVal })
+        );
+        entry.languagesText = langRows
+          .map(r => r.language_code).filter(Boolean).sort().join(' · ');
+      } catch (_) { entry.languagesText = ''; }
 
       return entry;
     }
@@ -219,6 +228,26 @@ module.exports = cds.service.impl(async function () {
       delete entry._roles;
     }
 
+    // Enrich with languagesText from ExpertLanguages
+    try {
+      const { ExpertLanguages } = this.entities;
+      const expertIds = [...expertMap.keys()];
+      if (expertIds.length > 0) {
+        const langRows = await cds.db.run(
+          SELECT.from(ExpertLanguages).where({ expert_ID: { in: expertIds } })
+        );
+        const langByExpert = new Map();
+        for (const r of langRows) {
+          if (!langByExpert.has(r.expert_ID)) langByExpert.set(r.expert_ID, new Set());
+          if (r.language_code) langByExpert.get(r.expert_ID).add(r.language_code);
+        }
+        for (const entry of expertMap.values()) {
+          const codes = langByExpert.get(entry.expertID);
+          entry.languagesText = codes ? [...codes].sort().join(' · ') : '';
+        }
+      }
+    } catch (_) { /* non-critical — leave languagesText empty */ }
+
     // Sort by relevance descending, then lastName ascending as tiebreaker
     let results = [...expertMap.values()].sort((a, b) =>
       b._score - a._score || (a.lastName || '').localeCompare(b.lastName || '')
@@ -245,35 +274,47 @@ module.exports = cds.service.impl(async function () {
     return { isAdmin: bAdmin, userName: sName };
   });
 
-  // ─── Admin: Compute virtual fullName for AdminExperts ─────────────────────
-  // Helper to compute fullName from lastName + firstName
+  // ─── Admin: Compute virtual fields for AdminExperts ───────────────────────
   const computeFullName = (e) => {
     if (!e) return;
     const parts = [e.lastName, e.firstName].filter(Boolean);
     e.fullName = parts.length ? parts.join(' ') : 'New Expert';
   };
 
-  // After READ: always populate fullName (active + draft reads)
-  this.after('READ', 'AdminExperts', (results) => {
-    for (const e of Array.isArray(results) ? results : [results]) {
-      computeFullName(e);
+  // Compute languagesText from expanded languages array (if present)
+  const computeLanguagesText = (e) => {
+    if (!e) return;
+    if (Array.isArray(e.languages) && e.languages.length > 0) {
+      e.languagesText = e.languages
+        .map(l => l.language_code || l.language?.code || l.language?.name || '')
+        .filter(Boolean)
+        .sort()
+        .join(' · ');
+    } else {
+      e.languagesText = '';
+    }
+  };
+
+  const computeVirtuals = (e) => { computeFullName(e); computeLanguagesText(e); };
+
+  // After READ: always populate virtual fields
+  this.after('READ', 'AdminExperts', async (results) => {
+    const list = Array.isArray(results) ? results : [results];
+    // For entries without expanded languages, load them
+    for (const e of list) {
+      if (!Array.isArray(e.languages)) {
+        try {
+          const { ExpertLanguages } = this.entities;
+          e.languages = await cds.db.run(SELECT.from(ExpertLanguages).where({ expert_ID: e.ID }));
+        } catch (_) { e.languages = []; }
+      }
+      computeVirtuals(e);
     }
   });
 
-  // After NEW: populate fullName when a new draft is created
-  this.after('NEW', 'AdminExperts', (data) => {
-    computeFullName(data);
-  });
-
-  // After EDIT: populate fullName when entering edit mode on existing entity
-  this.after('EDIT', 'AdminExperts', (data) => {
-    computeFullName(data);
-  });
-
-  // After PATCH: recompute fullName so SideEffects can refresh the title
-  this.after('PATCH', 'AdminExperts', (data) => {
-    computeFullName(data);
-  });
+  this.after('NEW',   'AdminExperts', (data) => { computeVirtuals(data); });
+  this.after('EDIT',  'AdminExperts', (data) => { computeVirtuals(data); });
+  this.after('PATCH', 'AdminExperts', (data) => { computeVirtuals(data); });
 
   // ─── Admin: Auto-generate IDs ─────────────────────────────────────────────
   this.before('CREATE', [

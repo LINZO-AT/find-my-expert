@@ -1,132 +1,94 @@
 using CatalogService as service from '../../srv/catalog-service';
 
-// ─── ExpertSearch field labels + value helps ─────────────────────────────────
+// ─── ExpertSearch field labels ────────────────────────────────────────────────
 annotate service.ExpertSearch with {
-    firstName    @title: '{i18n>FirstName}';
-    lastName     @title: '{i18n>LastName}';
-    email        @title: '{i18n>Email}';
-    country_code     @title: '{i18n>Location}';
-    email        @Communication.IsEmailAddress: true;
+    firstName      @title: '{i18n>FirstName}';
+    lastName       @title: '{i18n>LastName}';
+    email          @title: '{i18n>Email}'
+                   @Communication.IsEmailAddress: true;
+    // Override inherited @Common.Text from sap.common.Countries.code
+    // (ExpertSearch is a flat view — no country navigation, only countryName string)
+    country_code   @title: '{i18n>Location}'
+                   @Common.Text: countryName
+                   @Common.TextArrangement: #TextLast;
+    countryName    @title: '{i18n>Location}';
+    languagesText  @title: '{i18n>Languages}';
 
     solutionName @title: '{i18n>Solution}'
         @Common.ValueList: {
             CollectionPath : 'Solutions',
-            Parameters     : [{
-                $Type             : 'Common.ValueListParameterOut',
-                LocalDataProperty : solutionName,
-                ValueListProperty : 'name'
-            }]
+            Parameters     : [{ $Type: 'Common.ValueListParameterOut', LocalDataProperty: solutionName, ValueListProperty: 'name' }]
         }
         @Common.ValueListWithFixedValues: false;
 
     topicName @title: '{i18n>Topic}'
         @Common.ValueList: {
             CollectionPath : 'Topics',
-            Parameters     : [{
-                $Type             : 'Common.ValueListParameterOut',
-                LocalDataProperty : topicName,
-                ValueListProperty : 'name'
-            }]
+            Parameters     : [{ $Type: 'Common.ValueListParameterOut', LocalDataProperty: topicName, ValueListProperty: 'name' }]
         }
         @Common.ValueListWithFixedValues: false;
 
     roleName @title: '{i18n>Role}'
         @Common.ValueList: {
             CollectionPath : 'Roles',
-            Parameters     : [{
-                $Type             : 'Common.ValueListParameterOut',
-                LocalDataProperty : roleName,
-                ValueListProperty : 'name'
-            }]
+            Parameters     : [{ $Type: 'Common.ValueListParameterOut', LocalDataProperty: roleName, ValueListProperty: 'name' }]
         }
         @Common.ValueListWithFixedValues: false;
 
-    rolePriority  @title: '{i18n>RolePriority}';
-    notes         @title: '{i18n>Notes}';
-    canPresent5M  @title: '{i18n>CanPresent5M}';
-    canPresent30M @title: '{i18n>CanPresent30M}';
-    canPresent2H  @title: '{i18n>CanPresent2H}';
+    rolePriority   @title: '{i18n>RelevanceScore}';
+    notes          @title: '{i18n>Notes}';
+    canPresent5M   @title: '{i18n>CanPresent5M}';
+    canPresent30M  @title: '{i18n>CanPresent30M}';
+    canPresent2H   @title: '{i18n>CanPresent2H}';
     canPresentDemo @title: '{i18n>CanPresentDemo}';
 };
 
 // ─── ExpertSearch — List Report ──────────────────────────────────────────────
 annotate service.ExpertSearch with @(
-    UI.HeaderInfo        : {
+    UI.HeaderInfo : {
         TypeName       : '{i18n>Expert}',
         TypeNamePlural : '{i18n>Experts}',
-        Title          : {
-            $Type : 'UI.DataField',
-            Value : fullName
-        },
+        Title          : { $Type: 'UI.DataField', Value: fullName },
+        Description    : { $Type: 'UI.DataField', Value: countryName },
     },
-    UI.SelectionFields   : [
-        firstName,
-        lastName,
-        country_code,
-        topicName,
-        solutionName,
-        roleName
+    UI.SelectionFields : [ firstName, lastName, country_code, topicName, solutionName, roleName ],
+    UI.LineItem : [
+        { $Type: 'UI.DataField', Value: firstName,    Label: '{i18n>FirstName}' },
+        { $Type: 'UI.DataField', Value: lastName,     Label: '{i18n>LastName}' },
+        { $Type: 'UI.DataField', Value: country_code, Label: '{i18n>Location}' },
+        { $Type: 'UI.DataField', Value: topicName,    Label: '{i18n>Topics}' },
+        { $Type: 'UI.DataField', Value: solutionName, Label: '{i18n>Solutions}' },
+        { $Type: 'UI.DataField', Value: rolePriority, Label: '{i18n>RelevanceScore}' },
     ],
-    UI.LineItem          : [
-        {
-            $Type : 'UI.DataField',
-            Value : firstName,
-            Label : '{i18n>FirstName}'
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : lastName,
-            Label : '{i18n>LastName}'
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : country_code,
-            Label : '{i18n>Location}'
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : topicName,
-            Label : '{i18n>Topics}'
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : solutionName,
-            Label : '{i18n>Solutions}'
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : rolePriority,
-            Label : '{i18n>RelevanceScore}'
-        },
-    ],
+
+    // ─── Object Page Header ──────────────────────────────────────────────────
     UI.FieldGroup #ExpertInfo : {
         $Type : 'UI.FieldGroupType',
         Label : '{i18n>ExpertInformation}',
         Data  : [
-            { $Type : 'UI.DataField', Value : firstName },
-            { $Type : 'UI.DataField', Value : lastName },
-            { $Type : 'UI.DataField', Value : email },
-            { $Type : 'UI.DataField', Value : country_code },
+            { $Type: 'UI.DataField', Value: firstName },
+            { $Type: 'UI.DataField', Value: lastName },
+            { $Type: 'UI.DataField', Value: email },
+            { $Type: 'UI.DataField', Value: country_code },
+        ],
+    },
+    UI.FieldGroup #ExpertMeta : {
+        $Type : 'UI.FieldGroupType',
+        Label : '{i18n>Languages}',
+        Data  : [
+            { $Type: 'UI.DataField', Value: languagesText, Label: '{i18n>Languages}' },
         ],
     },
     UI.HeaderFacets : [
-        {
-            $Type  : 'UI.ReferenceFacet',
-            ID     : 'HeaderExpertInfo',
-            Target : '@UI.FieldGroup#ExpertInfo',
-        },
+        { $Type: 'UI.ReferenceFacet', ID: 'HeaderExpertInfo', Target: '@UI.FieldGroup#ExpertInfo' },
+        { $Type: 'UI.ReferenceFacet', ID: 'HeaderExpertMeta', Target: '@UI.FieldGroup#ExpertMeta' },
     ],
     UI.Facets : [
-        {
-            $Type  : 'UI.ReferenceFacet',
-            ID     : 'ExpertRolesFacet',
-            Label  : '{i18n>ExpertRoles}',
-            Target : 'expertRoles/@UI.LineItem',
-        },
+        { $Type: 'UI.ReferenceFacet', ID: 'ExpertRolesFacet', Label: '{i18n>ExpertRoles}', Target: 'expertRoles/@UI.LineItem' },
     ],
 );
 
-// ─── ExpertRoles — sub-table in Experts Object Page (read-only catalog view) ─
+// ─── ExpertRoles — read-only sub-table ───────────────────────────────────────
 annotate service.ExpertRoles with {
     expert        @title: '{i18n>Expert}';
     solution      @title: '{i18n>Solution}';
@@ -140,40 +102,12 @@ annotate service.ExpertRoles with {
 
 annotate service.ExpertRoles with @(
     UI.LineItem : [
-        {
-            $Type : 'UI.DataField',
-            Value : solution_ID,
-            Label : '{i18n>Solution}'
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : role_ID,
-            Label : '{i18n>Role}'
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : canPresent5M,
-            Label : '{i18n>CanPresent5M}'
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : canPresent30M,
-            Label : '{i18n>CanPresent30M}'
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : canPresent2H,
-            Label : '{i18n>CanPresent2H}'
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : canPresentDemo,
-            Label : '{i18n>CanPresentDemo}'
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : notes,
-            Label : '{i18n>Notes}'
-        },
+        { $Type: 'UI.DataField', Value: solution_ID,    Label: '{i18n>Solution}' },
+        { $Type: 'UI.DataField', Value: role_ID,        Label: '{i18n>Role}' },
+        { $Type: 'UI.DataField', Value: canPresent5M,   Label: '{i18n>CanPresent5M}' },
+        { $Type: 'UI.DataField', Value: canPresent30M,  Label: '{i18n>CanPresent30M}' },
+        { $Type: 'UI.DataField', Value: canPresent2H,   Label: '{i18n>CanPresent2H}' },
+        { $Type: 'UI.DataField', Value: canPresentDemo, Label: '{i18n>CanPresentDemo}' },
+        { $Type: 'UI.DataField', Value: notes,          Label: '{i18n>Notes}' },
     ],
 );

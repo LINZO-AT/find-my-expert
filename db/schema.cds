@@ -48,8 +48,10 @@ entity Experts : cuid, managed {
   email       : String(200);
   @title: 'Country'
   country     : Association to Countries;
-  languages   : Composition of many ExpertLanguages on languages.expert = $self;
-  roles       : Composition of many ExpertRoles on roles.expert = $self;
+  languages       : Composition of many ExpertLanguages on languages.expert = $self;
+  roles           : Composition of many ExpertRoles on roles.expert = $self;
+  @title: 'Languages'
+  virtual languagesText : String(200);
 }
 
 /**

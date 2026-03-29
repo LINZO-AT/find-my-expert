@@ -32,6 +32,7 @@ service CatalogService @(path: '/api/catalog') @(requires: ['ExpertViewer', 'Adm
         canPresent2H,
         canPresentDemo,
         notes,
+        virtual languagesText  : String(200),
         // Navigation to per-solution ExpertRoles for Object Page detail
         expertRoles : Association to many ExpertRoles on expertRoles.expert.ID = expertID
     };
@@ -54,7 +55,8 @@ service CatalogService @(path: '/api/catalog') @(requires: ['ExpertViewer', 'Adm
     entity AdminExperts as projection on findmyexpert.Experts {
         *, roles      : redirected to AdminExpertRoles,
            languages  : redirected to AdminExpertLanguages,
-        virtual fullName : String(200)
+        virtual fullName      : String(200),
+        virtual languagesText : String(200)
     };
 
     @(requires: 'Admin') @cds.redirection.target: false

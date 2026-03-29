@@ -2,13 +2,14 @@ using CatalogService as service from '../../srv/catalog-service';
 
 // ─── Admin: Experts ───────────────────────────────────────────────────────────
 annotate service.AdminExperts with {
-    firstName @title: '{i18n>FirstName}';
-    lastName  @title: '{i18n>LastName}';
-    email     @title: '{i18n>Email}'
-              @Communication.IsEmailAddress: true;
-    country   @title: '{i18n>Location}'
-              @Common.Text: country.name
-              @Common.TextArrangement: #TextFirst;
+    firstName     @title: '{i18n>FirstName}';
+    lastName      @title: '{i18n>LastName}';
+    email         @title: '{i18n>Email}'
+                  @Communication.IsEmailAddress: true;
+    country       @title: '{i18n>Location}'
+                  @Common.Text: country.name
+                  @Common.TextArrangement: #TextFirst;
+    languagesText @title: '{i18n>Languages}';
 };
 
 annotate service.AdminExperts with @(
@@ -41,11 +42,17 @@ annotate service.AdminExperts with @(
             { $Type : 'UI.DataField', Value : country_code },
         ],
     },
-    UI.HeaderFacets : [{
-        $Type  : 'UI.ReferenceFacet',
-        ID     : 'HeaderExpertInfo',
-        Target : '@UI.FieldGroup#ExpertInfo',
-    }],
+    UI.FieldGroup #ExpertMeta : {
+        $Type : 'UI.FieldGroupType',
+        Label : '{i18n>Languages}',
+        Data  : [
+            { $Type: 'UI.DataField', Value: languagesText, Label: '{i18n>Languages}' },
+        ],
+    },
+    UI.HeaderFacets : [
+        { $Type: 'UI.ReferenceFacet', ID: 'HeaderExpertInfo', Target: '@UI.FieldGroup#ExpertInfo' },
+        { $Type: 'UI.ReferenceFacet', ID: 'HeaderExpertMeta', Target: '@UI.FieldGroup#ExpertMeta' },
+    ],
     UI.Facets : [
         {
             $Type  : 'UI.ReferenceFacet',
