@@ -48,12 +48,6 @@ annotate service.AdminExperts with @(
     UI.Facets : [
         {
             $Type  : 'UI.ReferenceFacet',
-            ID     : 'ExpertLanguagesFacet',
-            Label  : '{i18n>Languages}',
-            Target : 'languages/@UI.LineItem',
-        },
-        {
-            $Type  : 'UI.ReferenceFacet',
             ID     : 'ExpertRolesFacet',
             Label  : '{i18n>ExpertRoles}',
             Target : 'roles/@UI.LineItem',
