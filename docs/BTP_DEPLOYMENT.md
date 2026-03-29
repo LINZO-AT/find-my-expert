@@ -25,8 +25,8 @@ Find My Expert runs on SAP BTP Cloud Foundry with **SAP Build Work Zone, Standar
                            │
                            ▼
                ┌───────────────────────┐
-               │   SAP HANA Cloud      │
-               │   (HDI Container)     │
+               │     PostgreSQL        │
+               │  (postgresql-db)      │
                └───────────────────────┘
 ```
 
@@ -38,7 +38,7 @@ Find My Expert runs on SAP BTP Cloud Foundry with **SAP Build Work Zone, Standar
 
 | Service | Plan | Purpose |
 |---------|------|---------|
-| SAP HANA Cloud | `hdi-shared` | Database (HDI Container) |
+| PostgreSQL on SAP BTP | `standard` | Database (managed PostgreSQL) |
 | SAP Authorization & Trust Management (XSUAA) | `application` | Auth & authorization |
 | HTML5 Application Repository | `app-host` + `app-runtime` | UI app hosting |
 | **SAP Build Work Zone, standard edition** | `standard` | Launchpad shell + managed AppRouter |
@@ -75,7 +75,7 @@ find-my-expert/
 ├── flp/
 │   └── cdm.json                      # Work Zone CDM content descriptor
 ├── srv/                              # CAP backend service
-├── db/                               # HANA DB schema + seed data
+├── db/                               # DB schema + seed data
 ├── docs/                             # Documentation
 ├── mta.yaml                          # MTA deployment descriptor
 ├── xs-security.json                  # XSUAA role config
@@ -128,7 +128,7 @@ This deploys:
 | Module | Type | What it does |
 |--------|------|-------------|
 | `find-my-expert-srv` | Node.js | CAP backend |
-| `find-my-expert-db-deployer` | HDI | Database schema + seed data |
+| `find-my-expert-db-deployer` | Node.js (task) | Database schema deployment (PostgreSQL) |
 | `findmyexpert-search` etc. | HTML5 | Builds UI5 apps |
 | `find-my-expert-app-content` | Content deployer | Uploads UI5 zips to HTML5 Repo |
 | `find-my-expert-flp-content` | Content deployer | Deploys CDM to Work Zone |
@@ -307,7 +307,7 @@ Example queries:
 | **404 Not Found** | Verify HTML5 repo: `cf html5-list -di find-my-expert-repo-host -u` |
 | **Apps not visible in Work Zone** | Channel Manager → Fetch updated content; Content Manager → Add to My Content |
 | **502 Bad Gateway** | Check srv logs: `cf logs find-my-expert-srv --recent` |
-| **HANA connection error** | Verify HDI container binding: `cf services` |
+| **PostgreSQL connection error** | Verify PostgreSQL service binding: `cf services` |
 | **Joule destination not visible** | Add `sap.processautomation.enabled = true` to destination additional properties |
 | **Joule action not in Skill Builder** | Action must be **Published to Library**, not just Released |
 | **Work Zone deploy fails** | Verify `SAPLaunchpad` service entitlement exists in subaccount (not `portal`) |

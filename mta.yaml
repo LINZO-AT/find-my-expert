@@ -33,12 +33,17 @@ modules:
       - name: find-my-expert-auth
       - name: find-my-expert-db
 
-  # --------------- DATABASE MODULE ---------------
+  # --------------- DATABASE MODULE (PostgreSQL) ---------------
   - name: find-my-expert-db-deployer
-    type: hdb
-    path: gen/db
+    type: nodejs
+    path: gen/pg
     parameters:
       buildpack: nodejs_buildpack
+      no-route: true
+      no-start: true
+      tasks:
+        - name: deploy-to-postgresql
+          command: npx cds-deploy
     requires:
       - name: find-my-expert-db
 
@@ -178,12 +183,12 @@ resources:
         xsappname: findmyexpert-${org}-${space}
         tenant-mode: dedicated
 
-  # --------------- HANA Cloud ---------------
+  # --------------- PostgreSQL ---------------
   - name: find-my-expert-db
-    type: com.sap.xs.hdi-container
+    type: org.cloudfoundry.managed-service
     parameters:
-      service: hana
-      service-plan: hdi-shared
+      service: postgresql-db
+      service-plan: standard
 
   # --------------- HTML5 Repo Host ---------------
   - name: find-my-expert-repo-host
