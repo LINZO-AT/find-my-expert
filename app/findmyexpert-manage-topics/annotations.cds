@@ -32,21 +32,7 @@ annotate service.AdminTopics with @(
             Label : '{i18n>Description}'
         },
     ],
-    UI.FieldGroup #TopicInfo : {
-        $Type : 'UI.FieldGroupType',
-        Label : '{i18n>TopicInformation}',
-        Data  : [
-            { $Type : 'UI.DataField', Value : name },
-            { $Type : 'UI.DataField', Value : description },
-        ],
-    },
     UI.Facets          : [
-        {
-            $Type  : 'UI.ReferenceFacet',
-            ID     : 'TopicInfoFacet',
-            Label  : '{i18n>TopicInformation}',
-            Target : '@UI.FieldGroup#TopicInfo',
-        },
         {
             $Type  : 'UI.ReferenceFacet',
             ID     : 'TopicSolutionsFacet',
@@ -63,18 +49,6 @@ annotate service.AdminSolutions with {
 };
 
 annotate service.AdminSolutions with @(
-    UI.HeaderInfo      : {
-        TypeName       : '{i18n>Solution}',
-        TypeNamePlural : '{i18n>Solutions}',
-        Title          : {
-            $Type : 'UI.DataField',
-            Value : name
-        },
-        Description    : {
-            $Type : 'UI.DataField',
-            Value : description
-        }
-    },
     UI.LineItem        : [
         {
             $Type : 'UI.DataField',
@@ -85,22 +59,6 @@ annotate service.AdminSolutions with @(
             $Type : 'UI.DataField',
             Value : description,
             Label : '{i18n>Description}'
-        },
-    ],
-    UI.FieldGroup #SolutionInfo : {
-        $Type : 'UI.FieldGroupType',
-        Label : '{i18n>SolutionInformation}',
-        Data  : [
-            { $Type : 'UI.DataField', Value : name },
-            { $Type : 'UI.DataField', Value : description },
-        ],
-    },
-    UI.Facets          : [
-        {
-            $Type  : 'UI.ReferenceFacet',
-            ID     : 'SolutionInfoFacet',
-            Label  : '{i18n>SolutionInformation}',
-            Target : '@UI.FieldGroup#SolutionInfo',
         },
     ],
 );

@@ -42,9 +42,7 @@ annotate service.AdminRoles with @(
         $Type : 'UI.FieldGroupType',
         Label : '{i18n>RoleInformation}',
         Data  : [
-            { $Type : 'UI.DataField', Value : name },
             { $Type : 'UI.DataField', Value : priority },
-            { $Type : 'UI.DataField', Value : description },
         ],
     },
     UI.Facets          : [

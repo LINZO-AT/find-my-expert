@@ -60,11 +60,6 @@
           "pattern": "AdminTopics({key}):?query:",
           "name": "AdminTopicsObjectPage",
           "target": "AdminTopicsObjectPage"
-        },
-        {
-          "pattern": "AdminTopics({key})/solutions({key2}):?query:",
-          "name": "AdminSolutionsObjectPage",
-          "target": "AdminSolutionsObjectPage"
         }
       ],
       "targets": {
@@ -94,24 +89,7 @@
           "options": {
             "settings": {
               "editableHeaderContent": true,
-              "contextPath": "/AdminTopics",
-              "navigation": {
-                "solutions": {
-                  "detail": { "route": "AdminSolutionsObjectPage" }
-                }
-              }
-            }
-          }
-        },
-        "AdminSolutionsObjectPage": {
-          "type": "Component",
-          "id": "AdminSolutionsObjectPage",
-          "name": "sap.fe.templates.ObjectPage",
-          "viewLevel": 2,
-          "options": {
-            "settings": {
-              "editableHeaderContent": true,
-              "contextPath": "/AdminTopics/solutions"
+              "contextPath": "/AdminTopics"
             }
           }
         }
