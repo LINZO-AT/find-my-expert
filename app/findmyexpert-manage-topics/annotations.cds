@@ -19,6 +19,9 @@ annotate service.AdminTopics with @(
             Value : description
         }
     },
+    UI.PresentationVariant : {
+        SortOrder : [{ Property : name, Descending : false }],
+    },
     UI.SelectionFields : [ name ],
     UI.LineItem        : [
         {

@@ -13,6 +13,10 @@ annotate service.AdminExperts with {
 };
 
 annotate service.AdminExperts with @(
+    Communication.Contact : {
+        fn    : fullName,
+        email : [{ address: email, type: #work }],
+    },
     UI.HeaderInfo      : {
         TypeName       : '{i18n>Expert}',
         TypeNamePlural : '{i18n>Experts}',

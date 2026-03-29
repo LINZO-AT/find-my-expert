@@ -2,6 +2,8 @@ using CatalogService as service from '../../srv/catalog-service';
 
 // ─── ExpertSearch field labels ────────────────────────────────────────────────
 annotate service.ExpertSearch with {
+    expertID       @UI.Hidden;
+    rolePriority   @UI.Hidden;
     firstName      @title: '{i18n>FirstName}';
     lastName       @title: '{i18n>LastName}';
     email          @title: '{i18n>Email}'
@@ -52,6 +54,38 @@ annotate service.ExpertSearch with @(
         Title          : { $Type: 'UI.DataField', Value: fullName },
     },
     UI.SelectionFields : [ firstName, lastName, country_code, topicName, solutionName, roleName ],
+    UI.SelectionVariant #BTPExperts : {
+        $Type          : 'UI.SelectionVariantType',
+        Text           : '{i18n>BTPExperts}',
+        SelectOptions  : [{
+            PropertyName : topicName,
+            Ranges       : [{ Sign: #I, Option: #EQ, Low: 'BTP' }]
+        }]
+    },
+    UI.SelectionVariant #AIExperts : {
+        $Type          : 'UI.SelectionVariantType',
+        Text           : '{i18n>AIExperts}',
+        SelectOptions  : [{
+            PropertyName : topicName,
+            Ranges       : [{ Sign: #I, Option: #EQ, Low: 'AI' }]
+        }]
+    },
+    UI.SelectionVariant #CloudERPExperts : {
+        $Type          : 'UI.SelectionVariantType',
+        Text           : '{i18n>CloudERPExperts}',
+        SelectOptions  : [{
+            PropertyName : topicName,
+            Ranges       : [{ Sign: #I, Option: #EQ, Low: 'CloudERP' }]
+        }]
+    },
+    UI.SelectionVariant #RISEExperts : {
+        $Type          : 'UI.SelectionVariantType',
+        Text           : '{i18n>RISEExperts}',
+        SelectOptions  : [{
+            PropertyName : topicName,
+            Ranges       : [{ Sign: #I, Option: #EQ, Low: 'RISE' }]
+        }]
+    },
     UI.LineItem : [
         { $Type: 'UI.DataField', Value: firstName,    Label: '{i18n>FirstName}' },
         { $Type: 'UI.DataField', Value: lastName,     Label: '{i18n>LastName}' },

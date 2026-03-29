@@ -96,7 +96,7 @@
       }
     }
   },
-  "sap.fiori": { "registrationIds": [], "archetype": "transactional" },
+  "sap.fiori": { "registrationIds": ["findmyexpert-manage-roles"], "archetype": "transactional" },
   "sap.fe": { "app": { "enableLazyLoading": true } },
   "sap.cloud": {
     "public": true,

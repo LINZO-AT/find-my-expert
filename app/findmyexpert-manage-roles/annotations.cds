@@ -20,6 +20,9 @@ annotate service.AdminRoles with @(
             Value : description
         }
     },
+    UI.PresentationVariant : {
+        SortOrder : [{ Property : priority, Descending : true }],
+    },
     UI.SelectionFields : [ name ],
     UI.LineItem        : [
         {

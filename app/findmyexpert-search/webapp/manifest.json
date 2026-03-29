@@ -148,7 +148,7 @@
     }
   },
   "sap.fiori": {
-    "registrationIds": [],
+    "registrationIds": ["findmyexpert-search"],
     "archetype": "transactional"
   },
   "sap.fe": {

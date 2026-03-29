@@ -2,6 +2,18 @@
   "welcomeFile": "/findmyexpert-search/index.html",
   "authenticationMethod": "route",
   "sessionTimeout": 30,
+  "httpHeaders": {
+    "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-eval' https://ui5.sap.com https://sapui5.hana.ondemand.com; style-src 'self' 'unsafe-inline' https://ui5.sap.com https://sapui5.hana.ondemand.com; font-src 'self' https://ui5.sap.com https://sapui5.hana.ondemand.com data:; img-src 'self' https://ui5.sap.com https://sapui5.hana.ondemand.com data:; connect-src 'self' https://ui5.sap.com https://sapui5.hana.ondemand.com; frame-ancestors 'self' https://*.hana.ondemand.com https://*.launchpad.cfapps.*.hana.ondemand.com;",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "SAMEORIGIN",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+    "X-XSS-Protection": "1; mode=block",
+    "Referrer-Policy": "strict-origin-when-cross-origin"
+  },
+  "logout": {
+    "logoutEndpoint": "/do/logout",
+    "logoutPage": "/"
+  },
   "routes": [
     {
       "source": "^/api/(.*)$",
@@ -13,25 +25,29 @@
       "source": "^/findmyexpert-search/(.*)$",
       "target": "/findmyexpert-search/$1",
       "service": "html5-apps-repo-rt",
-      "authenticationType": "xsuaa"
+      "authenticationType": "xsuaa",
+      "cacheControl": "public, max-age=86400"
     },
     {
       "source": "^/findmyexpert-manage-experts/(.*)$",
       "target": "/findmyexpert-manage-experts/$1",
       "service": "html5-apps-repo-rt",
-      "authenticationType": "xsuaa"
+      "authenticationType": "xsuaa",
+      "cacheControl": "public, max-age=86400"
     },
     {
       "source": "^/findmyexpert-manage-roles/(.*)$",
       "target": "/findmyexpert-manage-roles/$1",
       "service": "html5-apps-repo-rt",
-      "authenticationType": "xsuaa"
+      "authenticationType": "xsuaa",
+      "cacheControl": "public, max-age=86400"
     },
     {
       "source": "^/findmyexpert-manage-topics/(.*)$",
       "target": "/findmyexpert-manage-topics/$1",
       "service": "html5-apps-repo-rt",
-      "authenticationType": "xsuaa"
+      "authenticationType": "xsuaa",
+      "cacheControl": "public, max-age=86400"
     }
   ]
 }

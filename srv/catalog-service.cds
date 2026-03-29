@@ -1,14 +1,44 @@
 using findmyexpert from '../db/schema';
 
+@cds.query.limit: { default: 50, max: 1000 }
 service CatalogService @(path: '/api/catalog') @(requires: ['ExpertViewer', 'Admin']) {
 
     // ─── Public read-only entities ───────────────────────────────────────────
-    @readonly @cds.redirection.target entity Topics           as projection on findmyexpert.Topics;
-    @readonly @cds.redirection.target entity Solutions        as projection on findmyexpert.Solutions;
-    @readonly @cds.redirection.target entity Experts          as projection on findmyexpert.Experts;
-    @readonly @cds.redirection.target entity ExpertRoles      as projection on findmyexpert.ExpertRoles;
-    @readonly @cds.redirection.target entity ExpertLanguages  as projection on findmyexpert.ExpertLanguages;
-    @readonly @cds.redirection.target entity Roles            as projection on findmyexpert.Roles;
+    @readonly @cds.redirection.target
+    @Capabilities.InsertRestrictions.Insertable: false
+    @Capabilities.DeleteRestrictions.Deletable: false
+    @Capabilities.UpdateRestrictions.Updatable: false
+    entity Topics           as projection on findmyexpert.Topics;
+
+    @readonly @cds.redirection.target
+    @Capabilities.InsertRestrictions.Insertable: false
+    @Capabilities.DeleteRestrictions.Deletable: false
+    @Capabilities.UpdateRestrictions.Updatable: false
+    entity Solutions        as projection on findmyexpert.Solutions;
+
+    @readonly @cds.redirection.target
+    @Capabilities.InsertRestrictions.Insertable: false
+    @Capabilities.DeleteRestrictions.Deletable: false
+    @Capabilities.UpdateRestrictions.Updatable: false
+    entity Experts          as projection on findmyexpert.Experts;
+
+    @readonly @cds.redirection.target
+    @Capabilities.InsertRestrictions.Insertable: false
+    @Capabilities.DeleteRestrictions.Deletable: false
+    @Capabilities.UpdateRestrictions.Updatable: false
+    entity ExpertRoles      as projection on findmyexpert.ExpertRoles;
+
+    @readonly @cds.redirection.target
+    @Capabilities.InsertRestrictions.Insertable: false
+    @Capabilities.DeleteRestrictions.Deletable: false
+    @Capabilities.UpdateRestrictions.Updatable: false
+    entity ExpertLanguages  as projection on findmyexpert.ExpertLanguages;
+
+    @readonly @cds.redirection.target
+    @Capabilities.InsertRestrictions.Insertable: false
+    @Capabilities.DeleteRestrictions.Deletable: false
+    @Capabilities.UpdateRestrictions.Updatable: false
+    entity Roles            as projection on findmyexpert.Roles;
 
     // ─── Flat search view (denormalized for full-text search across topic/solution/role) ──
     // relevanceScore = role.priority + capability bonuses (computed in service handler)

@@ -39,14 +39,20 @@ entity Solutions : cuid, managed {
 @title: 'Experts'
 @cds.odata.valuelist
 @cds.search: { firstName, lastName, email, location }
+@PersonalData.EntitySemantics: 'DataSubject'
 entity Experts : cuid, managed {
   @title: 'First Name'
+  @PersonalData.FieldSemantics: 'GivenName'
   firstName   : String(100) not null;
   @title: 'Last Name'
+  @PersonalData.FieldSemantics: 'FamilyName'
   lastName    : String(100) not null;
   @title: 'E-Mail'
+  @PersonalData.FieldSemantics: 'EMail'
+  @assert.format: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
   email       : String(200);
   @title: 'Country'
+  @PersonalData.IsPotentiallyPersonal
   country     : Association to Countries;
   languages       : Composition of many ExpertLanguages on languages.expert = $self;
   roles           : Composition of many ExpertRoles on roles.expert = $self;

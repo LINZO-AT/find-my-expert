@@ -12,12 +12,17 @@
     "@sap/xsenv": "^5.0.0",
     "@sap/xssec": "^4.0.0",
     "express": "^4.18.0",
-    "passport": "^0.7.0"
+    "@sap/audit-logging": "^7.0.0",
+    "passport": "0.7.0"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^1.0.0",
     "@sap/cds-dk": "^9.1.0",
-    "cds-plugin-ui5": "^0.13.0"
+    "@cap-js/cds-types": "^0.9.0",
+    "@sap/eslint-plugin-cds": "^3.0.0",
+    "cds-plugin-ui5": "^0.13.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.7.0"
   },
   "scripts": {
     "start": "cds-serve",
@@ -30,10 +35,18 @@
     "watch-search": "cds watch --open findmyexpert-search/webapp/index.html?sap-ui-xx-viewCache=false --livereload false",
     "watch-manage-experts": "cds watch --open findmyexpert-manage-experts/webapp/index.html?sap-ui-xx-viewCache=false --livereload false",
     "watch-manage-roles": "cds watch --open findmyexpert-manage-roles/webapp/index.html?sap-ui-xx-viewCache=false --livereload false",
-    "watch-manage-topics": "cds watch --open findmyexpert-manage-topics/webapp/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch-manage-topics": "cds watch --open findmyexpert-manage-topics/webapp/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "lint": "eslint srv/ app/ --ext .js",
+    "lint:fix": "eslint srv/ app/ --ext .js --fix"
   },
-  "cds": {
+    "cds": {
     "requires": {
+      "audit-log": {
+        "kind": "audit-log-to-console",
+        "[production]": {
+          "kind": "audit-log-service"
+        }
+      },
       "[production]": {
         "auth": {
           "kind": "xsuaa"
