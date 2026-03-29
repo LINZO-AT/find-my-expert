@@ -5,7 +5,7 @@ annotate service.ExpertSearch with {
     firstName    @title: '{i18n>FirstName}';
     lastName     @title: '{i18n>LastName}';
     email        @title: '{i18n>Email}';
-    location     @title: '{i18n>Location}';
+    country_code     @title: '{i18n>Location}';
     email        @Communication.IsEmailAddress: true;
 
     solutionName @title: '{i18n>Solution}'
@@ -62,7 +62,7 @@ annotate service.ExpertSearch with @(
     UI.SelectionFields   : [
         firstName,
         lastName,
-        location,
+        country_code,
         topicName,
         solutionName,
         roleName
@@ -80,7 +80,7 @@ annotate service.ExpertSearch with @(
         },
         {
             $Type : 'UI.DataField',
-            Value : location,
+            Value : country_code,
             Label : '{i18n>Location}'
         },
         {
@@ -106,7 +106,7 @@ annotate service.ExpertSearch with @(
             { $Type : 'UI.DataField', Value : firstName },
             { $Type : 'UI.DataField', Value : lastName },
             { $Type : 'UI.DataField', Value : email },
-            { $Type : 'UI.DataField', Value : location },
+            { $Type : 'UI.DataField', Value : country_code },
         ],
     },
     UI.HeaderFacets : [

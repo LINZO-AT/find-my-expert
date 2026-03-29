@@ -6,16 +6,17 @@
     "node": ">=22"
   },
   "dependencies": {
+    "@cap-js/postgres": "^1.0.0",
     "@sap/cds": "^9.1.0",
+    "@sap/cds-common-content": "^3.1.0",
     "@sap/xsenv": "^5.0.0",
     "@sap/xssec": "^4.0.0",
-    "@cap-js/postgres": "^1.0.0",
     "express": "^4.18.0",
     "passport": "^0.7.0"
   },
   "devDependencies": {
-    "@sap/cds-dk": "^9.1.0",
     "@cap-js/sqlite": "^1.0.0",
+    "@sap/cds-dk": "^9.1.0",
     "cds-plugin-ui5": "^0.13.0"
   },
   "scripts": {

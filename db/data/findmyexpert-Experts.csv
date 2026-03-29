@@ -1,4 +1,4 @@
-ID,firstName,lastName,email,location
+ID,firstName,lastName,email,country_code
 770e8400-e29b-41d4-a716-000000000001,Thomas,Hartmann,thomas.hartmann@sap.com,AT
 770e8400-e29b-41d4-a716-000000000002,Sabine,Weissenböck,sabine.weissenbock@sap.com,AT
 770e8400-e29b-41d4-a716-000000000003,Markus,Friedl,markus.friedl@sap.com,AT

@@ -316,7 +316,7 @@ module.exports = cds.service.impl(async function () {
     for (const row of allRows) {
       const text = [
         row.firstName, row.lastName, row.solutionName,
-        row.topicName, row.roleName, row.notes, row.location
+        row.topicName, row.roleName, row.notes, row.country_code
       ].filter(Boolean).join(' ').toLowerCase();
 
       let matchCount = 0;
@@ -334,7 +334,7 @@ module.exports = cds.service.impl(async function () {
           firstName: row.firstName,
           lastName: row.lastName,
           email: row.email,
-          location: row.location,
+          country_code: row.country_code,
           _score: s,
           _solutions: new Set(),
           _topics: new Set(),

@@ -5,8 +5,10 @@ annotate service.AdminExperts with {
     firstName @title: '{i18n>FirstName}';
     lastName  @title: '{i18n>LastName}';
     email     @title: '{i18n>Email}';
-    location  @title: '{i18n>Location}';
-    email     @Communication.IsEmailAddress: true;
+    country @title: '{i18n>Location}'
+        @Common.Text: country.name
+        @Common.TextArrangement: #TextFirst;
+    email @Communication.IsEmailAddress: true;
     languages @title: '{i18n>Languages}';
 };
 
@@ -23,7 +25,7 @@ annotate service.AdminExperts with @(
         SourceProperties : [ firstName, lastName ],
         TargetProperties : [ fullName ]
     },
-    UI.SelectionFields : [ firstName, lastName, location ],
+    UI.SelectionFields : [ firstName, lastName, country_code ],
     UI.LineItem        : [
         {
             $Type : 'UI.DataField',
@@ -42,7 +44,7 @@ annotate service.AdminExperts with @(
         },
         {
             $Type : 'UI.DataField',
-            Value : location,
+            Value : country_code,
             Label : '{i18n>Location}'
         },
         {
@@ -58,7 +60,7 @@ annotate service.AdminExperts with @(
             { $Type : 'UI.DataField', Value : firstName },
             { $Type : 'UI.DataField', Value : lastName },
             { $Type : 'UI.DataField', Value : email },
-            { $Type : 'UI.DataField', Value : location },
+            { $Type : 'UI.DataField', Value : country_code },
             { $Type : 'UI.DataField', Value : languages },
         ],
     },

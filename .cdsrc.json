@@ -6,7 +6,8 @@
     },
     "auth": {
       "kind": "dummy"
-    }
+    },
+    "@sap/cds-common-content": true
   },
   "server": {
     "port": 4004,

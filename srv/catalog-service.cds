@@ -12,16 +12,17 @@ service CatalogService @(path: '/api/catalog') @(requires: ['ExpertViewer', 'Adm
     // ─── Flat search view (denormalized for full-text search across topic/solution/role) ──
     // relevanceScore = role.priority + capability bonuses (computed in service handler)
     @readonly
-    @cds.search: { firstName, lastName, email, location, solutionName, topicName, roleName }
+    @cds.search: { firstName, lastName, email, solutionName, topicName, roleName }
     entity ExpertSearch as SELECT from findmyexpert.ExpertRoles {
-        key expert.ID         as ID : UUID,
-        expert.ID             as expertID,
-        expert.firstName      as firstName,
-        expert.lastName       as lastName,
+        key expert.ID              as ID : UUID,
+        expert.ID                  as expertID,
+        expert.firstName           as firstName,
+        expert.lastName            as lastName,
         (expert.lastName || ' ' || expert.firstName) as fullName : String(200),
-        expert.email          as email,
-        expert.location       as location,
-        expert.languages      as languages,
+        expert.email               as email,
+        expert.country.code        as country_code,
+        expert.country.name        as countryName,
+        expert.languages           as languages,
         solution.name         as solutionName,
         solution.topic.name   as topicName,
         role.name             as roleName,
@@ -78,7 +79,8 @@ service CatalogService @(path: '/api/catalog') @(requires: ['ExpertViewer', 'Adm
         firstName      : String;
         lastName       : String;
         email          : String;
-        location       : String;
+        country_code   : String;
+        countryName    : String;
         solutionName   : String;
         topicName      : String;
         roleName       : String;
@@ -91,7 +93,4 @@ service CatalogService @(path: '/api/catalog') @(requires: ['ExpertViewer', 'Adm
         isMockMode     : Boolean;
     };
 
-    annotate AdminExperts with {
-        location @Common.ValueListWithFixedValues: true;
-    }
 }
