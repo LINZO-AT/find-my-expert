@@ -21,6 +21,6 @@
   },
   "responseTemplate": {
     "format": "markdown",
-    "template": "## Expert Recommendations\n\n{{#each results}}### {{firstName}} {{lastName}}\n- **Role:** {{roleName}}\n- **Solutions:** {{solutionName}}\n- **Topic:** {{topicName}}\n- **Location:** {{location}}\n- **Contact:** {{email}}\n\n{{/each}}"
+    "template": "## Expert Recommendations\n\n{{#each results}}### {{firstName}} {{lastName}}\n- **Role:** {{roleName}}\n- **Solutions:** {{solutionName}}\n- **Topic:** {{topicName}}\n- **Contact:** {{email}}\n\n{{/each}}"
   }
 }

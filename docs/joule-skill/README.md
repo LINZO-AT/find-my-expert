@@ -79,10 +79,14 @@ The skill returns results from the `searchExperts` action with these fields:
 |-------|-------------|
 | `firstName` / `lastName` | Expert name |
 | `email` | Contact email |
-| `solutionName` | SAP solution the expert covers |
-| `topicName` | Parent topic |
-| `roleName` | Expert's role (e.g. "Topic Owner", "Realization Lead") |
-| `reasoning` | AI-generated explanation of why this expert was matched |
-| `score` | Relevance score (higher = more relevant) |
+| `solutionName` | Comma-separated SAP solutions the expert covers |
+| `topicName` | Comma-separated parent topics |
+| `roleName` | Comma-separated roles (e.g. "Topic Owner", "Realization Lead") |
+| `reasoning` | Keyword match explanation (e.g. "Keyword match: signavio. Role score: 65.") |
+| `score` | Relevance score — role priority + keyword match bonus (higher = more relevant) |
 | `canPresent5M/30M/2H` | Presentation capabilities |
 | `canPresentDemo` | Can give a demo |
+
+> **Note:** Joule's own Foundation Model processes the `searchExperts` response and formulates  
+> a natural language answer. The `reasoning` field provides context for Joule to reference.  
+> Configure the Skill Builder's Send Message step to only use the fields listed above.

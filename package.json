@@ -7,22 +7,23 @@
   },
   "dependencies": {
     "@cap-js/postgres": "^1.0.0",
+    "@sap/audit-logging": "^7.0.0",
     "@sap/cds": "^9.1.0",
     "@sap/cds-common-content": "^3.1.0",
     "@sap/xsenv": "^5.0.0",
     "@sap/xssec": "^4.0.0",
     "express": "^4.18.0",
-    "@sap/audit-logging": "^7.0.0",
     "passport": "0.7.0"
   },
   "devDependencies": {
+    "@cap-js/cds-types": "^0.9.0",
     "@cap-js/sqlite": "^1.0.0",
     "@sap/cds-dk": "^9.1.0",
-    "@cap-js/cds-types": "^0.9.0",
     "@sap/eslint-plugin-cds": "^3.0.0",
     "cds-plugin-ui5": "^0.13.0",
     "eslint": "^8.57.0",
-    "typescript": "^5.7.0"
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   },
   "scripts": {
     "start": "cds-serve",
@@ -39,7 +40,7 @@
     "lint": "eslint srv/ app/ --ext .js",
     "lint:fix": "eslint srv/ app/ --ext .js --fix"
   },
-    "cds": {
+  "cds": {
     "requires": {
       "audit-log": {
         "kind": "audit-log-to-console",
