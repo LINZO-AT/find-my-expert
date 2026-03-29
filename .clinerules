@@ -5,48 +5,215 @@
 **Find My Expert** is an internal SAP expert directory for SAP Austria.
 
 - **CAP Backend**: `@sap/cds ^9.x`, Node.js 22, SQLite (local) / PostgreSQL (prod)
-- **SAPUI5 Frontend**: Fiori Elements, OData V4, `sap_horizon` Theme
-- **Two Services**: `CatalogService` (all users, read-only) + `AdminService` (ExpertAdmin, CRUD)
+- **SAPUI5 Frontend**: Fiori Elements (List Report + Object Page), OData V4, `sap_horizon` Theme
+- **Service**: `CatalogService` at `/api/catalog` (requires `ExpertViewer` or `Admin` role)
 - **Deployment Target**: SAP BTP Work Zone
+- **Project Root**: `/workspaces/find-my-expert`
 
 ### Start Commands
 
 ```bash
-# Terminal 1 — CAP Backend
-npm run watch          # → http://localhost:4004
+# Full-stack with FLP sandbox (recommended)
+npm run watch-flp     # → http://localhost:4004/findmyexpert-search/webapp/test/flpSandbox.html#Shell-home
 
-# Terminal 2 — UI5 Frontend
-cd app/findmyexpert
-npm run start:sandbox  # → http://localhost:8080/sandbox.html
+# Full-stack with individual app
+npm run watch-search          # → findmyexpert-search
+npm run watch-manage-experts  # → findmyexpert-manage-experts
+npm run watch-manage-roles    # → findmyexpert-manage-roles
+npm run watch-manage-topics   # → findmyexpert-manage-topics
+
+# CAP backend only
+npm run watch                 # → http://localhost:4004
 ```
+
+---
+
+## App Inventory
+
+| App | Path | Service | Base Entity | Watch Script |
+|-----|------|---------|-------------|--------------|
+| Expert Search | `app/findmyexpert-search` | `CatalogService` | `ExpertSearch` (flat view) | `npm run watch-search` |
+| Manage Experts | `app/findmyexpert-manage-experts` | `CatalogService` | `Experts` | `npm run watch-manage-experts` |
+| Manage Roles | `app/findmyexpert-manage-roles` | `CatalogService` | `ExpertRoles` | `npm run watch-manage-roles` |
+| Manage Topics | `app/findmyexpert-manage-topics` | `CatalogService` | `Topics` | `npm run watch-manage-topics` |
+
+All apps are Fiori Elements (List Report + Object Page), OData V4, registered in `package.json#sapux`.
+
+---
+
+## MCP Server Usage — Detailed Workflows
+
+### Overview
+
+| Server | Identifier | When to Use |
+|--------|-----------|-------------|
+| **fiori-mcp** | `io.github.SAP/open-ux-tools` | Generating/modifying Fiori Elements apps, adding pages/columns, app settings |
+| **cds-mcp** | `cds-mcp` | CDS model search, CAP documentation, annotation syntax, service patterns |
+| **ui5-mcp** | `ui5-mcp` | UI5 guidelines, API reference, linting, manifest validation |
+| **ui5-webc-mcp** | `ui5-webc-mcp` | Only if Web Components controls are considered (not used in this project) |
+| **puppeteer-mcp** | `github.com/modelcontextprotocol/servers/tree/main/src/puppeteer` | Visual verification, screenshots, browser-based end-to-end testing |
+| **context7-mcp** | `github.com/upstash/context7-mcp` | Documentation lookup for any npm library (e.g. `@sap/cds`, `express`, `@cap-js/postgres`) |
+| **memory-mcp** | `github.com/modelcontextprotocol/servers/tree/main/src/memory` | Persisting project knowledge across sessions (entity names, decisions, context) |
+| **product-standards** | `sap.tools.hyperspace.portal.s4c.mcp/mcp` | SAP product standards compliance checks (security, accessibility, etc.) |
+
+**Golden rule: Always consult MCP docs/tools first, then implement. No assumptions from memory.**
+
+---
+
+### fiori-mcp — Mandatory 3-Step Workflow
+
+When generating or modifying a Fiori Elements app, you MUST follow this exact sequence:
+
+1. **`list_functionality(appPath)`** → Get available functionalities for the app
+2. **`get_functionality_details(appPath, functionalityId)`** → Get required parameters and schema
+3. **`execute_functionality(functionalityId, parameters, appPath)`** → Execute the modification
+
+**Critical rules:**
+- NEVER guess or assume a `functionalityId` — only use IDs returned by `list_functionality`
+- NEVER use a `functionalityId` as the name of a tool call
+- If the needed functionality is NOT in the list, fall back to `search_docs` from fiori-mcp or manual code editing
+- Use `list_fiori_apps` first only if the target app path is unknown
+- The `appPath` must be an **absolute path** (e.g. `/workspaces/find-my-expert/app/findmyexpert-search`)
+
+**When to use fiori-mcp vs. manual editing:**
+- Adding pages, columns, table settings, page settings → fiori-mcp 3-step workflow
+- Modifying CDS annotations → edit `annotations.cds` files directly (after consulting cds-mcp)
+- Modifying manifest.json routing, datasources → fiori-mcp for settings, then `run_manifest_validation`
+
+---
+
+### cds-mcp — CDS Model & Documentation
+
+**Before ANY CDS model change:**
+1. **`search_model(projectPath, name?, kind?)`** — Search entities, fields, services, associations
+   - Always use `projectPath: "/workspaces/find-my-expert"`
+   - Use `namesOnly: true` for overview, `topN: 5` for detailed results
+   - Use `kind` filter: `"service"`, `"entity"`, `"action"`, etc.
+2. **`search_docs(query)`** — Search CAP documentation for syntax, patterns, APIs
+
+**Mandatory usage:**
+- You MUST use `search_model` to look up CDS definitions before reading `*.cds` files. Only read files directly if `search_model` fails.
+- You MUST use `search_docs` EVERY TIME you create or modify CDS models, annotations, or use `cds` CLI commands. Do NOT propose changes without first verifying syntax via docs.
+- When adding OData annotations (`@UI`, `@Common`, `@Communication`), always verify the annotation vocabulary via `search_docs` first.
+
+---
+
+### ui5-mcp — Guidelines, Linting & Validation
+
+**Before any UI5 work:**
+- Call **`get_guidelines()`** once per session to retrieve current coding standards
+- Call **`get_project_info(projectDir)`** to understand the app's UI5 version and configuration
+
+**After any UI5/manifest changes:**
+- Run **`run_ui5_linter(projectDir)`** to check for deprecated APIs and issues
+  - `projectDir` must be the absolute path to the app (e.g. `/workspaces/find-my-expert/app/findmyexpert-search`)
+  - Set `provideContextInformation: false` on repeated runs for the same app
+- Run **`run_manifest_validation(manifestPath)`** after any `manifest.json` change
+  - `manifestPath` = absolute path to the manifest file
+
+**For API lookups:**
+- Use **`get_api_reference(projectDir, query)`** to look up UI5 module APIs (e.g. `sap.m.Button`, `sap.fe.core`)
+
+---
+
+### puppeteer-mcp — Visual Verification
+
+Use for visual verification of UI changes:
+
+```
+1. puppeteer_navigate(url, launchOptions)  → open the app
+2. puppeteer_screenshot(name)              → capture current state
+3. (optional) puppeteer_click/fill/etc.    → interact with UI
+4. puppeteer_screenshot(name)              → capture result
+```
+
+**Important for Codespaces/CI environments:**
+- Use `launchOptions: { headless: true, args: ['--no-sandbox'] }` with `allowDangerous: true`
+- The app must be running first (`npm run watch-*` in an active terminal)
+
+---
+
+### context7-mcp — Library Documentation Lookup
+
+For documentation on any npm package not covered by the SAP-specific MCP servers:
+
+1. **`resolve-library-id(query, libraryName)`** → Find the Context7 library ID
+2. **`query-docs(libraryId, query)`** → Query documentation with specific questions
+
+Useful for: `@sap/cds` runtime APIs, `@cap-js/postgres` config, `@sap/xssec` auth patterns, `express` middleware, etc.
+
+**Limit:** Max 3 calls per question. Use best available result if not found after 3 tries.
+
+---
+
+### memory-mcp — Cross-Session Knowledge Persistence
+
+Use the knowledge graph to persist and retrieve project context:
+
+- **`create_entities`** — Store discovered project facts (app paths, entity structures, decisions)
+- **`search_nodes` / `open_nodes`** — Retrieve previously stored knowledge
+- **`add_observations`** — Append new findings to existing entities
+
+**When to use:**
+- After significant discovery work (e.g. mapping data model, understanding service structure)
+- When a user shares architectural decisions or preferences
+- Before starting a new task: check `read_graph` for existing project knowledge
+
+---
+
+### product-standards — SAP Compliance Checks
+
+Use before deployment or when the user asks about compliance:
+
+1. **`list_product_standards()`** — Get all standards and their requirement prefixes
+2. **`search_requirement(displayId)`** — Find specific requirements (e.g. `SEC-*`, `ACC-*`)
+3. **`get_requirement(requirementId)`** — Get full requirement details
 
 ---
 
 ## Rules for Creation or Modification of SAP Fiori Elements Apps
 
-- When asked to create an SAP Fiori elements app check whether the user input can be interpreted as an application organized into one or more pages containing table data or forms, these can be translated into a SAP Fiori elements application, else ask the user for suitable input.
-- The application typically starts with a List Report page showing the data of the base entity of the application in a table. Details of a specific table row are shown in the ObjectPage. This first Object Page is therefore based on the base entity of the application.
-- An Object Page can contain one or more table sections based on to-many associations of its entity type. The details of a table section row can be shown in another Object Page based on the associations target entity.
-- The data model must be suitable for usage in a SAP Fiori elements frontend application. So there must be one main entity and one or more navigation properties to related entities.
-- Each property of an entity must have a proper datatype.
-- For all entities in the data model provide primary keys of type UUID.
+- When asked to create an SAP Fiori elements app, check whether the user input can be interpreted as an application organized into one or more pages containing table data or forms. If not, ask the user for suitable input.
+- The application typically starts with a List Report page showing the data of the base entity in a table. Details of a specific row are shown in the ObjectPage based on the same entity.
+- An Object Page can contain one or more table sections based on to-many associations. Row details can be shown in another Object Page based on the association's target entity.
+- The data model must be suitable for Fiori Elements: one main entity with navigation properties to related entities.
+- Each property must have a proper CDS datatype.
+- For all entities, provide primary keys of type UUID.
 - When creating sample data in CSV files, all primary keys and foreign keys MUST be in UUID format (e.g., `550e8400-e29b-41d4-a716-446655440001`).
-- When generating or modifying the SAP Fiori elements application on top of the CAP service use the Fiori MCP server if available.
-- When attempting to modify the SAP Fiori elements application like adding columns you must not use the screen personalization but instead modify the code of the project, before this first check whether an MCP server provides a suitable function.
-- When previewing the SAP Fiori elements application use the most specific `npm run watch-*` script for the app in the `package.json`.
+- When generating or modifying Fiori Elements apps, use the **fiori-mcp 3-step workflow** (see above). Do NOT bypass it.
+- When modifying UI (adding columns, changing settings), modify the project code — never use screen personalization. First check if fiori-mcp provides a suitable functionality.
+- When previewing, use the most specific `npm run watch-*` script (see App Inventory table above).
 
 ---
 
 ## Guidelines for UI5
 
-Use the `get_guidelines` tool of the UI5 MCP server to retrieve the latest coding standards and best practices for UI5 development.
+- Call `get_guidelines()` from ui5-mcp **once before starting any UI5-related work** in a session.
+- After every UI5 code or manifest change, run `run_ui5_linter` and `run_manifest_validation`.
+- Use `get_api_reference` to look up any UI5 module before using it.
 
 ---
 
 ## Guidelines for CAP
 
-- You MUST search for CDS definitions, like entities, fields and services (which include HTTP endpoints) with cds-mcp, only if it fails you MAY read `*.cds` files in the project.
-- You MUST search for CAP docs with cds-mcp EVERY TIME you create, modify CDS models or when using APIs or the `cds` CLI from CAP. Do NOT propose, suggest or make any changes without first checking it.
+- You MUST use `search_model` from cds-mcp to look up CDS definitions (entities, fields, services, associations). Only read `*.cds` files directly if `search_model` fails.
+- You MUST use `search_docs` from cds-mcp EVERY TIME you create or modify CDS models, annotations, or use CAP APIs / `cds` CLI. Do NOT propose, suggest, or make any changes without first verifying via docs.
+- When unsure about a CAP runtime API (Node.js `cds.*` methods), additionally use `context7-mcp` to query `@sap/cds` documentation.
+
+---
+
+## Verification Checklist (after every change)
+
+Run these checks after making changes, before presenting results:
+
+| Change Type | Verification Tool | Command/Tool |
+|------------|-------------------|--------------|
+| CDS model / annotations | cds-mcp | `search_model` to verify structure |
+| UI5 app code | ui5-mcp | `run_ui5_linter(projectDir)` |
+| manifest.json | ui5-mcp | `run_manifest_validation(manifestPath)` |
+| Visual UI change | puppeteer-mcp | `puppeteer_navigate` + `puppeteer_screenshot` |
+| Fiori Elements page config | fiori-mcp | `list_functionality` to confirm changes |
+| Backend service handler | Terminal | `npm run watch` + test endpoint with `curl` |
 
 ---
 
@@ -67,21 +234,6 @@ Use the `get_guidelines` tool of the UI5 MCP server to retrieve the latest codin
 
 ---
 
-## MCP Server Usage
-
-| Server | When to Use |
-|--------|-------------|
-| `ui5-mcp` | UI5 API reference, Linter, Manifest validation, Guidelines |
-| `fiori-mcp` | Fiori Design Patterns, App analysis, UX Guidelines, generating/modifying Fiori Elements apps |
-| `cds-mcp` | CDS Schema patterns, Service best practices, OData Annotations, CDS model search |
-| `ui5-webc-mcp` | If Web Components controls are considered |
-| `puppeteer-mcp` | Browser automation, UI testing, screenshots, end-to-end testing of the running app |
-
-**Always consult MCP docs first, then implement.**
-No assumptions from memory — verify all API details via MCP tools.
-
----
-
 ## Architecture Overview
 
 ### Data Model (db/schema.cds)
@@ -92,19 +244,26 @@ No assumptions from memory — verify all API details via MCP tools.
 | `Solutions` | SAP Products/Services, linked to a Topic |
 | `Experts` | People / internal experts |
 | `ExpertRoles` | Junction: Expert ↔ Solution with role metadata + presentation capabilities |
+| `ExpertLanguages` | Languages spoken by an expert |
+| `Roles` | Role definitions (code list) |
 
-### App Floorplans (Target Architecture)
+### Service (srv/catalog-service.cds)
 
-| View | Fiori Elements Floorplan | Base Entity |
-|------|--------------------------|-------------|
-| Expert Search / Browse | List Report + Object Page | `ExpertRoles` (flat projection) or `Experts` with `@cds.search` |
-| Expert Detail | Object Page | `Experts` with `$expand=roles` |
-| Admin: Solutions | List Report + Object Page | `Solutions` with `Topics` |
-| Admin: Expert Roles | List Report + Object Page | `ExpertRoles` |
+`CatalogService` at `/api/catalog` — requires `ExpertViewer` or `Admin` role:
+- Read-only projections: `Topics`, `Solutions`, `Experts`, `ExpertRoles`, `ExpertLanguages`, `Roles`
+- `ExpertSearch` — flat denormalized view for full-text search with computed `relevanceScore`
+
+### App Floorplans
+
+| App | Fiori Elements Floorplan | Base Entity |
+|-----|--------------------------|-------------|
+| Expert Search | List Report + Object Page | `ExpertSearch` (flat projection) |
+| Manage Experts | List Report + Object Page | `Experts` |
+| Manage Roles | List Report + Object Page | `ExpertRoles` |
+| Manage Topics | List Report + Object Page | `Topics` |
 
 ### Search Strategy
 
-Instead of custom card-based search with client-side scoring, use:
 - `@cds.search` annotation on relevant entities for OData `$search` support
 - Standard Fiori Elements FilterBar with facets (Topic, Role, Location, Solution)
 - `@UI.Criticality` annotations for color-coded role badges
