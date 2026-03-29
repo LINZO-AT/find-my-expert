@@ -3,11 +3,12 @@ using findmyexpert from '../db/schema';
 service CatalogService @(path: '/api/catalog') @(requires: ['ExpertViewer', 'Admin']) {
 
     // ─── Public read-only entities ───────────────────────────────────────────
-    @readonly @cds.redirection.target entity Topics      as projection on findmyexpert.Topics;
-    @readonly @cds.redirection.target entity Solutions   as projection on findmyexpert.Solutions;
-    @readonly @cds.redirection.target entity Experts     as projection on findmyexpert.Experts;
-    @readonly @cds.redirection.target entity ExpertRoles as projection on findmyexpert.ExpertRoles;
-    @readonly @cds.redirection.target entity Roles       as projection on findmyexpert.Roles;
+    @readonly @cds.redirection.target entity Topics           as projection on findmyexpert.Topics;
+    @readonly @cds.redirection.target entity Solutions        as projection on findmyexpert.Solutions;
+    @readonly @cds.redirection.target entity Experts          as projection on findmyexpert.Experts;
+    @readonly @cds.redirection.target entity ExpertRoles      as projection on findmyexpert.ExpertRoles;
+    @readonly @cds.redirection.target entity ExpertLanguages  as projection on findmyexpert.ExpertLanguages;
+    @readonly @cds.redirection.target entity Roles            as projection on findmyexpert.Roles;
 
     // ─── Flat search view (denormalized for full-text search across topic/solution/role) ──
     // relevanceScore = role.priority + capability bonuses (computed in service handler)
@@ -22,7 +23,6 @@ service CatalogService @(path: '/api/catalog') @(requires: ['ExpertViewer', 'Adm
         expert.email               as email,
         expert.country.code        as country_code,
         expert.country.name        as countryName,
-        expert.languages           as languages,
         solution.name         as solutionName,
         solution.topic.name   as topicName,
         role.name             as roleName,
@@ -52,8 +52,14 @@ service CatalogService @(path: '/api/catalog') @(requires: ['ExpertViewer', 'Adm
     @(requires: 'Admin') @cds.redirection.target: false
     @odata.draft.enabled
     entity AdminExperts as projection on findmyexpert.Experts {
-        *, roles : redirected to AdminExpertRoles,
+        *, roles      : redirected to AdminExpertRoles,
+           languages  : redirected to AdminExpertLanguages,
         virtual fullName : String(200)
+    };
+
+    @(requires: 'Admin') @cds.redirection.target: false
+    entity AdminExpertLanguages as projection on findmyexpert.ExpertLanguages {
+        *, expert : redirected to AdminExperts
     };
 
     @(requires: 'Admin') @cds.redirection.target: false

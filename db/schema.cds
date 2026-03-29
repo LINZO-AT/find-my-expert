@@ -1,6 +1,6 @@
 namespace findmyexpert;
 
-using { managed, cuid, sap.common.Countries } from '@sap/cds/common';
+using { managed, cuid, sap.common.Countries, sap.common.Languages } from '@sap/cds/common';
 
 /**
  * Topic areas: AI, BDC, BTP, CloudERP, HCM,
@@ -48,9 +48,20 @@ entity Experts : cuid, managed {
   email       : String(200);
   @title: 'Country'
   country     : Association to Countries;
-  @title: 'Languages'
-  languages   : String(100);
+  languages   : Composition of many ExpertLanguages on languages.expert = $self;
   roles       : Composition of many ExpertRoles on roles.expert = $self;
+}
+
+/**
+ * Expert spoken languages — multi-value via junction to sap.common.Languages
+ */
+@title: 'Expert Languages'
+entity ExpertLanguages : cuid, managed {
+  @title: 'Expert'
+  expert    : Association to Experts   not null;
+  @title: 'Language'
+  @Common.Text: (language.name) @Common.TextArrangement: #TextOnly
+  language  : Association to Languages not null;
 }
 
 /**
