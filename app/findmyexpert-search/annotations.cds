@@ -48,6 +48,9 @@ annotate service.ExpertSearch with {
 
 // ─── ExpertSearch — List Report ──────────────────────────────────────────────
 annotate service.ExpertSearch with @(
+    UI.PresentationVariant : {
+        SortOrder : [{ Property: relevanceScore, Descending: true }],
+    },
     UI.HeaderInfo : {
         TypeName       : '{i18n>Expert}',
         TypeNamePlural : '{i18n>Experts}',

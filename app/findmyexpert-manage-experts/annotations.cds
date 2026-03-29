@@ -13,6 +13,9 @@ annotate service.AdminExperts with {
 };
 
 annotate service.AdminExperts with @(
+    UI.PresentationVariant : {
+        SortOrder : [{ Property : lastName, Descending : false }],
+    },
     Communication.Contact : {
         fn    : fullName,
         email : [{ address: email, type: #work }],

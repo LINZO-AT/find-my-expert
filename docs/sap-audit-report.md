@@ -71,9 +71,11 @@ Das Projekt „Find My Expert" ist ein solide strukturiertes SAP CAP/Fiori Eleme
 
 **[F-006]** — `@assert.format` Regex-Validierung für E-Mail-Feld auf `Experts` Entity in `db/schema.cds` hinzugefügt.
 
-**[F-009]** — `@UI.PresentationVariant` mit `SortOrder` für alle List Reports hinzugefügt:
-- `app/findmyexpert-search/annotations.cds` — ExpertRoles: sortiert nach `relevanceScore` absteigend (war bereits vorhanden)
-- `app/findmyexpert-manage-experts/annotations.cds` — AdminExpertRoles: sortiert nach `relevanceScore` absteigend (war bereits vorhanden)
+**[F-009]** — `@UI.PresentationVariant` mit `SortOrder` für alle List Reports und Sub-Tabellen hinzugefügt:
+- `app/findmyexpert-search/annotations.cds` — **ExpertSearch (Hauptentität)**: sortiert nach `relevanceScore` absteigend
+- `app/findmyexpert-search/annotations.cds` — ExpertRoles (Sub-Tabelle): sortiert nach `relevanceScore` absteigend (war bereits vorhanden)
+- `app/findmyexpert-manage-experts/annotations.cds` — **AdminExperts (Hauptentität)**: sortiert nach `lastName` aufsteigend
+- `app/findmyexpert-manage-experts/annotations.cds` — AdminExpertRoles (Sub-Tabelle): sortiert nach `relevanceScore` absteigend (war bereits vorhanden)
 - `app/findmyexpert-manage-roles/annotations.cds` — AdminExpertRoles: sortiert nach `priority` absteigend
 - `app/findmyexpert-manage-topics/annotations.cds` — AdminTopics: sortiert nach `name` aufsteigend
 
