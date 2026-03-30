@@ -1,19 +1,20 @@
-# Smart Search — Architektur & Implementierung
+# Smart Search — Architecture & Implementation
 
-## Überblick
+## Overview
 
-Die ExpertSearch nutzt ein eigenes **Smart-Search-System** in `srv/catalog-service.js`, das die Standard-CAP-Suche (`@cds.search` → `LIKE '%term%'`) ersetzt. Die Suche wurde entwickelt, um typische Probleme der Substring-Suche zu lösen:
+ExpertSearch uses a custom **Smart Search system** in `srv/catalog-service.js` that replaces CAP's default search (`@cds.search` → `LIKE '%term%'`). It was built to solve typical substring-search problems:
 
-| Problem | Beispiel | Lösung |
-|---------|----------|--------|
-| Substring-False-Positives bei Akronymen | `AI` matched „Toolch**ai**n" | Word-Boundary-Matching für Akronyme |
-| Substring-False-Positives bei kurzen Termen | `RISE` matched „Enterp**rise**" | Akronym-Erkennung + Word-Boundary |
-| CamelCase nicht aufgelöst | `Cloud ERP` findet „CloudERP" nicht | CamelCase-Normalisierung |
-| Keine Relevanz-Sortierung | Cloud-Migrationen vor Cloud-ERP-Experten | Feld-gewichtetes Scoring |
+| Problem | Example | Solution |
+|---------|---------|----------|
+| Acronym false positives | `AI` matches "Toolch**ai**n" | Word-boundary matching for acronyms |
+| Short-term false positives | `RISE` matches "Enterp**rise**" | Acronym detection + word boundary |
+| CamelCase not resolved | `Cloud ERP` doesn't find "CloudERP" | CamelCase normalization |
+| No relevance sorting | Random ordering of results | Field-weighted scoring |
+| Case-insensitive acronym mismatch | `rise` matches "Enterprise" | Known-terms list (see below) |
 
 ---
 
-## Architektur
+## Architecture
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -26,32 +27,32 @@ Die ExpertSearch nutzt ein eigenes **Smart-Search-System** in `srv/catalog-servi
 │  CAP Runtime (CatalogService)                                        │
 │                                                                      │
 │  1. Intercept $search → extractSearchString()                        │
-│  2. DELETE req.query.SELECT.search  (verhindert CAP LIKE '%..%')     │
-│  3. Load ALL rows from ExpertSearch (DB-View)                        │
-│  4. Smart Matching in JS: computeSearchScore() pro Zeile             │
-│  5. Deduplizierung pro Expert (aggregiert Solutions/Topics/Roles)    │
-│  6. Sortierung: searchScore → roleScore → lastName                   │
-│  7. Paginierung ($top / $skip)                                       │
-│  8. Return OData-Response mit $count                                 │
+│  2. DELETE req.query.SELECT.search  (prevents CAP LIKE '%..%')       │
+│  3. Load ALL rows from ExpertSearch (DB view)                        │
+│  4. Smart Matching in JS: computeSearchScore() per row               │
+│  5. Deduplication per expert (aggregate solutions/topics/roles)      │
+│  6. Sort: searchScore → roleScore → lastName                         │
+│  7. Paginate ($top / $skip)                                          │
+│  8. Return OData response with $count                                │
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
-### Warum kein Standard `@cds.search`?
+### Why not standard `@cds.search`?
 
-CAP's `@cds.search` Annotation generiert SQL `WHERE ... LIKE '%term%'`-Bedingungen. Das ist für einfache Suchen ausreichend, hat aber kritische Nachteile:
+CAP's `@cds.search` annotation generates `WHERE ... LIKE '%term%'` SQL conditions. Fine for simple cases, but has critical limitations:
 
-1. **Keine Word-Boundary-Erkennung**: „AI" findet alles mit den Buchstaben „ai" irgendwo im Text
-2. **Keine Relevanz-Sortierung**: Alle Treffer sind gleichwertig — keine Gewichtung nach Feld
-3. **Keine Phrase-Erkennung**: „Cloud ERP" wird als zwei unabhängige `LIKE`-Bedingungen behandelt
-4. **Keine CamelCase-Auflösung**: „CloudERP" wird nicht als „Cloud ERP" erkannt
+1. **No word-boundary awareness**: "AI" matches anything containing the letters "ai"
+2. **No relevance sorting**: all hits are equal — no field weighting
+3. **No phrase detection**: "Cloud ERP" becomes two independent `LIKE` conditions
+4. **No CamelCase resolution**: "CloudERP" is not found when searching "Cloud ERP"
 
-Die Smart Search interceptiert den `$search`-Parameter **bevor** CAP ihn verarbeitet, entfernt ihn aus der Query und führt die Matching-Logik in JavaScript durch.
+The Smart Search intercepts the `$search` parameter **before** CAP processes it, removes it from the query, and runs all matching logic in JavaScript.
 
 ---
 
-## ExpertSearch — Datengrundlage
+## ExpertSearch — Data Foundation
 
-`ExpertSearch` ist eine **flache, denormalisierte View** über mehrere Entities:
+`ExpertSearch` is a **flat, denormalized view** across multiple entities:
 
 ```
 ExpertRoles  →  Experts    (expert.*)
@@ -60,9 +61,9 @@ ExpertRoles  →  Experts    (expert.*)
              →  Roles      (role.name, role.priority)
 ```
 
-**Ein Expert hat mehrere ExpertRoles** → eine Zeile pro Expert-Solution-Role-Kombination. Die Smart Search dedupliziert diese zu einer Zeile pro Expert und aggregiert Solutions, Topics und Roles als kommaseparierte Listen.
+**One expert has multiple ExpertRoles** → one DB row per expert-solution-role combination. The Smart Search deduplicates these into one row per expert, aggregating solutions, topics, and roles as comma-separated strings.
 
-### CDS-Definition (srv/catalog-service.cds)
+### CDS Definition (`srv/catalog-service.cds`)
 
 ```cds
 @readonly
@@ -86,148 +87,159 @@ entity ExpertSearch as SELECT from findmyexpert.ExpertRoles {
     canPresentDemo,
     notes,
     virtual relevanceScore : Integer,
-    virtual languagesText  : String(200),
     expertRoles : Association to many ExpertRoles on expertRoles.expert.ID = expertID
 };
 ```
 
-> **Hinweis:** Die `@cds.search`-Annotation ist noch vorhanden, wird aber durch die Smart Search im Service Handler übersteuert (der `$search`-Parameter wird vor der DB-Abfrage entfernt).
+> **Note:** The `@cds.search` annotation is still present but overridden by the service handler — the `$search` parameter is removed before the DB query runs.
 
 ---
 
-## Matching-Algorithmus
+## Matching Algorithm
 
-### Term-Klassifikation
+### Term Classification
 
-Jeder Suchbegriff wird klassifiziert, bevor das Matching stattfindet:
+Each search term is classified before matching:
 
-| Typ | Erkennung | Matching-Strategie | Beispiele |
-|-----|-----------|---------------------|-----------|
-| **Akronym** | `/^[A-Z0-9]+$/` mit min. 1 Buchstabe | Strikte Word-Boundary (`\b`) | `AI`, `RISE`, `BTP`, `S4`, `HCM` |
-| **Kurz (≤2 Zeichen)** | Nicht-Akronym, Länge ≤ 2 | Word-Boundary (`\b`) | `fi`, `pp` |
-| **Mittel (3 Zeichen)** | Nicht-Akronym, Länge = 3 | Word-Boundary + CamelCase-Substring | `erp`, `sap` |
-| **Lang (≥4 Zeichen)** | Nicht-Akronym, Länge ≥ 4 | Substring (sicher bei langen Termen) | `Cloud`, `Signavio`, `Toolchain` |
+| Type | Detection | Matching strategy | Examples |
+|------|-----------|-------------------|---------|
+| **Known SAP term** | In `SAP_KNOWN_TERMS` set (case-insensitive) | Strict word boundary (`\b`) | `rise`, `Rise`, `RISE`, `btp`, `ai` |
+| **Structural acronym** | `/^[A-Z0-9]+$/` with min. 1 letter | Strict word boundary (`\b`) | `HCM`, `S4`, `BW4` |
+| **Short (≤2 chars)** | Non-acronym, length ≤ 2 | Word boundary (`\b`) | `fi`, `pp` |
+| **Medium (3 chars)** | Non-acronym, length = 3 | Word boundary + CamelCase substring | `erp`, `sap` |
+| **Long (≥4 chars)** | Non-acronym, length ≥ 4 | Substring (safe for long terms) | `Cloud`, `Signavio`, `Toolchain` |
 
-### `isAcronym(term)` — Akronym-Erkennung
+### `isAcronym(term)` — Acronym Detection
 
 ```javascript
-const isAcronym = (term) => /^[A-Z0-9]+$/.test(term) && /[A-Z]/.test(term);
+const SAP_KNOWN_TERMS = new Set([
+  'rise', 'btp', 'ai', 'hcm', 'bdc', 'erp', 's4', 'ti',
+  'clouderp', 'toolchain', 'signavio', 'leanix',
+]);
+
+const isAcronym = (term) => {
+  // Known SAP topic/solution term — always word-boundary regardless of case
+  if (SAP_KNOWN_TERMS.has(term.toLowerCase())) return true;
+  // Structural fallback: all uppercase + digits
+  return /^[A-Z0-9]+$/.test(term) && /[A-Z]/.test(term);
+};
 ```
 
-- Prüft ob der Term **ausschließlich** aus Großbuchstaben und Ziffern besteht
-- Erfordert mindestens einen Buchstaben (reine Ziffern sind keine Akronyme)
-- **Wichtig:** Die Suchbegriffe werden in **Originalschreibweise** beibehalten (kein `.toLowerCase()` vor dem Split), damit die Akronym-Erkennung funktioniert
+The `SAP_KNOWN_TERMS` set ensures that known topic and solution names always use word-boundary matching, regardless of how the user types them. Without this, `rise` (lowercase) would fall through to substring matching and incorrectly match "Enterprise".
 
-**Beispiele:**
-| Term | isAcronym | Begründung |
-|------|-----------|------------|
-| `RISE` | ✅ | Alle Großbuchstaben |
-| `AI` | ✅ | Alle Großbuchstaben |
-| `BTP` | ✅ | Alle Großbuchstaben |
-| `S4` | ✅ | Großbuchstabe + Ziffer |
-| `Cloud` | ❌ | Gemischte Groß-/Kleinschreibung |
-| `rise` | ❌ | Alles Kleinbuchstaben |
-| `42` | ❌ | Keine Buchstaben |
+**Examples:**
 
-### `matchesTerm(text, term)` — Einzelterm-Matching
+| Term | isAcronym | Reason |
+|------|-----------|--------|
+| `RISE` | ✅ | Structural: all uppercase |
+| `Rise` | ✅ | In `SAP_KNOWN_TERMS` (`rise`) |
+| `rise` | ✅ | In `SAP_KNOWN_TERMS` (`rise`) |
+| `AI` | ✅ | Structural: all uppercase |
+| `ai` | ✅ | In `SAP_KNOWN_TERMS` (`ai`) |
+| `BTP` | ✅ | Structural: all uppercase |
+| `S4` | ✅ | Structural: uppercase + digit |
+| `Cloud` | ❌ | Mixed case, not in known terms → substring |
+| `42` | ❌ | No letters |
+
+### `matchesTerm(text, term)` — Single Term Matching
 
 ```
 text: "LeanIX Enterprise Architecture Advisory"
-term: "RISE"
+term: "rise"
 
-1. isAcronym("RISE") → true
+1. isAcronym("rise") → true  (SAP_KNOWN_TERMS hit)
 2. Regex: /\brise\b/i
-3. Test gegen "LeanIX Enterprise Architecture Advisory" → false
-4. Test gegen CamelCase-Normalisierung → false
-5. Ergebnis: KEIN Match ✅ (Enterprise enthält "rise" als Substring, aber nicht als Wort)
+3. Test against "LeanIX Enterprise Architecture Advisory" → false
+4. Test against CamelCase-normalized → false
+5. Result: NO match ✅  ("Enterprise" contains "rise" as substring but not as a word)
 ```
 
-**CamelCase-Normalisierung:**
+**CamelCase normalization:**
 ```
 "CloudERP"        → "Cloud ERP"
 "GenAI"           → "Gen AI"
-"SAP Business AI" → "SAP Business AI" (keine Änderung)
+"SAP Business AI" → "SAP Business AI"  (no change)
 ```
 
-### `matchesPhrase(text, phrase)` — Phrase-Matching
+### `matchesPhrase(text, phrase)` — Phrase Matching
 
-Prüft ob der gesamte Suchausdruck als zusammenhängende Phrase in einem Feld vorkommt:
+Checks whether the full search expression appears as a contiguous phrase in a field:
 
-1. **Direkter Substring**: `"cloud erp (generic)"` enthält `"cloud erp"` → ✅
-2. **CamelCase-normalisiert**: `"CloudERP"` → `"cloud erp"` enthält `"cloud erp"` → ✅
-3. **No-Space-Vergleich**: `"clouderp"` enthält `"clouderp"` → ✅
+1. **Direct substring**: `"cloud erp (generic)"` contains `"cloud erp"` → ✅
+2. **CamelCase-normalized**: `"CloudERP"` → `"cloud erp"` contains `"cloud erp"` → ✅
+3. **No-space comparison**: `"clouderp"` contains `"clouderp"` → ✅
 
 ---
 
-## Scoring-System
+## Scoring System
 
-### Feld-Gewichtung
+### Field Weights
 
-Jedes durchsuchte Feld hat eine Gewichtung, die dessen Relevanz für die Suche widerspiegelt:
+Each searchable field has a weight reflecting its relevance:
 
-| Feld | Gewicht | Begründung |
-|------|---------|------------|
-| `topicName` | 60 | Kernkategorisierung — höchste Relevanz |
-| `solutionName` | 50 | Spezifisches Produkt/Lösung |
-| `firstName` | 25 | Personensuche |
-| `lastName` | 25 | Personensuche |
-| `roleName` | 15 | Rollentyp |
-| `notes` | 8 | Kontextinformationen |
-| `email` | 5 | Niedrige Relevanz |
+| Field | Weight | Reason |
+|-------|--------|--------|
+| `topicName` | 60 | Core categorization — highest relevance |
+| `solutionName` | 50 | Specific product/solution |
+| `firstName` | 25 | Person search |
+| `lastName` | 25 | Person search |
+| `roleName` | 15 | Role type |
+| `notes` | 8 | Contextual keywords |
+| `email` | 5 | Low relevance |
 
-### Score-Berechnung (`computeSearchScore`)
-
-```
-Für jeden Suchterm:
-  → Prüfe ob mindestens ein Feld den Term enthält (AND-Semantik)
-  → Wenn ein Term in keinem Feld gefunden wird → Zeile wird aussortiert (Score = 0)
-
-Für jedes Feld:
-  → Phrase-Match (alle Terme zusammen im Feld)? → Gewicht × 2 (Phrase-Bonus)
-  → Sonst: Gewicht × (Anzahl matchender Terme / Gesamtanzahl Terme)
-```
-
-**Beispiel: Suche nach „Cloud ERP"**
-
-| Expert | topicName | solutionName | Score-Berechnung |
-|--------|-----------|--------------|------------------|
-| Lechner Sandra | CloudERP | Cloud ERP (generic), ... | topic: 60×2=120 (Phrase) + solution: 50×2=100 (Phrase) = **220** |
-| Winkler Sophie | CloudMigration | Cloud Migration | Nur „Cloud" in topic: 60×0.5=30 + „Cloud" in solution: 50×0.5=25 = **55** (kein „ERP" → 0 ❌) |
-
-### AND-Semantik
-
-**Alle** Suchbegriffe müssen in mindestens einem Feld vorkommen. Wenn ein einziger Term nirgends gefunden wird, erhält die Zeile Score 0 und wird ausgeschlossen.
+### Score Calculation (`computeSearchScore`)
 
 ```
-Suche: "Cloud ERP"
-  → Term "Cloud": muss irgendwo vorkommen ✅
-  → Term "ERP": muss irgendwo vorkommen ✅
-  → Beide gefunden → Zeile wird bewertet
+For each search term:
+  → Check if at least one field contains the term (AND semantics)
+  → If a term is not found in any field → row excluded (score = 0)
 
-Suche: "Cloud Quantum"
-  → Term "Cloud": gefunden ✅
-  → Term "Quantum": nirgends gefunden ❌
-  → Score = 0 → Zeile aussortiert
+For each field:
+  → Phrase match (all terms together in one field)? → weight × 2 (phrase bonus)
+  → Otherwise: weight × (number of matching terms / total terms)
 ```
 
-### Sortierung
+**Example: searching "Cloud ERP"**
 
-Die Ergebnisliste wird in folgender Reihenfolge sortiert:
+| Expert | topicName | solutionName | Score calculation |
+|--------|-----------|--------------|-------------------|
+| Lechner Sandra | CloudERP | Cloud ERP (generic), ... | topic: 60×2=120 (phrase) + solution: 50×2=100 (phrase) = **220** |
+| Winkler Sophie | CloudMigration | Cloud Migration | Only "Cloud" in topic: 60×0.5=30 + "Cloud" in solution: 50×0.5=25 = **55** (no "ERP" → 0 ❌) |
 
-1. **Search Score** (absteigend) — Relevanz des Suchtreffers
-2. **Role Score** (absteigend) — Admin-konfigurierbare Rollenwertigkeit
-3. **Nachname** (alphabetisch) — Tie-Breaker
+### AND Semantics
 
-**Ohne Suche** (kein `$search`-Parameter):
-1. **Role Score** (absteigend)
-2. **Nachname** (alphabetisch)
+**All** search terms must appear in at least one field. If a single term is not found anywhere, the row gets score 0 and is excluded.
 
-### Role Score (Basis-Relevanz)
+```
+Search: "Cloud ERP"
+  → Term "Cloud": found somewhere ✅
+  → Term "ERP":   found somewhere ✅
+  → Both found → row is scored
 
-Der Role Score wird unabhängig von der Suche berechnet und ist die vom Admin konfigurierbare Relevanz eines Experten:
+Search: "Cloud Quantum"
+  → Term "Cloud":   found ✅
+  → Term "Quantum": not found anywhere ❌
+  → Score = 0 → row excluded
+```
+
+### Sort Order
+
+Results are sorted as follows:
+
+1. **Search score** (descending) — keyword match relevance
+2. **Role score** (descending) — admin-configurable role priority
+3. **Last name** (alphabetical) — tiebreaker
+
+**Without search** (no `$search` parameter):
+1. **Role score** (descending)
+2. **Last name** (alphabetical)
+
+### Role Score (Base Relevance)
+
+Computed independently of the search query — the admin-configurable relevance of an expert:
 
 ```javascript
-roleScore = role.priority           // Admin-konfigurierbar (Standard: 5)
+roleScore = role.priority           // admin-configurable (default: 5)
            + (canPresent2H   ? 3 : 0)
            + (canPresentDemo ? 2 : 0)
            + (canPresent30M  ? 1 : 0)
@@ -236,79 +248,79 @@ roleScore = role.priority           // Admin-konfigurierbar (Standard: 5)
 
 ---
 
-## Deduplizierung
+## Deduplication
 
-Da `ExpertSearch` auf `ExpertRoles` basiert, gibt es **mehrere Zeilen pro Expert** (eine pro Solution-Role-Kombination). Die Smart Search dedupliziert zu einer Zeile pro Expert:
+Since `ExpertSearch` is based on `ExpertRoles`, there are **multiple DB rows per expert** (one per solution-role combination). The Smart Search deduplicates to one row per expert:
 
 ```
-Eingabe (DB):
+Input (DB):
   Row 1: Lechner Sandra | Cloud ERP (generic) | Realization Lead
   Row 2: Lechner Sandra | Cloud ERP: Finance   | Realization Consultant
   Row 3: Lechner Sandra | Cloud ERP: Sales     | Realization Consultant
 
-Ausgabe (dedupliziert):
+Output (deduplicated):
   Lechner Sandra
-    solutionName: "Cloud ERP (generic), Cloud ERP: Finance, Cloud ERP: Sales"
-    roleName:     "Realization Consultant, Realization Lead"
-    topicName:    "CloudERP"
-    relevanceScore: MAX(roleScore) über alle Zeilen
-    searchScore:    MAX(searchScore) über alle Zeilen
-    canPresent*:    OR-Verknüpfung über alle Zeilen
+    solutionName:   "Cloud ERP (generic), Cloud ERP: Finance, Cloud ERP: Sales"
+    roleName:       "Realization Consultant, Realization Lead"
+    topicName:      "CloudERP"
+    relevanceScore: MAX(roleScore) across all rows
+    searchScore:    MAX(searchScore) across all rows
+    canPresent*:    OR-merged across all rows
 ```
 
 ---
 
-## OData-Integration
+## OData Integration
 
 ### Fiori Elements FilterBar → Smart Search
 
-Der Fiori Elements List Report sendet Suchanfragen als OData `$search`-Parameter:
+The Fiori Elements List Report sends search queries as an OData `$search` parameter:
 
 ```
 GET /api/catalog/ExpertSearch?$search=Cloud%20ERP&$top=30&$skip=0
 ```
 
-CAP übersetzt `$search` intern in eine CQN-Suchexpression:
+CAP translates `$search` internally into a CQN search expression:
 
 ```javascript
-// CQN-Format: [{val:'Cloud'},'and',{val:'ERP'}]
-// oder:       [{val:'Cloud ERP'}]
+// CQN format: [{val:'Cloud'},'and',{val:'ERP'}]
+// or:         [{val:'Cloud ERP'}]
 ```
 
-Die Funktion `extractSearchString()` extrahiert den rohen Suchstring aus verschiedenen CQN-Formaten:
+`extractSearchString()` extracts the raw search string from various CQN formats:
 
 ```javascript
 function extractSearchString(searchExpr) {
-  // String → direkt zurückgeben
-  // Array  → alle {val:...} Objekte extrahieren und mit ' ' joinen
-  // Object → .val extrahieren
+  // string → return as-is
+  // array  → extract all {val:...} objects and join with ' '
+  // object → extract .val
 }
 ```
 
-### $filter bleibt erhalten
+### $filter is preserved
 
-Standard-OData-Filter (`$filter`) über die FilterBar (Topic, Location, etc.) werden **nicht** von der Smart Search beeinflusst. Sie werden als `WHERE`-Klausel an die Datenbank weitergegeben:
+Standard OData filters (`$filter`) set via the FilterBar (topic, location, etc.) are **not** affected by Smart Search. They are passed as a `WHERE` clause to the database:
 
 ```
 GET /api/catalog/ExpertSearch?$search=ERP&$filter=topicName eq 'CloudERP'
 ```
 
-→ Filter wird auf DB-Ebene angewandt, Smart Search läuft auf den gefilterten Ergebnissen.
+→ Filter applied at DB level, Smart Search runs on the filtered result set.
 
-### Paginierung
+### Pagination
 
-Die Smart Search paginiert manuell nach dem Scoring:
+Smart Search paginates manually after scoring:
 
 ```javascript
 const page = results.slice(skip, skip + top);
-page.$count = total;  // Gesamtzahl für Fiori "X of Y"
+page.$count = total;  // total count for Fiori "X of Y"
 ```
 
 ---
 
 ## searchExperts Action
 
-Neben der OData-`$search`-Integration gibt es eine separate **CDS-Action** `searchExperts`:
+In addition to the OData `$search` integration, there is a separate **CDS action** `searchExperts` — the entry point for the Joule Skill:
 
 ```
 POST /api/catalog/searchExperts
@@ -316,21 +328,21 @@ Content-Type: application/json
 {"query": "Cloud ERP"}
 ```
 
-Diese Action nutzt denselben Matching-Algorithmus (`computeSearchScore`), gibt aber zusätzlich diagnostische Informationen zurück:
+Uses the same matching algorithm (`computeSearchScore`) but returns additional diagnostic fields:
 
-| Feld | Typ | Beschreibung |
-|------|-----|--------------|
-| `score` | Integer | Kombinierter Score (searchScore + roleScore) |
-| `reasoning` | String | Erklärung: „Search match: 120 pts across [Cloud, ERP]. Role priority: 7." |
-| `isMockMode` | Boolean | `true` — für zukünftige AI-basierte Suche vorbereitet |
+| Field | Type | Description |
+|-------|------|-------------|
+| `score` | Integer | Combined score (searchScore + roleScore) |
+| `reasoning` | String | e.g. "Search match: 120 pts across [Cloud, ERP]. Role priority: 7." |
+| `isMockMode` | Boolean | `true` — prepared for future AI Core replacement (see [AI_CORE.md](./AI_CORE.md)) |
 
 ---
 
-## Konfiguration & Erweiterung
+## Configuration & Extension
 
-### Feld-Gewichtungen ändern
+### Changing field weights
 
-Die Gewichtungen sind in `SEARCH_FIELD_WEIGHTS` in `srv/catalog-service.js` definiert:
+Weights are defined in `SEARCH_FIELD_WEIGHTS` in `srv/catalog-service.js`:
 
 ```javascript
 const SEARCH_FIELD_WEIGHTS = {
@@ -344,82 +356,88 @@ const SEARCH_FIELD_WEIGHTS = {
 };
 ```
 
-Änderungen erfordern einen Server-Neustart.
+Server restart required after changes.
 
-### Neue durchsuchbare Felder hinzufügen
+### Adding new searchable fields
 
-1. Feld zur `ExpertSearch`-View in `srv/catalog-service.cds` hinzufügen
-2. Feld mit Gewichtung in `SEARCH_FIELD_WEIGHTS` eintragen
-3. Server neu starten
+1. Add field to `ExpertSearch` view in `srv/catalog-service.cds`
+2. Add field with weight to `SEARCH_FIELD_WEIGHTS`
+3. Restart server
 
-### Matching-Strategie anpassen
+### Adding known SAP terms
 
-Die Schwellenwerte für Term-Klassifikation können in `matchesTerm()` angepasst werden:
+If a new topic or solution is added that could cause false positives via substring matching, add its lowercase name to `SAP_KNOWN_TERMS` in `srv/catalog-service.js`:
 
-- `isAcronym()`: Regex für Akronym-Erkennung
-- `lTerm.length <= 2`: Schwelle für sehr kurze Terme (Word-Boundary)
-- `lTerm.length === 3`: Schwelle für mittlere Terme (Word-Boundary + Substring)
-- `lTerm.length >= 4`: Alles darüber → Substring-Matching
-
----
-
-## Testfälle
-
-### Manuelle Tests via curl
-
-```bash
-# TEST 1: Akronym "AI" — kein False-Positive auf "Toolchain"
-curl -s "http://localhost:4004/api/catalog/ExpertSearch?\$search=AI" | jq '.value[] | .lastName'
-# Erwartet: Nur AI-Topic-Experten (Brandstätter, Winkler)
-
-# TEST 2: Phrase "Cloud ERP" — CloudERP-Experten zuerst
-curl -s "http://localhost:4004/api/catalog/ExpertSearch?\$search=Cloud%20ERP" | jq '.value[] | {n:.lastName, t:.topicName}'
-# Erwartet: Lechner, Gruber, Hollerweger, ... (alle Topic "CloudERP")
-
-# TEST 3: Substring "Toolchain" — Integrated Toolchain wird gefunden
-curl -s "http://localhost:4004/api/catalog/ExpertSearch?\$search=Toolchain" | jq '.value[] | .lastName'
-# Erwartet: Friedl, Hartmann, Steindl, Weissenböck, Pöchhacker
-
-# TEST 4: Ohne Suche — alle Experten nach Role Score sortiert
-curl -s "http://localhost:4004/api/catalog/ExpertSearch?\$top=5" | jq '.value[] | {n:.lastName, s:.relevanceScore}'
-# Erwartet: Sortiert nach relevanceScore absteigend
-
-# TEST 5: Akronym "RISE" — kein False-Positive auf "Enterprise"
-curl -s "http://localhost:4004/api/catalog/ExpertSearch?\$search=RISE" | jq '.value[] | {n:.lastName, t:.topicName}'
-# Erwartet: Nur RISE-Topic-Experten (Krammer, Hollerweger, Rothbauer, Knapitsch)
-# NICHT erwartet: Hartmann (Integrated Toolchain), Schindler (BDC/SAC)
+```javascript
+const SAP_KNOWN_TERMS = new Set([
+  'rise', 'btp', 'ai', 'hcm', 'bdc', 'erp', 's4', 'ti',
+  'clouderp', 'toolchain', 'signavio', 'leanix',
+  // add new terms here
+]);
 ```
 
-### Bekannte Edge Cases
+---
 
-| Eingabe | Verhalten | Begründung |
-|---------|-----------|------------|
-| `ai` (Kleinbuchstaben) | Substring-Match | Kein Akronym, da Kleinbuchstaben → `matchesTerm` nutzt 2-Zeichen-Word-Boundary |
-| `Rise` (Mixed Case) | Substring-Match | Kein Akronym → 4+ Zeichen → Substring, findet „Enterprise" |
-| `RISE` (Großbuchstaben) | Word-Boundary | Akronym erkannt → findet nur „RISE" als eigenes Wort |
-| `CloudERP` (ein Wort) | Gefunden | CamelCase-Normalisierung: „CloudERP" → „Cloud ERP" |
-| `SAP` | Word-Boundary | Akronym → findet „SAP" nur als eigenes Wort |
+## Test Cases
 
-> **Hinweis:** Da die Akronym-Erkennung auf der **Originalschreibweise** des Suchbegriffs basiert, liefert `RISE` und `rise` unterschiedliche Ergebnisse. Das Fiori Elements Suchfeld übergibt die Eingabe des Benutzers unverändert.
+### Manual tests via curl
+
+```bash
+# TEST 1: "AI" acronym — no false positive on "Toolchain"
+curl -s "http://localhost:4004/api/catalog/ExpertSearch?\$search=AI" | jq '.value[] | .lastName'
+# Expected: only AI-topic experts
+
+# TEST 2: "rise" lowercase — no false positive on "Enterprise"
+curl -s "http://localhost:4004/api/catalog/ExpertSearch?\$search=rise" | jq '.value[] | {n:.lastName, t:.topicName}'
+# Expected: only RISE-topic experts (Krammer, Hollerweger, Rothbauer, Knapitsch)
+# NOT expected: Hartmann (Integrated Toolchain), Schindler (BDC/SAC)
+
+# TEST 3: Phrase "Cloud ERP" — CloudERP experts first
+curl -s "http://localhost:4004/api/catalog/ExpertSearch?\$search=Cloud%20ERP" | jq '.value[] | {n:.lastName, t:.topicName}'
+# Expected: Lechner, Gruber, Hollerweger, ... (all Topic "CloudERP")
+
+# TEST 4: Substring "Toolchain" — Integrated Toolchain found
+curl -s "http://localhost:4004/api/catalog/ExpertSearch?\$search=Toolchain" | jq '.value[] | .lastName'
+# Expected: Friedl, Hartmann, Steindl, Weissenböck, Pöchhacker
+
+# TEST 5: No search — all experts sorted by role score
+curl -s "http://localhost:4004/api/catalog/ExpertSearch?\$top=5" | jq '.value[] | {n:.lastName, s:.relevanceScore}'
+# Expected: sorted by relevanceScore descending
+```
+
+### Edge Cases
+
+| Input | Behavior | Reason |
+|-------|----------|--------|
+| `RISE` (uppercase) | Word boundary | Structural acronym |
+| `Rise` (mixed case) | Word boundary | In `SAP_KNOWN_TERMS` |
+| `rise` (lowercase) | Word boundary | In `SAP_KNOWN_TERMS` |
+| `ai` (lowercase) | Word boundary | In `SAP_KNOWN_TERMS` (2-char, would otherwise be boundary anyway) |
+| `CloudERP` (one word) | Found | CamelCase normalization: "CloudERP" → "Cloud ERP" |
+| `SAP` | Word boundary | Structural acronym |
+| `Cloud` | Substring | Mixed case, not in known terms → safe at 5 chars |
 
 ---
 
-## Performance-Hinweise
+## Performance Notes
 
-Die aktuelle Implementierung lädt **alle Zeilen** aus der `ExpertSearch`-View und führt das Matching in JavaScript durch. Das funktioniert gut für die aktuelle Datenmenge (~85 ExpertRole-Zeilen, ~20 Experten).
+The current implementation loads **all rows** from the `ExpertSearch` view and runs matching in JavaScript. This works well for the current data size (~85 ExpertRole rows, ~20 experts).
 
-**Bei stark wachsender Datenmenge** (>1000 Experten) sollte evaluiert werden:
-- PostgreSQL Full-Text-Search (`tsvector` / `tsquery`) als DB-seitige Vorfilterung
-- Caching der ExpertSearch-Daten im Service Handler
-- Indexierung auf häufig gesuchte Felder (topicName, solutionName)
+**If data grows significantly** (>1000 experts), consider:
+- PostgreSQL Full-Text Search (`tsvector` / `tsquery`) as a DB-side pre-filter
+- Caching ExpertSearch data in the service handler
+- Indexing frequently searched fields (topicName, solutionName)
+
+For semantic/natural language search, see [AI_CORE.md](./AI_CORE.md).
 
 ---
 
-## Dateiübersicht
+## File Overview
 
-| Datei | Verantwortung |
-|-------|---------------|
-| `srv/catalog-service.js` | Smart Search Implementierung (Matching, Scoring, Deduplizierung) |
-| `srv/catalog-service.cds` | ExpertSearch View-Definition, `@cds.search`-Annotation, `searchExperts`-Action |
-| `app/findmyexpert-search/annotations.cds` | UI-Annotationen für den List Report (FilterBar, Columns, etc.) |
-| `app/findmyexpert-search/webapp/manifest.json` | Fiori Elements Konfiguration (OData-Model, Routing) |
+| File | Responsibility |
+|------|----------------|
+| `srv/catalog-service.js` | Smart Search implementation (matching, scoring, deduplication) |
+| `srv/catalog-service.cds` | ExpertSearch view definition, `@cds.search` annotation, `searchExperts` action |
+| `app/findmyexpert-search/annotations.cds` | UI annotations for the List Report (FilterBar, columns, etc.) |
+| `app/findmyexpert-search/webapp/manifest.json` | Fiori Elements configuration (OData model, routing) |
+| `docs/AI_CORE.md` | Optional Phase 3: semantic search via SAP AI Core |
