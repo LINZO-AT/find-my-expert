@@ -9,7 +9,6 @@ annotate service.AdminExperts with {
     country       @title: '{i18n>Location}'
                   @Common.Text: country.name
                   @Common.TextArrangement: #TextFirst;
-    languagesText @title: '{i18n>Languages}';
 };
 
 annotate service.AdminExperts with @(
@@ -60,43 +59,6 @@ annotate service.AdminExperts with @(
             Target : 'roles/@UI.LineItem',
         },
     ],
-);
-
-// ─── Admin: ExpertLanguages ───────────────────────────────────────────────────
-annotate service.AdminExpertLanguages with {
-    language @title: '{i18n>Language}'
-             @Common.Text: language.name
-             @Common.TextArrangement: #TextOnly
-             @Common.ValueList: {
-                 CollectionPath: 'Languages',
-                 Parameters: [{
-                     $Type             : 'Common.ValueListParameterOut',
-                     LocalDataProperty : language_code,
-                     ValueListProperty : 'code'
-                 }, {
-                     $Type             : 'Common.ValueListParameterDisplayOnly',
-                     ValueListProperty : 'name'
-                 }]
-             };
-};
-
-annotate service.AdminExpertLanguages with @(
-    UI.LineItem : [
-        { $Type : 'UI.DataField', Value : language_code, Label : '{i18n>Language}' },
-    ],
-    UI.FieldGroup #LanguageInfo : {
-        $Type : 'UI.FieldGroupType',
-        Label : '{i18n>Language}',
-        Data  : [
-            { $Type : 'UI.DataField', Value : language_code },
-        ],
-    },
-    UI.Facets : [{
-        $Type  : 'UI.ReferenceFacet',
-        ID     : 'LanguageInfoFacet',
-        Label  : '{i18n>Language}',
-        Target : '@UI.FieldGroup#LanguageInfo',
-    }],
 );
 
 // ─── Admin: ExpertRoles ───────────────────────────────────────────────────────

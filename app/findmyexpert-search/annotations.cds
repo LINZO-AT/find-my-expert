@@ -14,8 +14,6 @@ annotate service.ExpertSearch with {
                    @Common.Text: countryName
                    @Common.TextArrangement: #TextLast;
     countryName    @title: '{i18n>Location}';
-    languagesText  @title: '{i18n>Languages}';
-
     solutionName @title: '{i18n>Solution}'
         @Common.ValueList: {
             CollectionPath : 'Solutions',

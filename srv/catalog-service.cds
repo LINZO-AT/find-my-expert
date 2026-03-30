@@ -32,12 +32,6 @@ service CatalogService @(path: '/api/catalog') @(requires: ['ExpertViewer', 'Adm
     @Capabilities.InsertRestrictions.Insertable: false
     @Capabilities.DeleteRestrictions.Deletable: false
     @Capabilities.UpdateRestrictions.Updatable: false
-    entity ExpertLanguages  as projection on findmyexpert.ExpertLanguages;
-
-    @readonly @cds.redirection.target
-    @Capabilities.InsertRestrictions.Insertable: false
-    @Capabilities.DeleteRestrictions.Deletable: false
-    @Capabilities.UpdateRestrictions.Updatable: false
     entity Roles            as projection on findmyexpert.Roles;
 
     // ─── Flat search view (denormalized for full-text search across topic/solution/role) ──
@@ -63,7 +57,6 @@ service CatalogService @(path: '/api/catalog') @(requires: ['ExpertViewer', 'Adm
         canPresentDemo,
         notes,
         virtual relevanceScore : Integer,
-        virtual languagesText  : String(200),
         // Navigation to per-solution ExpertRoles for Object Page detail
         expertRoles : Association to many ExpertRoles on expertRoles.expert.ID = expertID
     };
@@ -84,15 +77,8 @@ service CatalogService @(path: '/api/catalog') @(requires: ['ExpertViewer', 'Adm
     @(requires: 'Admin') @cds.redirection.target: false
     @odata.draft.enabled
     entity AdminExperts as projection on findmyexpert.Experts {
-        *, roles      : redirected to AdminExpertRoles,
-           languages  : redirected to AdminExpertLanguages,
-        virtual fullName      : String(200),
-        virtual languagesText : String(200)
-    };
-
-    @(requires: 'Admin') @cds.redirection.target: false
-    entity AdminExpertLanguages as projection on findmyexpert.ExpertLanguages {
-        *, expert : redirected to AdminExperts
+        *, roles : redirected to AdminExpertRoles,
+        virtual fullName : String(200)
     };
 
     @(requires: 'Admin') @cds.redirection.target: false

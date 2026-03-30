@@ -296,15 +296,6 @@ module.exports = cds.service.impl(async function () {
         }
       }
 
-      try {
-        const { ExpertLanguages } = this.entities;
-        const langRows = await cds.db.run(
-          SELECT.from(ExpertLanguages).where({ expert_ID: keyVal })
-        );
-        entry.languagesText = langRows
-          .map(r => r.language_code).filter(Boolean).sort().join(' · ');
-      } catch (_) { entry.languagesText = ''; }
-
       return entry;
     }
 
@@ -391,27 +382,7 @@ module.exports = cds.service.impl(async function () {
       delete entry._roles;
     }
 
-    // 5. Enrich with languagesText
-    try {
-      const { ExpertLanguages } = this.entities;
-      const expertIds = [...expertMap.keys()];
-      if (expertIds.length > 0) {
-        const langRows = await cds.db.run(
-          SELECT.from(ExpertLanguages).where({ expert_ID: { in: expertIds } })
-        );
-        const langByExpert = new Map();
-        for (const r of langRows) {
-          if (!langByExpert.has(r.expert_ID)) langByExpert.set(r.expert_ID, new Set());
-          if (r.language_code) langByExpert.get(r.expert_ID).add(r.language_code);
-        }
-        for (const entry of expertMap.values()) {
-          const codes = langByExpert.get(entry.expertID);
-          entry.languagesText = codes ? [...codes].sort().join(' · ') : '';
-        }
-      }
-    } catch (_) { /* non-critical */ }
-
-    // 6. Sort: when searching → search relevance first, then role score; otherwise → role score only
+    // 5. Sort: when searching → search relevance first, then role score; otherwise → role score only
     let results = [...expertMap.values()];
     if (searchTerms.length > 0) {
       results.sort((a, b) =>
@@ -493,32 +464,11 @@ module.exports = cds.service.impl(async function () {
     e.fullName = parts.length ? parts.join(' ') : 'New Expert';
   };
 
-  const computeLanguagesText = (e) => {
-    if (!e) return;
-    if (Array.isArray(e.languages) && e.languages.length > 0) {
-      e.languagesText = e.languages
-        .map(l => l.language_code || l.language?.code || l.language?.name || '')
-        .filter(Boolean)
-        .sort()
-        .join(' · ');
-    } else {
-      e.languagesText = '';
-    }
-  };
-
-  const computeVirtuals = (e) => { computeFullName(e); computeLanguagesText(e); };
+  const computeVirtuals = (e) => { computeFullName(e); };
 
   this.after('READ', 'AdminExperts', async (results) => {
     const list = Array.isArray(results) ? results : [results];
-    for (const e of list) {
-      if (!Array.isArray(e.languages)) {
-        try {
-          const { ExpertLanguages } = this.entities;
-          e.languages = await cds.db.run(SELECT.from(ExpertLanguages).where({ expert_ID: e.ID }));
-        } catch (_) { e.languages = []; }
-      }
-      computeVirtuals(e);
-    }
+    for (const e of list) computeVirtuals(e);
   });
 
   this.after('NEW',   'AdminExperts', (data) => { computeVirtuals(data); });
