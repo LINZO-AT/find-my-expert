@@ -77,6 +77,13 @@
                 "AdminTopics": {
                   "detail": { "route": "AdminTopicsObjectPage" }
                 }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable"
+                  }
+                }
               }
             }
           }
@@ -96,7 +103,7 @@
       }
     }
   },
-  "sap.fiori": { "registrationIds": ["findmyexpert-manage-topics"], "archetype": "transactional" },
+  "sap.fiori": { "registrationIds": ["findmyexpert-manage-topics"], "archeType": "transactional" },
   "sap.fe": { "app": { "enableLazyLoading": true } },
   "sap.cloud": {
     "public": true,

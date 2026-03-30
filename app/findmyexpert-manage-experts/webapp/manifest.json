@@ -75,7 +75,16 @@
               "variantManagement": "Page",
               "navigation": {
                 "AdminExperts": {
-                  "detail": { "route": "AdminExpertsObjectPage" }
+                  "detail": {
+                    "route": "ExpertsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable"
+                  }
                 }
               }
             }
@@ -96,7 +105,7 @@
       }
     }
   },
-  "sap.fiori": { "registrationIds": ["findmyexpert-manage-experts"], "archetype": "transactional" },
+  "sap.fiori": { "registrationIds": ["findmyexpert-manage-experts"], "archeType": "transactional" },
   "sap.fe": { "app": { "enableLazyLoading": true } },
   "sap.cloud": {
     "public": true,

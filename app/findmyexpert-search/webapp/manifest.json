@@ -149,7 +149,7 @@
   },
   "sap.fiori": {
     "registrationIds": ["findmyexpert-search"],
-    "archetype": "transactional"
+    "archeType": "transactional"
   },
   "sap.fe": {
     "app": {
