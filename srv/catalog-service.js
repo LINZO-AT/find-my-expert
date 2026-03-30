@@ -20,11 +20,25 @@ const genId = () => {
 const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /**
+ * Known SAP topic/solution terms that must always use word-boundary matching,
+ * regardless of how the user types them (rise, Rise, RISE → all word-boundary).
+ * Covers all 8 Topics + common short solution names that would cause false positives.
+ */
+const SAP_KNOWN_TERMS = new Set([
+  'rise', 'btp', 'ai', 'hcm', 'bdc', 'erp', 's4', 'ti',
+  'clouderp', 'toolchain', 'signavio', 'leanix',
+]);
+
+/**
  * Detect whether a term is likely an acronym.
  * Acronyms: all uppercase (e.g. "RISE", "AI", "BTP", "HCM"),
- * or all uppercase + digits (e.g. "S4", "BW4").
+ * or all uppercase + digits (e.g. "S4", "BW4"),
+ * OR a known SAP topic/solution term (case-insensitive, e.g. "rise", "Rise").
  */
-const isAcronym = (term) => /^[A-Z0-9]+$/.test(term) && /[A-Z]/.test(term);
+const isAcronym = (term) => {
+  if (SAP_KNOWN_TERMS.has(term.toLowerCase())) return true;
+  return /^[A-Z0-9]+$/.test(term) && /[A-Z]/.test(term);
+};
 
 /**
  * Check if `text` contains `term` respecting word boundaries.
