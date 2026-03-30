@@ -12,26 +12,170 @@ const genId = () => {
   }
 };
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// Smart Search — word-boundary matching + field-weighted relevance scoring
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/** Escape special regex characters in a string */
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/**
+ * Detect whether a term is likely an acronym.
+ * Acronyms: all uppercase (e.g. "RISE", "AI", "BTP", "HCM"),
+ * or all uppercase + digits (e.g. "S4", "BW4").
+ */
+const isAcronym = (term) => /^[A-Z0-9]+$/.test(term) && /[A-Z]/.test(term);
+
+/**
+ * Check if `text` contains `term` respecting word boundaries.
+ * Strategy by term type:
+ * - Acronyms (all-uppercase like "AI", "RISE", "BTP"): strict word-boundary match
+ * - Short terms ≤ 3 chars (non-acronym): word-boundary + camelCase-boundary
+ * - Terms ≥ 4 chars (non-acronym): substring match (plus camelCase-normalized)
+ */
+function matchesTerm(text, term) {
+  if (!text || !term) return false;
+  const lower = text.toLowerCase();
+  const lTerm = term.toLowerCase();
+
+  // CamelCase-normalize: "CloudERP" → "Cloud ERP"
+  const normalized = text.replace(/([a-z])([A-Z])/g, '$1 $2')
+                         .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+                         .toLowerCase();
+
+  // Acronyms (any length) — strict word boundary to prevent "RISE" matching "Enterprise"
+  if (isAcronym(term)) {
+    const re = new RegExp(`\\b${escapeRegex(lTerm)}\\b`, 'i');
+    return re.test(text) || re.test(normalized);
+  }
+
+  if (lTerm.length <= 2) {
+    // Very short non-acronym terms — require strict word boundary
+    const re = new RegExp(`\\b${escapeRegex(lTerm)}\\b`, 'i');
+    return re.test(text) || re.test(normalized);
+  }
+
+  if (lTerm.length === 3) {
+    // 3-char non-acronym terms — word boundary OR camelCase boundary
+    const re = new RegExp(`\\b${escapeRegex(lTerm)}\\b`, 'i');
+    if (re.test(text) || re.test(normalized)) return true;
+    // Also allow substring in camelCase-normalized form
+    return normalized.includes(lTerm);
+  }
+
+  // 4+ chars non-acronym — substring match is safe
+  return lower.includes(lTerm) || normalized.includes(lTerm);
+}
+
+/**
+ * Check if `text` contains the full `phrase` (multi-word).
+ * Tries: direct substring, camelCase-normalized, and no-space comparison.
+ */
+function matchesPhrase(text, phrase) {
+  if (!text || !phrase) return false;
+  const lower = text.toLowerCase();
+  const lPhrase = phrase.toLowerCase();
+
+  // Direct substring: "Cloud ERP (generic)" contains "cloud erp"
+  if (lower.includes(lPhrase)) return true;
+
+  // CamelCase-normalized: "CloudERP" → "cloud erp" contains "cloud erp"
+  const normalized = text.replace(/([a-z])([A-Z])/g, '$1 $2')
+                         .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+                         .toLowerCase();
+  if (normalized.includes(lPhrase)) return true;
+
+  // No-space comparison: "clouderp" contains "clouderp"
+  const noSpaceLower = lower.replace(/[\s\-_/()]+/g, '');
+  const noSpacePhrase = lPhrase.replace(/[\s\-_/()]+/g, '');
+  if (noSpaceLower.includes(noSpacePhrase)) return true;
+
+  return false;
+}
+
+/**
+ * Field weights for search relevance scoring.
+ * Higher weight = match in this field is more relevant.
+ */
+const SEARCH_FIELD_WEIGHTS = {
+  topicName:    60,   // Core categorization — most important
+  solutionName: 50,   // Specific product/solution
+  firstName:    25,   // Person search
+  lastName:     25,   // Person search
+  roleName:     15,   // Role type
+  email:         5,   // Low relevance
+  notes:         8,   // Some relevance for keyword context
+};
+
+/**
+ * Compute a search relevance score for a single ExpertSearch row.
+ * Returns 0 if the row does NOT match the search (i.e. should be filtered out).
+ *
+ * Matching logic:
+ * - ALL search terms must be found in at least one field (AND semantic)
+ * - Score is weighted by which fields contain matches
+ * - Phrase match (all terms together in one field) gets a 2× bonus
+ */
+function computeSearchScore(row, searchTerms, searchPhrase) {
+  // First check: every term must match at least one field
+  for (const term of searchTerms) {
+    let found = false;
+    for (const field of Object.keys(SEARCH_FIELD_WEIGHTS)) {
+      if (matchesTerm(row[field], term)) { found = true; break; }
+    }
+    if (!found) return 0; // AND failed — row doesn't match
+  }
+
+  // Compute weighted score across all fields
+  let totalScore = 0;
+  for (const [field, weight] of Object.entries(SEARCH_FIELD_WEIGHTS)) {
+    const value = (row[field] || '').toString();
+    if (!value) continue;
+
+    // Phrase match bonus (all terms together in one field)
+    if (searchTerms.length > 1 && matchesPhrase(value, searchPhrase)) {
+      totalScore += weight * 2;
+      continue; // Don't double-count individual terms for this field
+    }
+
+    // Individual term matches
+    let termMatchCount = 0;
+    for (const term of searchTerms) {
+      if (matchesTerm(value, term)) termMatchCount++;
+    }
+    if (termMatchCount > 0) {
+      totalScore += weight * (termMatchCount / searchTerms.length);
+    }
+  }
+
+  return totalScore;
+}
+
+/**
+ * Extract the raw search string from a CQN search expression.
+ * Handles: [{val:'Cloud'},'and',{val:'ERP'}], [{val:'Cloud ERP'}], or string.
+ */
+function extractSearchString(searchExpr) {
+  if (!searchExpr) return '';
+  if (typeof searchExpr === 'string') return searchExpr;
+  if (Array.isArray(searchExpr)) {
+    return searchExpr
+      .filter(s => s && typeof s === 'object' && 'val' in s)
+      .map(s => s.val)
+      .join(' ');
+  }
+  if (typeof searchExpr === 'object' && 'val' in searchExpr) return searchExpr.val;
+  return '';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Role-based relevance score (unchanged business logic)
+// ═══════════════════════════════════════════════════════════════════════════════
+
 /**
  * Relevance score for a single ExpertSearch row.
- *
- * Base score = role.priority  (stored in the Roles entity, admin-configurable).
- * Presentation capability bonuses are added on top:
- *   canPresent2H  +3   (deeper commitment)
- *   canPresentDemo +2
- *   canPresent30M  +1
- *   canPresent5M   +1
- *
- * The role priority values shipped as seed data:
- *   Topic Owner / SPOC               50
- *   Themen Lead                      45
- *   Solutioning / Architecture / Advisory  40
- *   Realization Lead                 35
- *   Project Management               30
- *   Realization Consultant           25
- *   Service Seller                   20
- *   Other Contact (AT)               10
- *   Other Contact (non-AT)            5
+ * Base score = role.priority  (admin-configurable).
+ * Presentation capability bonuses on top.
  */
 const roleScore = (r) => {
   let s = r.rolePriority ?? 5;
@@ -42,26 +186,24 @@ const roleScore = (r) => {
   return s;
 };
 
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Service implementation
+// ═══════════════════════════════════════════════════════════════════════════════
+
 module.exports = cds.service.impl(async function () {
 
   // ─── ExpertSearch → ExpertRoles navigation (per-solution detail for Object Page) ──
   this.on('READ', 'ExpertRoles', async (req, next) => {
-    // Only intercept reads that come via ExpertSearch navigation
-    // Detect: req.params will have 2 entries: [{ID: expertSearchKey}, {ID: ...}] for /ExpertSearch(key)/expertRoles
-    // Or the query will have a WHERE filter from the association ON condition
     const where = req.query.SELECT?.where;
-
-    // Check if this is a navigation from ExpertSearch (filter on expert.ID or expert_ID)
     let expertIdFromNav = null;
     if (Array.isArray(where)) {
-      // Look for expert_ID = <uuid> or expert.ID = <uuid> pattern in WHERE
       for (let i = 0; i < where.length; i++) {
         const item = where[i];
         if (item?.ref && (
           (item.ref.length === 1 && item.ref[0] === 'expert_ID') ||
           (item.ref.length === 2 && item.ref[0] === 'expert' && item.ref[1] === 'ID')
         )) {
-          // Next non-operator item should be the value
           if (where[i + 1] === '=' && where[i + 2]?.val) {
             expertIdFromNav = where[i + 2].val;
             break;
@@ -69,29 +211,20 @@ module.exports = cds.service.impl(async function () {
         }
       }
     }
-
-    if (!expertIdFromNav) {
-      // Not a navigation from ExpertSearch — delegate to default handler
-      return next();
-    }
-
-    // Query ExpertRoles for this expert directly from DB
+    if (!expertIdFromNav) return next();
     const { ExpertRoles } = this.entities;
     const q = SELECT.from(ExpertRoles).where({ expert_ID: expertIdFromNav });
     return cds.db.run(q);
   });
 
-  // ─── ExpertSearch: deduplicate + relevance sort ───────────────────────────
+  // ─── ExpertSearch: smart search + deduplicate + relevance sort ─────────────
   this.on('READ', 'ExpertSearch', async (req) => {
-    // Extract pagination before running the full query
     const top    = req.query.SELECT?.limit?.rows?.val   ?? 100;
     const skip   = req.query.SELECT?.limit?.offset?.val ?? 0;
     const wantCount = req.query.SELECT?.count ?? false;
 
-    // CAP sets req.params for single-entity (key) reads (path-style: /ExpertSearch(ID=...)).
+    // ── Key read (Object Page) ──────────────────────────────────────────────
     const isKeyRead = Array.isArray(req.params) && req.params.length > 0;
-
-    // Secondary detection: WHERE clause is a simple equality filter on the primary key.
     const where = req.query.SELECT?.where;
     let keyWhereClause = null;
     if (!isKeyRead && Array.isArray(where) && where.length === 3) {
@@ -104,10 +237,7 @@ module.exports = cds.service.impl(async function () {
     }
 
     if (isKeyRead || keyWhereClause) {
-      // Object Page: fetch by expertID (since aggregation maps ID → expertID)
       const { ExpertSearch } = this.entities;
-
-      // Extract the requested key value
       let keyVal = null;
       if (keyWhereClause) {
         const [left, , right] = keyWhereClause;
@@ -118,19 +248,16 @@ module.exports = cds.service.impl(async function () {
       }
 
       if (!keyVal) {
-        // Fallback: try original WHERE
         const resolvedWhere = req.query.SELECT?.where ?? req.params[0];
         const kq = SELECT.from(ExpertSearch).where(resolvedWhere);
         const rows = await cds.db.run(kq);
         return Array.isArray(rows) ? (rows[0] ?? null) : rows;
       }
 
-      // Query all ExpertRole rows for this expert and aggregate into one result
       const kq = SELECT.from(ExpertSearch).where({ expertID: keyVal });
       const rows = await cds.db.run(kq);
       if (!rows || rows.length === 0) return null;
 
-      // Aggregate just like the list handler
       const entry = { ...rows[0], ID: keyVal };
       const solutions = new Set();
       const topics    = new Set();
@@ -153,7 +280,6 @@ module.exports = cds.service.impl(async function () {
       entry.roleName     = [...roles].sort().join(', ');
       entry.relevanceScore = maxScore;
 
-      // Support $expand=expertRoles for Object Page sub-table
       const columns = req.query.SELECT?.columns;
       if (Array.isArray(columns)) {
         const expandExpertRoles = columns.find(c => c.ref?.[0] === 'expertRoles' && c.expand);
@@ -170,7 +296,6 @@ module.exports = cds.service.impl(async function () {
         }
       }
 
-      // Enrich languagesText for Object Page header
       try {
         const { ExpertLanguages } = this.entities;
         const langRows = await cds.db.run(
@@ -183,34 +308,68 @@ module.exports = cds.service.impl(async function () {
       return entry;
     }
 
-    // Build query for ALL matching rows (no LIMIT) to allow correct dedup + pagination
+    // ── List read (with smart search) ───────────────────────────────────────
+
+    // 1. Extract and REMOVE $search so CAP doesn't apply naive LIKE '%term%'
+    const searchExpr = req.query.SELECT?.search;
+    let searchTerms = [];
+    let searchPhrase = '';
+    if (searchExpr) {
+      searchPhrase = extractSearchString(searchExpr).trim();
+      // Preserve original case for acronym detection (e.g. "RISE", "AI", "BTP")
+      searchTerms = searchPhrase.split(/\s+/).filter(t => t.length > 0);
+      // Remove $search from query — we handle it ourselves
+      delete req.query.SELECT.search;
+      LOG.info('Smart search intercepted:', { phrase: searchPhrase, terms: searchTerms });
+    }
+
+    // 2. Build query: keep $filter (WHERE) but without $search, without pagination
     const { ExpertSearch } = this.entities;
     const q = SELECT.from(ExpertSearch);
-    if (req.query.SELECT?.where)  q.SELECT.where  = req.query.SELECT.where;
-    if (req.query.SELECT?.search) q.SELECT.search = req.query.SELECT.search;
+    if (req.query.SELECT?.where) q.SELECT.where = req.query.SELECT.where;
+    // Intentionally NOT passing search — we handle it in JS below
 
-    // Run against DB (the CDS view handles joins + @cds.search LIKE translation)
     const allRows = await cds.db.run(q);
 
-    // Deduplicate: one row per expert, aggregating solutions/topics/roles
+    // 3. Apply smart matching (or pass all rows through if no search)
+    let matchedRows;
+    if (searchTerms.length > 0) {
+      matchedRows = [];
+      for (const row of allRows) {
+        const searchScore = computeSearchScore(row, searchTerms, searchPhrase);
+        if (searchScore > 0) {
+          row._searchScore = searchScore;
+          matchedRows.push(row);
+        }
+      }
+      LOG.info(`Smart search: ${allRows.length} total rows → ${matchedRows.length} matched`);
+    } else {
+      matchedRows = allRows;
+      for (const row of matchedRows) row._searchScore = 0;
+    }
+
+    // 4. Deduplicate: one row per expert, aggregate solutions/topics/roles
     const expertMap = new Map();
-    for (const row of allRows) {
-      const s = roleScore(row);
+    for (const row of matchedRows) {
+      const rScore = roleScore(row);
+      const sScore = row._searchScore || 0;
+
       let entry = expertMap.get(row.expertID);
       if (!entry) {
         entry = {
           ...row,
-          _score: s,
+          _roleScore: rScore,
+          _searchScore: sScore,
           _solutions: new Set(),
           _topics: new Set(),
           _roles: new Set(),
         };
         expertMap.set(row.expertID, entry);
       } else {
-        // Keep the highest score
-        if (s > entry._score) {
-          entry._score = s;
-        }
+        // Keep the best search match score
+        if (sScore > entry._searchScore) entry._searchScore = sScore;
+        // Keep the highest role score
+        if (rScore > entry._roleScore) entry._roleScore = rScore;
         // OR-merge presentation capabilities
         entry.canPresent5M   = entry.canPresent5M   || row.canPresent5M;
         entry.canPresent30M  = entry.canPresent30M  || row.canPresent30M;
@@ -232,7 +391,7 @@ module.exports = cds.service.impl(async function () {
       delete entry._roles;
     }
 
-    // Enrich with languagesText from ExpertLanguages
+    // 5. Enrich with languagesText
     try {
       const { ExpertLanguages } = this.entities;
       const expertIds = [...expertMap.keys()];
@@ -250,17 +409,30 @@ module.exports = cds.service.impl(async function () {
           entry.languagesText = codes ? [...codes].sort().join(' · ') : '';
         }
       }
-    } catch (_) { /* non-critical — leave languagesText empty */ }
+    } catch (_) { /* non-critical */ }
 
-    // Sort by relevance descending, then lastName ascending as tiebreaker
-    let results = [...expertMap.values()].sort((a, b) =>
-      b._score - a._score || (a.lastName || '').localeCompare(b.lastName || '')
-    );
+    // 6. Sort: when searching → search relevance first, then role score; otherwise → role score only
+    let results = [...expertMap.values()];
+    if (searchTerms.length > 0) {
+      results.sort((a, b) =>
+        b._searchScore - a._searchScore ||
+        b._roleScore - a._roleScore ||
+        (a.lastName || '').localeCompare(b.lastName || '')
+      );
+    } else {
+      results.sort((a, b) =>
+        b._roleScore - a._roleScore ||
+        (a.lastName || '').localeCompare(b.lastName || '')
+      );
+    }
 
-    // Map internal _score to the virtual relevanceScore field and remove _score
-    results = results.map(({ _score, ...rest }) => ({ ...rest, relevanceScore: _score }));
+    // 7. Map to output: relevanceScore = role-based score (business metric shown to user)
+    results = results.map(({ _roleScore, _searchScore, ...rest }) => ({
+      ...rest,
+      relevanceScore: _roleScore,
+    }));
 
-    // Paginate — CAP reads $count off the returned array for @odata.count
+    // 8. Paginate
     const total = results.length;
     const page  = results.slice(skip, skip + top);
     page.$count  = total;
@@ -281,19 +453,16 @@ module.exports = cds.service.impl(async function () {
   // ─── ExpertRoles / AdminExpertRoles: Compute virtual relevanceScore ───────
   const computeRelevanceScore = async (results) => {
     const list = Array.isArray(results) ? results : [results];
-    // Collect role_IDs that need priority lookup
-    const needLookup = new Map(); // role_ID → [rows]
+    const needLookup = new Map();
     for (const row of list) {
       if (!row || row.relevanceScore !== undefined && row.relevanceScore !== null) continue;
       if (row.role_ID) {
         if (!needLookup.has(row.role_ID)) needLookup.set(row.role_ID, []);
         needLookup.get(row.role_ID).push(row);
       } else {
-        // No role_ID — set score to 0
         row.relevanceScore = 0;
       }
     }
-    // Batch-load priorities for all distinct role_IDs
     const priorityMap = new Map();
     if (needLookup.size > 0) {
       const roleIds = [...needLookup.keys()];
@@ -302,7 +471,6 @@ module.exports = cds.service.impl(async function () {
       );
       for (const r of roles) priorityMap.set(r.ID, r.priority ?? 0);
     }
-    // Compute score for each row
     for (const [roleId, rows] of needLookup) {
       const priority = priorityMap.get(roleId) ?? 0;
       for (const row of rows) {
@@ -325,7 +493,6 @@ module.exports = cds.service.impl(async function () {
     e.fullName = parts.length ? parts.join(' ') : 'New Expert';
   };
 
-  // Compute languagesText from expanded languages array (if present)
   const computeLanguagesText = (e) => {
     if (!e) return;
     if (Array.isArray(e.languages) && e.languages.length > 0) {
@@ -341,10 +508,8 @@ module.exports = cds.service.impl(async function () {
 
   const computeVirtuals = (e) => { computeFullName(e); computeLanguagesText(e); };
 
-  // After READ: always populate virtual fields
   this.after('READ', 'AdminExperts', async (results) => {
     const list = Array.isArray(results) ? results : [results];
-    // For entries without expanded languages, load them
     for (const e of list) {
       if (!Array.isArray(e.languages)) {
         try {
@@ -387,31 +552,25 @@ module.exports = cds.service.impl(async function () {
 
   // ─── searchExperts: Keyword-based relevance search (Phase 1 — no AI Core) ──
   this.on('searchExperts', async (req) => {
-    const query = (req.data.query || '').toLowerCase().trim();
+    const query = (req.data.query || '').trim();
     LOG.info(`searchExperts called — query: "${query}"`);
     if (!query) return [];
+
+    // Preserve original case for acronym detection (e.g. "RISE", "AI", "BTP")
+    const searchTerms = query.split(/\s+/).filter(t => t.length > 0);
+    const searchPhrase = query;
 
     const { ExpertSearch } = this.entities;
     const allRows = await cds.db.run(SELECT.from(ExpertSearch));
 
-    // Tokenize query
-    const tokens = query.split(/\s+/).filter(t => t.length > 1);
-
     const expertMap = new Map();
     for (const row of allRows) {
-      const text = [
-        row.firstName, row.lastName, row.solutionName,
-        row.topicName, row.roleName, row.notes, row.country_code
-      ].filter(Boolean).join(' ').toLowerCase();
+      const searchScore = computeSearchScore(row, searchTerms, searchPhrase);
+      if (searchScore === 0) continue;
 
-      let matchCount = 0;
-      const matchedTokens = [];
-      for (const token of tokens) {
-        if (text.includes(token)) { matchCount++; matchedTokens.push(token); }
-      }
-      if (matchCount === 0) continue;
+      const rScore = row.rolePriority ?? 5;
+      const combinedScore = searchScore + rScore;
 
-      const s = (row.rolePriority ?? 5) + matchCount * 5;
       let entry = expertMap.get(row.expertID);
       if (!entry) {
         entry = {
@@ -420,11 +579,13 @@ module.exports = cds.service.impl(async function () {
           lastName: row.lastName,
           email: row.email,
           country_code: row.country_code,
-          _score: s,
+          countryName: row.countryName,
+          _score: combinedScore,
+          _searchScore: searchScore,
           _solutions: new Set(),
           _topics: new Set(),
           _roles: new Set(),
-          _matched: new Set(matchedTokens),
+          _matched: new Set(),
           canPresent5M:   row.canPresent5M,
           canPresent30M:  row.canPresent30M,
           canPresent2H:   row.canPresent2H,
@@ -432,27 +593,34 @@ module.exports = cds.service.impl(async function () {
         };
         expertMap.set(row.expertID, entry);
       } else {
-        if (s > entry._score) entry._score = s;
+        if (combinedScore > entry._score) entry._score = combinedScore;
+        if (searchScore > entry._searchScore) entry._searchScore = searchScore;
         entry.canPresent5M   = entry.canPresent5M   || row.canPresent5M;
         entry.canPresent30M  = entry.canPresent30M  || row.canPresent30M;
         entry.canPresent2H   = entry.canPresent2H   || row.canPresent2H;
         entry.canPresentDemo = entry.canPresentDemo || row.canPresentDemo;
-        for (const t of matchedTokens) entry._matched.add(t);
       }
       if (row.solutionName) entry._solutions.add(row.solutionName);
       if (row.topicName)    entry._topics.add(row.topicName);
       if (row.roleName)     entry._roles.add(row.roleName);
+
+      // Track which terms matched
+      for (const term of searchTerms) {
+        for (const field of Object.keys(SEARCH_FIELD_WEIGHTS)) {
+          if (matchesTerm(row[field], term)) { entry._matched.add(term); break; }
+        }
+      }
     }
 
     return [...expertMap.values()]
-      .sort((a, b) => b._score - a._score)
-      .map(({ _score, _solutions, _topics, _roles, _matched, ...rest }) => ({
+      .sort((a, b) => b._searchScore - a._searchScore || b._score - a._score)
+      .map(({ _score, _searchScore, _solutions, _topics, _roles, _matched, ...rest }) => ({
         ...rest,
         solutionName: [..._solutions].sort().join(', '),
         topicName:    [..._topics].sort().join(', '),
         roleName:     [..._roles].sort().join(', '),
         score:        _score,
-        reasoning:    `Keyword match: ${[..._matched].join(', ')}. Role score: ${_score}.`,
+        reasoning:    `Search match: ${Math.round(_searchScore)} pts across [${[..._matched].join(', ')}]. Role priority: ${_score - _searchScore}.`,
         isMockMode:   true,
       }));
   });
