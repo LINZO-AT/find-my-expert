@@ -79,7 +79,6 @@ modules:
               URL: ~{srv-api/srv-url}
               HTML5.DynamicDestination: true
               HTML5.ForwardAuthToken: true
-              sap.cloud.service: findmyexpert
             - Name: find-my-expert-html5-repo-runtime
               ServiceInstanceName: find-my-expert-repo-runtime
               ServiceKeyName: find-my-expert-repo-runtime-key
