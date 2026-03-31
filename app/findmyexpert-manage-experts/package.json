@@ -1,16 +1,21 @@
 {
   "name": "findmyexpert-manage-experts",
   "version": "0.0.1",
-  "description": "Manage Experts — Admin CRUD for SAP Austria experts",
-  "keywords": ["ui5", "openui5", "sapui5"],
+  "description": "Manage Experts — Admin CRUD for experts",
+  "keywords": [
+    "ui5",
+    "openui5",
+    "sapui5"
+  ],
   "main": "webapp/index.html",
   "dependencies": {},
   "devDependencies": {
     "@ui5/cli": "^4.0.33",
-    "@sap/ux-ui5-tooling": "1"
+    "@sap/ux-ui5-tooling": "1",
+    "@sap-ux/eslint-plugin-fiori-tools": "^9.0.0",
+    "eslint": "^9"
   },
   "scripts": {
-    "start": "fiori run --open index.html",
-    "deploy-config": "npx -p @sap/ux-ui5-tooling fiori add deploy-config cf"
+    "start": "fiori run --open index.html"
   }
 }

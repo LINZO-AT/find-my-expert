@@ -1,22 +1,25 @@
 {
   "requires": {
     "db": {
-      "kind": "sqlite",
-      "database": "db.sqlite"
+      "[development]": {
+        "kind": "sqlite",
+        "credentials": { "url": "db.sqlite" }
+      },
+      "[production]": {
+        "kind": "hana",
+        "deploy-format": "hdbtable"
+      }
     },
     "auth": {
-      "kind": "dummy"
+      "kind": "dummy",
+      "[production]": {
+        "kind": "xsuaa"
+      }
     },
     "@sap/cds-common-content": true
   },
   "server": {
     "port": 4004,
     "host": "0.0.0.0"
-  },
-  "[production]": {
-    "requires": {
-      "db":   { "kind": "postgres" },
-      "auth": { "kind": "xsuaa" }
-    }
   }
 }

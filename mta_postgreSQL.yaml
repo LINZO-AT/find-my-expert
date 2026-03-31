@@ -1,7 +1,7 @@
 _schema-version: "3.1"
 ID: find-my-expert
 version: 1.0.0
-description: "Find My Expert — SAP Austria Internal Expert Directory (SAP HANA)"
+description: "Find My Expert — SAP Austria Internal Expert Directory"
 
 parameters:
   deploy_mode: html5-repo
@@ -11,6 +11,7 @@ build-parameters:
   before-all:
     - builder: custom
       commands:
+        - npm install --package-lock-only
         - npm ci
         - npx cds build --production
 
@@ -21,6 +22,8 @@ modules:
     path: gen/srv
     parameters:
       buildpack: nodejs_buildpack
+      memory: 256M
+      disk-quota: 512M
       readiness-health-check-type: http
       readiness-health-check-http-endpoint: /health
     build-parameters:
@@ -33,16 +36,23 @@ modules:
       - name: find-my-expert-auth
       - name: find-my-expert-db
 
-  # --------------- DATABASE MODULE (SAP HANA HDI Container) ---------------
+  # --------------- DATABASE MODULE (PostgreSQL) ---------------
   - name: find-my-expert-db-deployer
-    type: hdb
-    path: gen/db
+    type: nodejs
+    path: gen/pg
     parameters:
       buildpack: nodejs_buildpack
+      memory: 128M
+      disk-quota: 512M
+      no-route: true
+      no-start: true
+      tasks:
+        - name: deploy-to-postgresql
+          command: npx cds-deploy
     requires:
       - name: find-my-expert-db
 
-  # --------------- MANAGED APPROUTER (Work Zone Standard Edition) ---------------
+  # --------------- DESTINATIONS (Managed AppRouter via Work Zone) ---------------
   - name: find-my-expert-destinations
     type: com.sap.application.content
     requires:
@@ -55,7 +65,7 @@ modules:
           service-key:
             name: find-my-expert-repo-runtime-key
       - name: srv-api
-      - name: find-my-expert-portal-service
+      - name: find-my-expert-destination-service
         parameters:
           content-target: true
     parameters:
@@ -67,7 +77,8 @@ modules:
               TokenServiceInstanceName: find-my-expert-auth
               TokenServiceKeyName: find-my-expert-auth-key
               URL: ~{srv-api/srv-url}
-              sap.cloud.service: findmyexpert
+              HTML5.DynamicDestination: true
+              HTML5.ForwardAuthToken: true
             - Name: find-my-expert-html5-repo-runtime
               ServiceInstanceName: find-my-expert-repo-runtime
               ServiceKeyName: find-my-expert-repo-runtime-key
@@ -113,7 +124,9 @@ modules:
       builder: custom
       commands:
         - npm install
-        - npx ui5 build --clean-dest --dest dist
+        - npx ui5 build --clean-dest --dest build_output
+        - mkdir -p dist
+        - bash -c "cd build_output && zip -r ../dist/findmyexpert-search.zip ."
       supported-platforms: []
 
   - name: findmyexpert-manage-experts
@@ -124,7 +137,9 @@ modules:
       builder: custom
       commands:
         - npm install
-        - npx ui5 build --clean-dest --dest dist
+        - npx ui5 build --clean-dest --dest build_output
+        - mkdir -p dist
+        - bash -c "cd build_output && zip -r ../dist/findmyexpert-manage-experts.zip ."
       supported-platforms: []
 
   - name: findmyexpert-manage-roles
@@ -135,7 +150,9 @@ modules:
       builder: custom
       commands:
         - npm install
-        - npx ui5 build --clean-dest --dest dist
+        - npx ui5 build --clean-dest --dest build_output
+        - mkdir -p dist
+        - bash -c "cd build_output && zip -r ../dist/findmyexpert-manage-roles.zip ."
       supported-platforms: []
 
   - name: findmyexpert-manage-topics
@@ -146,22 +163,10 @@ modules:
       builder: custom
       commands:
         - npm install
-        - npx ui5 build --clean-dest --dest dist
+        - npx ui5 build --clean-dest --dest build_output
+        - mkdir -p dist
+        - bash -c "cd build_output && zip -r ../dist/findmyexpert-manage-topics.zip ."
       supported-platforms: []
-
-  # --------------- FLP CONTENT (Work Zone Integration) ---------------
-  - name: find-my-expert-flp-content
-    type: com.sap.application.content
-    path: flp
-    requires:
-      - name: find-my-expert-portal-service
-        parameters:
-          content-target: true
-      - name: find-my-expert-repo-host
-      - name: find-my-expert-auth
-    build-parameters:
-      requires:
-        - name: find-my-expert-app-content
 
 resources:
   # --------------- XSUAA ---------------
@@ -175,12 +180,12 @@ resources:
         xsappname: findmyexpert-${org}-${space}
         tenant-mode: dedicated
 
-  # --------------- SAP HANA HDI Container ---------------
+  # --------------- PostgreSQL ---------------
   - name: find-my-expert-db
-    type: com.sap.xs.hdi-container
+    type: org.cloudfoundry.managed-service
     parameters:
-      service: hana
-      service-plan: hdi-shared
+      service: postgresql-db
+      service-plan: standard
 
   # --------------- HTML5 Repo Host ---------------
   - name: find-my-expert-repo-host
@@ -196,9 +201,11 @@ resources:
       service: html5-apps-repo
       service-plan: app-runtime
 
-  # --------------- SAP Build Work Zone Standard Edition ---------------
-  - name: find-my-expert-portal-service
+  # --------------- Destination Service ---------------
+  - name: find-my-expert-destination-service
     type: org.cloudfoundry.managed-service
     parameters:
-      service: SAPLaunchpad
-      service-plan: standard
+      service: destination
+      service-plan: lite
+      config:
+        HTML5Runtime_enabled: true

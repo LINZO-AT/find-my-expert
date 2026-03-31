@@ -8,4 +8,8 @@ gen/
 *.sqlite-wal
 .cds-build/
 dist/
+build_output/
+mta-op-*/
+resources/
+mta_archives/
 

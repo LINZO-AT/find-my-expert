@@ -6,7 +6,7 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@cap-js/postgres": "^1.0.0",
+    "@cap-js/hana": "^2.0.0",
     "@sap/audit-logging": "^7.0.0",
     "@sap/cds": "^9.1.0",
     "@sap/cds-common-content": "^3.1.0",
@@ -16,8 +16,8 @@
     "passport": "0.7.0"
   },
   "devDependencies": {
-    "@cap-js/cds-types": "^0.9.0",
-    "@cap-js/sqlite": "^1.0.0",
+    "@cap-js/cds-types": "^0.16.0",
+    "@cap-js/sqlite": "^2.0.0",
     "@sap/cds-dk": "^9.1.0",
     "@sap/eslint-plugin-cds": "^3.0.0",
     "cds-plugin-ui5": "^0.13.0",
@@ -41,6 +41,12 @@
     "lint:fix": "eslint srv/ app/ --ext .js --fix"
   },
   "cds": {
+    "build": {
+      "tasks": [
+        { "for": "hana", "src": "db" },
+        { "for": "nodejs", "src": "srv" }
+      ]
+    },
     "requires": {
       "audit-log": {
         "kind": "audit-log-to-console",
@@ -53,7 +59,7 @@
           "kind": "xsuaa"
         },
         "db": {
-          "kind": "postgres"
+          "kind": "hana"
         }
       }
     }

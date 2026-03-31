@@ -15,20 +15,20 @@
         "payload": {
           "viz": [
             {
-              "appId": "findmyexpert.search",
-              "vizId": "findmyexpert-search-inbound"
+              "appId": "findmyexpertSearch",
+              "vizId": "findmyexpert-search"
             },
             {
-              "appId": "findmyexpertManageExperts",
-              "vizId": "findmyexpert-manage-experts"
+              "appId": "findmyexpert.findmyexpertmanageexperts",
+              "vizId": "Expert-manage"
             },
             {
-              "appId": "findmyexpertManageRoles",
-              "vizId": "findmyexpert-manage-roles"
+              "appId": "findmyexpert.findmyexpertmanageroles",
+              "vizId": "findmyexpert-ManageRoles-inbound"
             },
             {
-              "appId": "findmyexpertManageTopics",
-              "vizId": "findmyexpert-manage-topics"
+              "appId": "findmyexpert.findmyexpertmanagetopics",
+              "vizId": "ManageTopics-display"
             }
           ]
         }
@@ -44,20 +44,20 @@
         "payload": {
           "viz": [
             {
-              "appId": "findmyexpert.search",
-              "vizId": "findmyexpert-search-inbound"
+              "appId": "findmyexpertSearch",
+              "vizId": "findmyexpert-search"
             },
             {
-              "appId": "findmyexpertManageExperts",
-              "vizId": "findmyexpert-manage-experts"
+              "appId": "findmyexpert.findmyexpertmanageexperts",
+              "vizId": "Expert-manage"
             },
             {
-              "appId": "findmyexpertManageRoles",
-              "vizId": "findmyexpert-manage-roles"
+              "appId": "findmyexpert.findmyexpertmanageroles",
+              "vizId": "findmyexpert-ManageRoles-inbound"
             },
             {
-              "appId": "findmyexpertManageTopics",
-              "vizId": "findmyexpert-manage-topics"
+              "appId": "findmyexpert.findmyexpertmanagetopics",
+              "vizId": "ManageTopics-display"
             }
           ]
         }
