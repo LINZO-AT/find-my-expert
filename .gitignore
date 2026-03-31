@@ -12,4 +12,5 @@ build_output/
 mta-op-*/
 resources/
 mta_archives/
+.find-my-expert_mta_build_tmp/
 
