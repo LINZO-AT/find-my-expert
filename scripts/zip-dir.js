@@ -3,12 +3,12 @@
  * Cross-platform directory zipper for MTA builds.
  * Usage: node zip-dir.js <source-dir> <dest-zip>
  *
- * Tries native `zip` first (Linux/macOS), falls back to `bestzip` (Windows).
- * Both are invoked with explicit cwd to avoid path resolution issues.
+ * Uses the 'archiver' npm package — pure Node.js, no shell commands.
+ * Works on Windows, Linux, and macOS without native zip or /bin/sh.
  */
-const { spawnSync, execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const archiver = require('archiver');
 
 const [srcDir, destZip] = process.argv.slice(2);
 if (!srcDir || !destZip) {
@@ -19,6 +19,12 @@ if (!srcDir || !destZip) {
 const absSrc = path.resolve(srcDir);
 const absDest = path.resolve(destZip);
 
+// Ensure source directory exists
+if (!fs.existsSync(absSrc)) {
+  console.error(`Source directory does not exist: ${absSrc}`);
+  process.exit(1);
+}
+
 // Ensure destination directory exists
 fs.mkdirSync(path.dirname(absDest), { recursive: true });
 
@@ -27,27 +33,22 @@ if (fs.existsSync(absDest)) {
   fs.unlinkSync(absDest);
 }
 
-// Try native zip first (available on Linux/macOS)
-const zipResult = spawnSync('zip', ['-r', absDest, '.'], {
-  cwd: absSrc,
-  stdio: 'inherit'
+const output = fs.createWriteStream(absDest);
+const archive = archiver('zip', { zlib: { level: 9 } });
+
+output.on('close', () => {
+  console.log(`Created ${absDest} (${archive.pointer()} bytes)`);
+  process.exit(0);
 });
 
-if (zipResult.status === 0) {
-  console.log(`Created ${absDest}`);
-  process.exit(0);
-}
-
-// Fallback: use bestzip with explicit cwd (for Windows / no native zip)
-console.log('Native zip not available, falling back to bestzip...');
-try {
-  execSync(`npx -y bestzip "${absDest}" .`, {
-    cwd: absSrc,
-    stdio: 'inherit',
-    shell: true
-  });
-  console.log(`Created ${absDest}`);
-} catch (err) {
+archive.on('error', (err) => {
   console.error('Failed to create zip archive:', err.message);
   process.exit(1);
-}
+});
+
+archive.pipe(output);
+
+// Add all files from source directory at the root of the zip
+archive.directory(absSrc, false);
+
+archive.finalize();
