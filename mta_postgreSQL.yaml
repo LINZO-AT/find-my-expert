@@ -126,7 +126,7 @@ modules:
         - npm install
         - npx ui5 build --clean-dest --dest build_output
         - mkdir -p dist
-        - bash -c "cd build_output && zip -r ../dist/findmyexpert-search.zip ."
+        - bash -c "cd build_output && npx -y bestzip ../dist/findmyexpert-search.zip *"
       supported-platforms: []
 
   - name: findmyexpert-manage-experts
@@ -139,7 +139,7 @@ modules:
         - npm install
         - npx ui5 build --clean-dest --dest build_output
         - mkdir -p dist
-        - bash -c "cd build_output && zip -r ../dist/findmyexpert-manage-experts.zip ."
+        - bash -c "cd build_output && npx -y bestzip ../dist/findmyexpert-manage-experts.zip *"
       supported-platforms: []
 
   - name: findmyexpert-manage-roles
@@ -152,7 +152,7 @@ modules:
         - npm install
         - npx ui5 build --clean-dest --dest build_output
         - mkdir -p dist
-        - bash -c "cd build_output && zip -r ../dist/findmyexpert-manage-roles.zip ."
+        - bash -c "cd build_output && npx -y bestzip ../dist/findmyexpert-manage-roles.zip *"
       supported-platforms: []
 
   - name: findmyexpert-manage-topics
@@ -165,7 +165,7 @@ modules:
         - npm install
         - npx ui5 build --clean-dest --dest build_output
         - mkdir -p dist
-        - bash -c "cd build_output && zip -r ../dist/findmyexpert-manage-topics.zip ."
+        - bash -c "cd build_output && npx -y bestzip ../dist/findmyexpert-manage-topics.zip *"
       supported-platforms: []
 
 resources:
