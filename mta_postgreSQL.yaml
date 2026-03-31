@@ -125,8 +125,7 @@ modules:
       commands:
         - npm install
         - npx ui5 build --clean-dest --dest build_output
-        - mkdir -p dist
-        - bash -c "OUTDIR=$(pwd)/dist && cd build_output && npx -y bestzip $OUTDIR/findmyexpert-search.zip *"
+        - node ../../scripts/zip-dir.js build_output dist/findmyexpert-search.zip
       supported-platforms: []
 
   - name: findmyexpert-manage-experts
@@ -138,8 +137,7 @@ modules:
       commands:
         - npm install
         - npx ui5 build --clean-dest --dest build_output
-        - mkdir -p dist
-        - bash -c "OUTDIR=$(pwd)/dist && cd build_output && npx -y bestzip $OUTDIR/findmyexpert-manage-experts.zip *"
+        - node ../../scripts/zip-dir.js build_output dist/findmyexpert-manage-experts.zip
       supported-platforms: []
 
   - name: findmyexpert-manage-roles
@@ -151,8 +149,7 @@ modules:
       commands:
         - npm install
         - npx ui5 build --clean-dest --dest build_output
-        - mkdir -p dist
-        - bash -c "OUTDIR=$(pwd)/dist && cd build_output && npx -y bestzip $OUTDIR/findmyexpert-manage-roles.zip *"
+        - node ../../scripts/zip-dir.js build_output dist/findmyexpert-manage-roles.zip
       supported-platforms: []
 
   - name: findmyexpert-manage-topics
@@ -164,8 +161,7 @@ modules:
       commands:
         - npm install
         - npx ui5 build --clean-dest --dest build_output
-        - mkdir -p dist
-        - bash -c "OUTDIR=$(pwd)/dist && cd build_output && npx -y bestzip $OUTDIR/findmyexpert-manage-topics.zip *"
+        - node ../../scripts/zip-dir.js build_output dist/findmyexpert-manage-topics.zip
       supported-platforms: []
 
 resources:
